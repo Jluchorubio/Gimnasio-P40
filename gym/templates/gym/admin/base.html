@@ -6,27 +6,102 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{% block title %}Panel Admin{% endblock %}</title>
     <link rel="stylesheet" href="{% static 'gym/css/panel.css' %}" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;700&family=Poppins:wght@300;400;600&family=Pirata+One&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="{% static 'gym/css/admin.css' %}" />
   </head>
-  <body>
-    <header class="card">
-      <div class="row between">
-        <strong>Panel Admin</strong>
-        <nav>
-          <a href="/admin.html">Inicio</a>
-          <a href="/index/">Web</a>
-          <a href="/roles/">Roles</a>
+  <body class="admin-body">
+    <div class="admin-shell">
+      <aside class="admin-sidebar">
+        <div class="admin-brand">
+          <div class="admin-mark">F</div>
+          <div class="admin-brand-text">FitKit</div>
+        </div>
+
+        <nav class="admin-nav">
+          <a href="/admin.html#reportes" data-key="reportes">Reportes</a>
+          <div class="nav-section">Gestion</div>
+          <a href="{% url 'admin_list' model_key='miembros' %}" data-key="miembros">Miembros</a>
+          <a href="{% url 'admin_list' model_key='planes' %}" data-key="planes">Planes</a>
+          <a href="{% url 'admin_list' model_key='clases' %}" data-key="clases">Clases y asistencia</a>
         </nav>
-      </div>
-    </header>
 
-    {% if messages %}
-    <ul class="messages">
-      {% for message in messages %}
-      <li>{{ message }}</li>
-      {% endfor %}
-    </ul>
-    {% endif %}
+        <div class="admin-sidebar-footer">
+          <a class="admin-btn" href="/index/">Ver web</a>
+          <a class="admin-btn primary" href="/auth-test/">Cerrar sesion</a>
+        </div>
+      </aside>
 
-    {% block content %}{% endblock %}
+      <main class="admin-main">
+        <header class="admin-topbar">
+          <div>
+            <p class="admin-eyebrow">Panel administrador</p>
+            <h1 class="admin-title">{% block page_heading %}Panel Admin{% endblock %}</h1>
+          </div>
+          <div>
+            <a class="admin-chip" href="/admin/">Django admin</a>
+          </div>
+        </header>
+
+        {% if messages %}
+        <ul class="messages">
+          {% for message in messages %}
+          <li>{{ message }}</li>
+          {% endfor %}
+        </ul>
+        {% endif %}
+
+        <section class="admin-content">
+          {% block content %}{% endblock %}
+        </section>
+      </main>
+    </div>
+    <script>
+      (function () {
+        const path = window.location.pathname;
+        const hash = window.location.hash.replace("#", "");
+        const navLinks = document.querySelectorAll(".admin-nav a");
+        const groupMap = {
+          miembros: "miembros",
+          roles: "miembros",
+          solicitudes: "miembros",
+          planes: "planes",
+          clases: "clases",
+          asistencias: "clases",
+          publicaciones: "clases",
+          comentarios: "clases",
+        };
+        let active = null;
+
+        if (hash) {
+          active = document.querySelector(`.admin-nav a[data-key="${hash}"]`);
+        }
+
+        if (!active) {
+          navLinks.forEach((link) => {
+            if (link.getAttribute("href") === path) {
+              active = link;
+            }
+          });
+        }
+
+        if (!active) {
+          const match = path.match(/^\/panel\/([^/]+)\//);
+          if (match) {
+            const key = match[1];
+            const mapped = groupMap[key] || key;
+            active = document.querySelector(`.admin-nav a[data-key="${mapped}"]`);
+          } else if (path.includes("admin.html")) {
+            active = document.querySelector('.admin-nav a[data-key="reportes"]');
+          }
+        }
+
+        if (active) {
+          active.classList.add("active");
+        }
+      })();
+    </script>
   </body>
 </html>

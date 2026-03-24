@@ -1,117 +1,52 @@
-{% load static %}
-<!doctype html>
-<html lang="es">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Panel Administrador</title>
-    <link rel="stylesheet" href="{% static 'gym/css/panel.css' %}" />
-  </head>
-  <body class="page-narrow">
-    <header class="card">
-      <div class="row between">
-        <strong>Gimnasio</strong>
-        <nav>
-          <a href="/index/">Inicio</a>
-          <a href="/roles/">Roles</a>
-          <a href="/membresia/">Membresia</a>
-        </nav>
-        <div class="row">
-          <a class="btn secondary" href="/admin/">Django Admin</a>
-          <a class="btn" href="/auth-test/">Cerrar sesion</a>
-        </div>
-      </div>
-    </header>
+{% extends "gym/admin/base.html" %}
 
-    <div class="card">
-      <h1>Panel del Administrador</h1>
-      <p>
-        Esta es la pagina base del administrador. Aqui iremos agregando accesos
-        a gestion de planes, clases, miembros y reportes.
-      </p>
+{% block title %}Reportes{% endblock %}
+{% block page_heading %}Reportes{% endblock %}
+
+{% block content %}
+  <section id="reportes" class="admin-section">
+    <div class="admin-card">
+      <p class="admin-eyebrow">Panel administrador</p>
+      <h2>Reportes KPIs</h2>
+      <p>Indicadores clave para decisiones rapidas y control de rendimiento.</p>
     </div>
 
-    <div class="card">
-      <h2>Panel de Usuarios y Roles</h2>
-      <p>Gestion completa de cuentas y permisos.</p>
-      <ul>
-        <li>Crear, editar y desactivar miembros</li>
-        <li>Asignar roles: Administrador, Entrenador, Cliente</li>
-        <li>Ver historial de registro y estado de membresia</li>
-        <li>Restablecer credenciales cuando sea necesario</li>
-      </ul>
-      <div class="row">
-        <a class="btn" href="/panel/miembros/">Administrar miembros</a>
-        <a class="btn secondary" href="/panel/roles/">Administrar roles</a>
+    <div class="admin-grid">
+      <div class="stat-box">
+        <p class="admin-eyebrow">Ingresos del mes</p>
+        <h2>$45,230</h2>
+        <p class="pill pill-green">+12% vs mes anterior</p>
+      </div>
+      <div class="stat-box">
+        <p class="admin-eyebrow">Miembros activos</p>
+        <h2>1,240</h2>
+        <p class="pill pill-blue">75% ocupacion</p>
+      </div>
+      <div class="stat-box">
+        <p class="admin-eyebrow">Clases del dia</p>
+        <h2>24</h2>
+        <p class="pill pill-red">82% asistencia</p>
+      </div>
+      <div class="stat-box">
+        <p class="admin-eyebrow">Solicitudes pendientes</p>
+        <h2>18</h2>
+        <p class="pill pill-red">Requieren revision</p>
       </div>
     </div>
+  </section>
 
-    <div class="card">
-      <h2>Panel de Membresias y Planes</h2>
-      <p>Control de planes, precios y solicitudes.</p>
-      <ul>
-        <li>Crear y editar planes (precio y duracion)</li>
-        <li>Aprobar o rechazar solicitudes de membresia</li>
-        <li>Activar o suspender membresias</li>
-        <li>Consultar historial de pagos</li>
-      </ul>
-      <div class="row">
-        <a class="btn" href="/panel/planes/">Administrar planes</a>
-        <a class="btn secondary" href="/panel/solicitudes/">Solicitudes</a>
-      </div>
+  <div class="admin-card">
+    <h2>Accesos rapidos</h2>
+    <p>Gestiona las areas mas usadas sin pasar por menus extra.</p>
+    <div class="admin-card-actions">
+      <a class="btn" href="/panel/miembros/">Miembros</a>
+      <a class="btn secondary" href="/panel/roles/">Roles</a>
+      <a class="btn secondary" href="/panel/solicitudes/">Solicitudes</a>
+      <a class="btn" href="/panel/planes/">Planes</a>
+      <a class="btn" href="/panel/clases/">Clases</a>
+      <a class="btn secondary" href="/panel/asistencias/">Asistencias</a>
+      <a class="btn secondary" href="/panel/publicaciones/">Publicaciones</a>
+      <a class="btn secondary" href="/panel/comentarios/">Comentarios</a>
     </div>
-
-    <div class="card">
-      <h2>Panel de Clases</h2>
-      <p>Administracion de la oferta de clases del gimnasio.</p>
-      <ul>
-        <li>Crear y editar clases</li>
-        <li>Asignar instructor y cupo maximo</li>
-        <li>Ver inscritos por clase</li>
-        <li>Bloquear inscripciones cuando el cupo este lleno</li>
-      </ul>
-      <div class="row">
-        <a class="btn" href="/panel/clases/">Administrar clases</a>
-      </div>
-    </div>
-
-    <div class="card">
-      <h2>Panel de Asistencia</h2>
-      <p>Seguimiento de asistencia por clase y por miembro.</p>
-      <ul>
-        <li>Ver reportes por fecha e instructor</li>
-        <li>Exportar asistencia</li>
-        <li>Marcar inasistencias justificadas</li>
-      </ul>
-      <div class="row">
-        <a class="btn" href="/panel/asistencias/">Administrar asistencia</a>
-      </div>
-    </div>
-
-    <div class="card">
-      <h2>Panel de Contenido</h2>
-      <p>Supervision del foro y material educativo.</p>
-      <ul>
-        <li>Revisar publicaciones por clase</li>
-        <li>Moderar comentarios</li>
-        <li>Eliminar contenido inapropiado</li>
-      </ul>
-      <div class="row">
-        <a class="btn" href="/panel/publicaciones/">Publicaciones</a>
-        <a class="btn secondary" href="/panel/comentarios/">Comentarios</a>
-      </div>
-    </div>
-
-    <div class="card">
-      <h2>Panel de Reportes</h2>
-      <p>Indicadores clave del gimnasio.</p>
-      <ul>
-        <li>Miembros activos vs. inactivos</li>
-        <li>Clases mas demandadas</li>
-        <li>Ingresos por planes</li>
-        <li>Asistencia promedio mensual</li>
-      </ul>
-      <p class="text-muted">(Se conectara en la siguiente fase)</p>
-    </div>
-  </body>
-</html>
+  </div>
+{% endblock %}

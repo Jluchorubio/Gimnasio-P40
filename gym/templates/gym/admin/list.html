@@ -2,18 +2,43 @@
 {% load admin_extras %}
 
 {% block title %}{{ model_label }}{% endblock %}
+{% block page_heading %}{{ model_label }}{% endblock %}
 
 {% block content %}
-  <div class="card">
-    <div class="row" style="justify-content: space-between;">
-      <h1 style="margin:0;">{{ model_label }}</h1>
-      <a class="btn" href="{% url 'admin_create' model_key=model_key %}">Crear</a>
+  <div class="admin-card admin-list-header">
+    <div>
+      <p class="admin-eyebrow">Panel administrador</p>
+      <h2>{{ model_label }}</h2>
+      {% if model_key == "miembros" or model_key == "roles" or model_key == "solicitudes" %}
+        <p>Gestiona miembros, roles y solicitudes de membresia desde una sola vista.</p>
+      {% elif model_key == "clases" or model_key == "asistencias" or model_key == "publicaciones" or model_key == "comentarios" %}
+        <p>Administra clases, asistencia y contenido (publicaciones/comentarios) desde un solo flujo.</p>
+      {% endif %}
+      {% if filter_label %}
+        <p class="admin-filter">Filtrado por clase: {{ filter_label }}</p>
+      {% endif %}
     </div>
+    <a class="btn" href="{% url 'admin_create' model_key=model_key %}">Crear</a>
   </div>
 
-  <div class="card">
+  {% if model_key == "miembros" or model_key == "roles" or model_key == "solicitudes" %}
+    <div class="admin-subnav">
+      <a class="admin-tab {% if model_key == 'miembros' %}active{% endif %}" href="{% url 'admin_list' model_key='miembros' %}">Miembros</a>
+      <a class="admin-tab {% if model_key == 'roles' %}active{% endif %}" href="{% url 'admin_list' model_key='roles' %}">Roles</a>
+      <a class="admin-tab {% if model_key == 'solicitudes' %}active{% endif %}" href="{% url 'admin_list' model_key='solicitudes' %}">Solicitudes</a>
+    </div>
+  {% elif model_key == "clases" or model_key == "asistencias" or model_key == "publicaciones" or model_key == "comentarios" %}
+    <div class="admin-subnav">
+      <a class="admin-tab {% if model_key == 'clases' %}active{% endif %}" href="{% url 'admin_list' model_key='clases' %}">Clases</a>
+      <a class="admin-tab {% if model_key == 'asistencias' %}active{% endif %}" href="{% url 'admin_list' model_key='asistencias' %}">Asistencias</a>
+      <a class="admin-tab {% if model_key == 'publicaciones' %}active{% endif %}" href="{% url 'admin_list' model_key='publicaciones' %}">Publicaciones</a>
+      <a class="admin-tab {% if model_key == 'comentarios' %}active{% endif %}" href="{% url 'admin_list' model_key='comentarios' %}">Comentarios</a>
+    </div>
+  {% endif %}
+
+  <div class="admin-card">
     {% if objects %}
-      <table>
+      <table class="admin-table">
         <thead>
           <tr>
             {% for label in field_labels %}
@@ -31,6 +56,11 @@
               <td class="row">
                 <a class="btn secondary" href="{% url 'admin_edit' model_key=model_key pk=obj.pk %}">Editar</a>
                 <a class="btn danger" href="{% url 'admin_delete' model_key=model_key pk=obj.pk %}">Eliminar</a>
+                {% if model_key == "clases" %}
+                  <a class="btn secondary" href="{% url 'admin_list' model_key='asistencias' %}?clase={{ obj.pk }}">Asistencias</a>
+                  <a class="btn secondary" href="{% url 'admin_list' model_key='publicaciones' %}?clase={{ obj.pk }}">Publicaciones</a>
+                  <a class="btn secondary" href="{% url 'admin_list' model_key='comentarios' %}?clase={{ obj.pk }}">Comentarios</a>
+                {% endif %}
               </td>
             </tr>
           {% endfor %}

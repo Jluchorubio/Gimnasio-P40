@@ -117,6 +117,26 @@ def admin_list(request, model_key):
     objects = model.objects.all()
     fields = config["list_fields"]
     field_labels = [model._meta.get_field(f).verbose_name.title() for f in fields]
+    filter_label = None
+
+    clase_id = request.GET.get("clase")
+    if clase_id:
+        try:
+            clase_id_int = int(clase_id)
+        except ValueError:
+            clase_id_int = None
+        if clase_id_int:
+            if model is Asistencia:
+                objects = objects.filter(clase_id=clase_id_int)
+            elif model is PublicacionClase:
+                objects = objects.filter(clase_id=clase_id_int)
+            elif model is Comentario:
+                objects = objects.filter(publicacion__clase_id=clase_id_int)
+
+            if model in {Asistencia, PublicacionClase, Comentario}:
+                clase = Clase.objects.filter(pk=clase_id_int).first()
+                if clase:
+                    filter_label = f"{clase.nombre} ({clase.fecha})"
 
     context = {
         "model_key": model_key,
@@ -124,6 +144,7 @@ def admin_list(request, model_key):
         "objects": objects,
         "fields": fields,
         "field_labels": field_labels,
+        "filter_label": filter_label,
     }
     return render(request, "gym/admin/list.html", context)
 
