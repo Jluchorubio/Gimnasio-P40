@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import redirect, render
 
 
 def auth_test(request):
@@ -14,7 +14,7 @@ def roles(request):
 
 
 def membresia(request):
-    return render(request, "gym/membresia.html")
+    return redirect("/index/#membresia")
 
 
 def admin_home(request):

@@ -11,6 +11,14 @@ body {
   margin: 0;
 }
 
+.font-oswald {
+  font-family: "Oswald", sans-serif;
+}
+
+.font-gothic {
+  font-family: "Pirata One", cursive;
+}
+
 h1,
 h2,
 h3,
@@ -228,34 +236,6 @@ html {
   .mood-item {
     transform: none !important;
   }
-}
-
-.membership-hero {
-  position: relative;
-  padding: 140px 0;
-  background-image:
-    linear-gradient(rgba(0, 0, 0, 0.55), rgba(0, 0, 0, 0.92)),
-    url("https://images.unsplash.com/photo-1540497077202-7c8a3999166f?q=80&w=2070");
-  background-size: cover;
-  background-position: center;
-  text-align: center;
-}
-
-.membership-hero .membership-kicker {
-  display: inline-block;
-  font-size: 12px;
-  text-transform: uppercase;
-  letter-spacing: 0.6em;
-  color: #f87171;
-  font-weight: 700;
-}
-
-.membership-overlay {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  background: radial-gradient(circle at center, transparent 0%, rgba(0, 0, 0, 0.9) 90%);
-  opacity: 0.6;
 }
 
 body.only-membresia section:not(#membresia),

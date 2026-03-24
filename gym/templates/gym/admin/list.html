@@ -10,7 +10,7 @@
       <p class="admin-eyebrow">Panel administrador</p>
       <h2>{{ model_label }}</h2>
       {% if model_key == "miembros" or model_key == "roles" or model_key == "solicitudes" %}
-        <p>Gestiona miembros, roles y solicitudes de membresia desde una sola vista.</p>
+        <p>Gestiona miembros y solicitudes de membresia desde una sola vista.</p>
       {% elif model_key == "clases" or model_key == "asistencias" or model_key == "publicaciones" or model_key == "comentarios" %}
         <p>Administra clases, asistencia y contenido (publicaciones/comentarios) desde un solo flujo.</p>
       {% endif %}
@@ -24,7 +24,6 @@
   {% if model_key == "miembros" or model_key == "roles" or model_key == "solicitudes" %}
     <div class="admin-subnav">
       <a class="admin-tab {% if model_key == 'miembros' %}active{% endif %}" href="{% url 'admin_list' model_key='miembros' %}">Miembros</a>
-      <a class="admin-tab {% if model_key == 'roles' %}active{% endif %}" href="{% url 'admin_list' model_key='roles' %}">Roles</a>
       <a class="admin-tab {% if model_key == 'solicitudes' %}active{% endif %}" href="{% url 'admin_list' model_key='solicitudes' %}">Solicitudes</a>
     </div>
   {% elif model_key == "clases" or model_key == "asistencias" or model_key == "publicaciones" or model_key == "comentarios" %}

@@ -77,6 +77,19 @@ def cliente_dashboard(request):
 
     if request.method == "POST":
         action = request.POST.get("action")
+        if action == "membership_request":
+            if cliente.estado_membresia:
+                messages.info(request, "Ya tienes una membresia activa.")
+            else:
+                solicitud_pendiente = SolicitudMembresia.objects.filter(
+                    miembro=cliente, aprobada=False
+                ).exists()
+                if solicitud_pendiente:
+                    messages.info(request, "Ya tienes una solicitud pendiente.")
+                else:
+                    SolicitudMembresia.objects.create(miembro=cliente, aprobada=False)
+                    messages.success(request, "Solicitud enviada correctamente.")
+            return redirect(reverse("cliente_home_html") + "?view=membership")
         if action == "add_comment":
             publication_id = request.POST.get("publication_id")
             contenido = request.POST.get("comment_content", "").strip()
@@ -308,6 +321,11 @@ def cliente_dashboard(request):
             }
         )
 
+    solicitudes = SolicitudMembresia.objects.filter(miembro=cliente).order_by(
+        "-fecha_solicitud"
+    )
+    solicitud_pendiente = solicitudes.filter(aprobada=False).exists()
+
     return render(
         request,
         "gym/cliente.html",
@@ -319,6 +337,9 @@ def cliente_dashboard(request):
             "total_clases_inscritas": asistencias.count(),
             "total_clases_asistidas": asistencias.filter(asistio=True).count(),
             "clases_disponibles": clases_disponibles,
+            "membresia_activa": cliente.estado_membresia,
+            "solicitud_pendiente": solicitud_pendiente,
+            "solicitudes": solicitudes,
         },
     )
 
@@ -340,24 +361,9 @@ def cliente_membresia(request):
             else:
                 SolicitudMembresia.objects.create(miembro=cliente, aprobada=False)
                 messages.success(request, "Solicitud enviada correctamente.")
+        return redirect(reverse("cliente_home_html") + "?view=membership")
 
-    solicitudes = SolicitudMembresia.objects.filter(miembro=cliente).order_by(
-        "-fecha_solicitud"
-    )
-    solicitud_pendiente = SolicitudMembresia.objects.filter(
-        miembro=cliente, aprobada=False
-    ).exists()
-
-    return render(
-        request,
-        "gym/cliente/membresia.html",
-        {
-            "cliente": cliente,
-            "solicitudes": solicitudes,
-            "membresia_activa": cliente.estado_membresia,
-            "solicitud_pendiente": solicitud_pendiente,
-        },
-    )
+    return redirect(reverse("cliente_home_html") + "?view=membership")
 
 
 def cliente_clases_list(request):

@@ -10,6 +10,7 @@ const viewTitles = {
   "my-courses": "Mis Cursos",
   calendar: "Calendario de Entrenamiento",
   profile: "Ajustes de Perfil",
+  membership: "Membresia",
   "course-player": "Reproductor de Entrenamiento",
 };
 
@@ -365,7 +366,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   } else {
     const view = params.get("view");
-    if (view && ["courses", "my-courses", "calendar", "profile"].includes(view)) {
+    if (view && ["courses", "my-courses", "calendar", "profile", "membership"].includes(view)) {
       showView(view);
     } else {
       showView("courses");

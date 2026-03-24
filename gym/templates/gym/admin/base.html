@@ -5,19 +5,25 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{% block title %}Panel Admin{% endblock %}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="{% static 'gym/css/panel.css' %}" />
     <link
       href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;700&family=Poppins:wght@300;400;600&family=Pirata+One&display=swap"
       rel="stylesheet"
     />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Teko:wght@400;600;700&family=Roboto:wght@300;400;700&display=swap"
+      rel="stylesheet"
+    />
     <link rel="stylesheet" href="{% static 'gym/css/admin.css' %}" />
+    <link rel="stylesheet" href="{% static 'gym/css/membresia_panel.css' %}" />
   </head>
   <body class="admin-body">
     <div class="admin-shell">
       <aside class="admin-sidebar">
         <div class="admin-brand">
           <div class="admin-mark">F</div>
-          <div class="admin-brand-text">FitKit</div>
+          <div class="admin-brand-text">FIT<span class="red-accent">KIT</span></div>
         </div>
 
         <nav class="admin-nav">

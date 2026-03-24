@@ -61,7 +61,7 @@
 }
 
 .admin-brand-text {
-  font-family: "Oswald", sans-serif;
+  font-family: "Teko", sans-serif;
   font-size: 2rem;
   font-weight: 700;
   letter-spacing: -1px;
@@ -75,6 +75,10 @@
 
 .font-oswald {
   font-family: "Oswald", sans-serif;
+}
+
+.red-accent {
+  color: var(--ego-red);
 }
 
 .admin-nav {
@@ -127,7 +131,7 @@
   border: 1px solid var(--ego-border);
   color: #e5e5e5;
   border-radius: 12px;
-  font-family: "Oswald", sans-serif;
+  font-family: "Teko", sans-serif;
   text-transform: uppercase;
   letter-spacing: 0.2em;
   font-size: 0.7rem;
@@ -177,9 +181,10 @@
 }
 
 .admin-title {
-  font-family: "Pirata One", cursive;
-  font-size: 3.5rem;
+  font-family: "Teko", sans-serif;
+  font-size: 3.4rem;
   text-transform: uppercase;
+  letter-spacing: 0.08em;
   margin: 0;
   color: #ffffff;
 }
@@ -194,7 +199,7 @@
   font-size: 0.7rem;
   text-transform: uppercase;
   letter-spacing: 0.24em;
-  font-family: "Oswald", sans-serif;
+  font-family: "Teko", sans-serif;
   transition: all 0.2s ease;
 }
 
@@ -228,10 +233,10 @@
 }
 
 .admin-card h2 {
-  font-family: "Oswald", sans-serif;
-  font-size: 1.6rem;
+  font-family: "Teko", sans-serif;
+  font-size: 1.8rem;
   text-transform: uppercase;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.14em;
   margin: 0;
   color: #ffffff;
 }
@@ -490,7 +495,7 @@
   text-transform: uppercase;
   font-size: 0.65rem;
   letter-spacing: 0.2em;
-  font-family: "Oswald", sans-serif;
+  font-family: "Teko", sans-serif;
   transition: all 0.2s ease;
 }
 
@@ -616,7 +621,7 @@
   border: 1px solid var(--ego-red);
   background: var(--ego-red);
   color: #ffffff;
-  font-family: "Oswald", sans-serif;
+  font-family: "Teko", sans-serif;
   text-transform: uppercase;
   letter-spacing: 0.18em;
   font-size: 0.7rem;
@@ -715,4 +720,15 @@
     flex-direction: row;
     flex-wrap: wrap;
   }
+}
+
+.admin-membership {
+  margin-top: 24px;
+}
+
+.admin-membership .membership-hero {
+  min-height: 520px;
+  border-radius: 24px;
+  overflow: hidden;
+  background-attachment: scroll;
 }
