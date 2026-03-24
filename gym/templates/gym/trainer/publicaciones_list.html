@@ -1,21 +1,29 @@
 {% extends "gym/trainer/base.html" %}
 
-{% block title %}Publicaciones{% endblock %}
+{% block title %}Publicaciones | FITKIT{% endblock %}
 
 {% block content %}
-  <div class="card">
-    <div class="row" style="justify-content: space-between;">
-      <h1 style="margin:0;">Publicaciones - {{ clase.nombre }}</h1>
-      <a class="btn" href="{% url 'trainer_publicacion_create' pk=clase.pk %}">Crear publicacion</a>
+  <section class="page-header">
+    <div>
+      <h1 class="page-title">Publicaciones</h1>
+      <p class="page-subtitle">{{ clase.nombre }}</p>
     </div>
-  </div>
+    <div class="page-actions">
+      <a class="btn primary" href="{% url 'trainer_publicacion_create' pk=clase.pk %}">Nueva publicación</a>
+      {% if clase.curso %}
+        <a class="btn ghost" href="{% url 'trainer_course_detail' curso_id=clase.curso.id %}">Volver al curso</a>
+      {% else %}
+        <a class="btn ghost" href="{% url 'trainer_clases_list' %}">Volver</a>
+      {% endif %}
+    </div>
+  </section>
 
-  <div class="card">
+  <div class="form-card">
     {% if publicaciones %}
-      <table>
+      <table class="table">
         <thead>
           <tr>
-            <th>Titulo</th>
+            <th>Título</th>
             <th>Fecha</th>
             <th>Acciones</th>
           </tr>
@@ -24,20 +32,19 @@
           {% for pub in publicaciones %}
             <tr>
               <td>{{ pub.titulo }}</td>
-              <td>{{ pub.fecha_publicacion }}</td>
-              <td class="row">
-                <a class="btn secondary" href="{% url 'trainer_publicacion_edit' pk=pub.pk %}">Editar</a>
-                <a class="btn danger" href="{% url 'trainer_publicacion_delete' pk=pub.pk %}">Eliminar</a>
+              <td>{{ pub.fecha_publicacion|date:"d M Y H:i" }}</td>
+              <td>
+                <div class="class-actions">
+                  <a class="btn ghost" href="{% url 'trainer_publicacion_edit' pk=pub.pk %}">Editar</a>
+                  <a class="btn danger" href="{% url 'trainer_publicacion_delete' pk=pub.pk %}">Eliminar</a>
+                </div>
               </td>
             </tr>
           {% endfor %}
         </tbody>
       </table>
     {% else %}
-      <p>No hay publicaciones para esta clase.</p>
+      <p class="course-meta">No hay publicaciones para esta clase.</p>
     {% endif %}
-    <div class="row" style="margin-top:1rem;">
-      <a class="btn secondary" href="{% url 'trainer_clases_list' %}">Volver</a>
-    </div>
   </div>
 {% endblock %}

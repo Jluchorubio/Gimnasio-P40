@@ -297,6 +297,189 @@
   margin-bottom: 16px;
 }
 
+.courses-grid {
+  display: grid;
+  gap: 16px;
+}
+
+.course-card {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+  background: var(--ego-card);
+  border: 1px solid var(--ego-border);
+  border-radius: 20px;
+  padding: 1.2rem 1.4rem;
+  transition: border-color 0.2s ease, transform 0.2s ease;
+}
+
+.course-card:hover {
+  border-color: rgba(220, 38, 38, 0.6);
+  transform: translateY(-2px);
+}
+
+.course-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.course-card h3 {
+  font-size: 1.2rem;
+  margin: 0;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.course-meta {
+  margin: 4px 0;
+  font-size: 0.85rem;
+  color: #a1a1aa;
+}
+
+.class-accordion {
+  background: var(--ego-card);
+  border: 1px solid var(--ego-border);
+  border-radius: 22px;
+  margin-bottom: 16px;
+  overflow: hidden;
+}
+
+.class-accordion summary {
+  list-style: none;
+  cursor: pointer;
+  padding: 1.1rem 1.4rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  background: #0f0f0f;
+}
+
+.class-accordion summary::after {
+  content: "+";
+  font-size: 1.2rem;
+  color: #a1a1aa;
+  margin-left: auto;
+}
+
+.class-accordion[open] summary::after {
+  content: "–";
+  color: #ffffff;
+}
+
+.class-accordion summary::-webkit-details-marker {
+  display: none;
+}
+
+.class-summary-info h3 {
+  margin: 0;
+  font-size: 1.2rem;
+  color: #ffffff;
+}
+
+.class-summary-info p {
+  margin: 6px 0 0;
+  color: #a1a1aa;
+  font-size: 0.85rem;
+}
+
+.class-summary-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.class-body {
+  padding: 1.2rem 1.4rem 1.6rem;
+  display: grid;
+  gap: 16px;
+  background: #0b0b0b;
+}
+
+.class-block {
+  background: #101010;
+  border: 1px solid var(--ego-border);
+  border-radius: 18px;
+  padding: 1rem 1.2rem;
+}
+
+.class-block-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+
+.class-block h4 {
+  margin: 0;
+  font-size: 1rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-family: "Oswald", sans-serif;
+}
+
+.class-block-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.content-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 12px;
+}
+
+.content-item {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  border: 1px solid var(--ego-border);
+  border-radius: 16px;
+  padding: 12px 14px;
+  background: #0f0f0f;
+  flex-wrap: wrap;
+}
+
+.content-title {
+  font-weight: 700;
+  font-size: 0.95rem;
+  margin-bottom: 4px;
+  color: #ffffff;
+}
+
+.content-meta {
+  font-size: 0.75rem;
+  color: #9ca3af;
+  margin-bottom: 6px;
+}
+
+.content-snippet {
+  font-size: 0.85rem;
+  color: #d4d4d8;
+}
+
+.content-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.empty-state {
+  color: #71717a;
+  font-size: 0.85rem;
+  margin: 0;
+}
+
 .admin-tab {
   text-decoration: none;
   color: var(--ego-muted);
@@ -327,6 +510,15 @@
   width: 100%;
   border-collapse: separate;
   border-spacing: 0 10px;
+}
+
+.admin-table.compact thead th {
+  padding: 0 12px 8px;
+  font-size: 0.6rem;
+}
+
+.admin-table.compact tbody td {
+  padding: 0.7rem 0.9rem;
 }
 
 .admin-table thead th {

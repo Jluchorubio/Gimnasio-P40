@@ -1,0 +1,45 @@
+{% extends "gym/trainer/base.html" %}
+
+{% block title %}Mis cursos | FITKIT{% endblock %}
+
+{% block content %}
+  <section class="page-header">
+    <div>
+      <h1 class="page-title">Mis cursos</h1>
+      <p class="page-subtitle">Gestiona tus cursos, clases, contenido y asistencia sin salir del flujo.</p>
+    </div>
+    <div class="page-actions">
+      <a class="btn ghost" href="{% url 'trainer_attendance_overview' %}">Llenar asistencia</a>
+      <a class="btn primary" href="{% url 'trainer_course_create' %}">Crear curso</a>
+    </div>
+  </section>
+
+  {% if cursos %}
+    <div class="course-grid">
+      {% for curso in cursos %}
+        <div class="course-card">
+          <div class="course-card-header">
+            {% if curso.activo %}
+              <span class="pill active">Activo</span>
+            {% else %}
+              <span class="pill inactive">Inactivo</span>
+            {% endif %}
+            <span class="course-meta">{{ curso.total_clases }} clases</span>
+          </div>
+          <h3 class="course-title">{{ curso.nombre }}</h3>
+          <p class="course-description">
+            {{ curso.descripcion|default:"Sin descripción por ahora." }}
+          </p>
+          <div class="course-actions">
+            <a class="btn ghost" href="{% url 'trainer_course_edit' curso_id=curso.id %}">Editar</a>
+            <a class="btn primary" href="{% url 'trainer_course_detail' curso_id=curso.id %}">Abrir curso</a>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="empty-state">
+      Aún no tienes cursos creados. Usa el botón “Crear curso” para empezar.
+    </div>
+  {% endif %}
+{% endblock %}

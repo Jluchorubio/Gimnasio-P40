@@ -3,35 +3,43 @@
 {% block title %}Publicaciones{% endblock %}
 
 {% block content %}
-  <div class="card">
-    <div class="row" style="justify-content: space-between;">
-      <h1 style="margin:0;">Publicaciones - {{ clase.nombre }}</h1>
-      <a class="btn secondary" href="{% url 'cliente_mis_clases' %}">Volver</a>
+  <section class="page-header">
+    <div>
+      <h1 class="page-title">Publicaciones</h1>
+      <p class="page-subtitle">{{ clase.nombre }}</p>
     </div>
-  </div>
+    <div class="page-actions">
+      <a class="btn ghost" href="{% url 'cliente_mis_clases' %}">Volver</a>
+    </div>
+  </section>
 
   {% if publicaciones %}
     {% for pub in publicaciones %}
-      <div class="card">
-        <h2 style="margin-top:0;">{{ pub.titulo }}</h2>
+      <div class="form-card">
+        <h2>{{ pub.titulo }}</h2>
         <p>{{ pub.contenido }}</p>
-        {% if pub.imagen %}
-          <p><a href="{{ pub.imagen.url }}" target="_blank">Ver imagen</a></p>
-        {% endif %}
-        {% if pub.video_archivo %}
-          <p><a href="{{ pub.video_archivo.url }}" target="_blank">Ver video</a></p>
-        {% endif %}
-        {% if pub.video_url %}
-          <p><a href="{{ pub.video_url }}" target="_blank">Ver video externo</a></p>
-        {% endif %}
-        <p><small>Publicado: {{ pub.fecha_publicacion }}</small></p>
+        <div class="class-actions">
+          {% if pub.imagen %}
+            <a class="btn ghost" href="{{ pub.imagen.url }}" target="_blank">Ver imagen</a>
+          {% endif %}
+          {% if pub.video_archivo %}
+            <a class="btn ghost" href="{{ pub.video_archivo.url }}" target="_blank">Ver video</a>
+          {% endif %}
+          {% if pub.video_url %}
+            <a class="btn ghost" href="{{ pub.video_url }}" target="_blank">Ver video externo</a>
+          {% endif %}
+        </div>
+        <p class="course-meta">Publicado: {{ pub.fecha_publicacion }}</p>
 
         <h3>Comentarios</h3>
-        <ul>
+        <ul class="list-clean">
           {% for comentario in pub.comentarios.all %}
-            <li><strong>{{ comentario.autor.nombre }}:</strong> {{ comentario.contenido }}</li>
+            <li class="list-item">
+              <span>{{ comentario.autor.nombre }}</span>
+              <span class="course-meta">{{ comentario.contenido }}</span>
+            </li>
           {% empty %}
-            <li>No hay comentarios.</li>
+            <li class="list-item">No hay comentarios.</li>
           {% endfor %}
         </ul>
 
@@ -39,13 +47,13 @@
           {% csrf_token %}
           {{ form.as_p }}
           <input type="hidden" name="publicacion_id" value="{{ pub.id }}" />
-          <button class="btn" type="submit">Comentar</button>
+          <button class="btn primary" type="submit">Comentar</button>
         </form>
       </div>
     {% endfor %}
   {% else %}
-    <div class="card">
-      <p>No hay publicaciones en esta clase.</p>
+    <div class="form-card">
+      <p class="course-meta">No hay publicaciones en esta clase.</p>
     </div>
   {% endif %}
 {% endblock %}

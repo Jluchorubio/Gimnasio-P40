@@ -1,23 +1,26 @@
 {% extends "gym/trainer/base.html" %}
 
-{% block title %}Mis clases{% endblock %}
+{% block title %}Mis clases | FITKIT{% endblock %}
 
 {% block content %}
-  <div class="card">
-    <div class="row" style="justify-content: space-between;">
-      <h1 style="margin:0;">Mis clases</h1>
-      <a class="btn" href="{% url 'trainer_clase_create' %}">Crear clase</a>
+  <section class="page-header">
+    <div>
+      <h1 class="page-title">Mis clases</h1>
+      <p class="page-subtitle">Lista rápida de clases creadas en tus cursos.</p>
     </div>
-  </div>
+    <div class="page-actions">
+      <a class="btn primary" href="{% url 'trainer_clase_create' %}">Crear clase</a>
+    </div>
+  </section>
 
-  <div class="card">
+  <div class="form-card">
     {% if clases %}
-      <table>
+      <table class="table">
         <thead>
           <tr>
-            <th>Nombre</th>
+            <th>Clase</th>
+            <th>Curso</th>
             <th>Fecha</th>
-            <th>Hora</th>
             <th>Cupo</th>
             <th>Acciones</th>
           </tr>
@@ -26,20 +29,22 @@
           {% for clase in clases %}
             <tr>
               <td>{{ clase.nombre }}</td>
-              <td>{{ clase.fecha }}</td>
-              <td>{{ clase.hora }}</td>
+              <td>{{ clase.curso.nombre|default:"Sin curso" }}</td>
+              <td>{{ clase.fecha }} · {{ clase.hora|time:"H:i" }}</td>
               <td>{{ clase.cupo_maximo }}</td>
-              <td class="row">
-                <a class="btn secondary" href="{% url 'trainer_clase_edit' pk=clase.pk %}">Editar</a>
-                <a class="btn" href="{% url 'trainer_inscritos' pk=clase.pk %}">Inscritos</a>
-                <a class="btn" href="{% url 'trainer_publicaciones_list' pk=clase.pk %}">Publicaciones</a>
+              <td>
+                <div class="class-actions">
+                  <a class="btn ghost" href="{% url 'trainer_clase_edit' pk=clase.pk %}">Editar</a>
+                  <a class="btn primary" href="{% url 'trainer_inscritos' pk=clase.pk %}">Asistencia</a>
+                  <a class="btn ghost" href="{% url 'trainer_publicaciones_list' pk=clase.pk %}">Contenido</a>
+                </div>
               </td>
             </tr>
           {% endfor %}
         </tbody>
       </table>
     {% else %}
-      <p>No tienes clases asignadas.</p>
+      <p class="course-meta">No tienes clases asignadas.</p>
     {% endif %}
   </div>
 {% endblock %}

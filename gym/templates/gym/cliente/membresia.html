@@ -1,25 +1,31 @@
 {% extends "gym/cliente/base.html" %}
 
-{% block title %}Membresia{% endblock %}
+{% block title %}Membresía{% endblock %}
 
 {% block content %}
-  <div class="card">
-    <h1 style="margin-top:0;">Membresia</h1>
+  <section class="page-header">
+    <div>
+      <h1 class="page-title">Membresía</h1>
+      <p class="page-subtitle">Controla el estado de tu membresía y solicitudes.</p>
+    </div>
+  </section>
+
+  <div class="form-card">
     {% if membresia_activa %}
-      <p>Tu membresia esta activa.</p>
+      <p class="course-meta">Tu membresía está activa.</p>
     {% else %}
-      <p>No tienes membresia activa.</p>
+      <p class="course-meta">No tienes membresía activa.</p>
       <form method="post">
         {% csrf_token %}
-        <button class="btn" type="submit">Solicitar membresia</button>
+        <button class="btn primary" type="submit">Solicitar membresía</button>
       </form>
     {% endif %}
   </div>
 
-  <div class="card">
+  <div class="form-card">
     <h2>Historial de solicitudes</h2>
     {% if solicitudes %}
-      <table>
+      <table class="table">
         <thead>
           <tr>
             <th>Fecha</th>
@@ -36,7 +42,7 @@
         </tbody>
       </table>
     {% else %}
-      <p>No hay solicitudes.</p>
+      <p class="course-meta">No hay solicitudes.</p>
     {% endif %}
   </div>
 {% endblock %}

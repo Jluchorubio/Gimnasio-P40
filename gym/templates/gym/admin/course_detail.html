@@ -1,0 +1,126 @@
+{% extends "gym/admin/base.html" %}
+
+{% block title %}{{ curso.nombre }}{% endblock %}
+{% block page_heading %}{{ curso.nombre }}{% endblock %}
+
+{% block content %}
+  <div class="admin-card admin-list-header">
+    <div>
+      <p class="admin-eyebrow">Curso seleccionado</p>
+      <h2>{{ curso.nombre }}</h2>
+      <p>Profesor: {{ curso.profesor.nombre }} · Estado: {{ curso.activo|yesno:"Activo,Inactivo" }}</p>
+    </div>
+    <div class="admin-card-actions">
+      <a class="btn" href="{% url 'admin_create' model_key='clases' %}?curso={{ curso.id }}">Crear clase</a>
+      <a class="btn secondary" href="{% url 'admin_edit' model_key='cursos' pk=curso.id %}">Editar curso</a>
+      <a class="btn secondary" href="{% url 'admin_courses' %}">Ver cursos</a>
+    </div>
+  </div>
+
+  {% for clase in clases %}
+    <details class="class-accordion" {% if forloop.first %}open{% endif %}>
+      <summary class="class-summary">
+        <div class="class-summary-info">
+          <h3>{{ clase.nombre }}</h3>
+          <p>{{ clase.fecha }} · {{ clase.hora }} · Instructor: {{ clase.instructor.nombre }}</p>
+        </div>
+        <div class="class-summary-actions">
+          <a class="btn secondary" href="{% url 'admin_edit' model_key='clases' pk=clase.id %}">Editar</a>
+          <a class="btn danger" href="{% url 'admin_delete' model_key='clases' pk=clase.id %}">Eliminar</a>
+        </div>
+      </summary>
+
+      <div class="class-body">
+        <div class="class-block">
+          <div class="class-block-header">
+            <h4>Contenido</h4>
+            <div class="class-block-actions">
+              <a class="btn secondary" href="{% url 'admin_create' model_key='publicaciones' %}?clase={{ clase.id }}">Agregar contenido</a>
+              <a class="btn secondary" href="{% url 'admin_list' model_key='publicaciones' %}?clase={{ clase.id }}">Ver todo</a>
+            </div>
+          </div>
+          {% if clase.publicaciones.all %}
+            <ul class="content-list">
+              {% for publicacion in clase.publicaciones.all %}
+                <li class="content-item">
+                  <div class="content-main">
+                    <div class="content-title">{{ publicacion.titulo }}</div>
+                    <div class="content-meta">
+                      Por {{ publicacion.autor.nombre }} · {{ publicacion.fecha_publicacion|date:"d M Y" }}
+                    </div>
+                    <div class="content-snippet">{{ publicacion.contenido|truncatechars:180 }}</div>
+                  </div>
+                  <div class="content-actions">
+                    <span class="pill pill-blue">{{ publicacion.comentarios.all|length }} comentarios</span>
+                    <a class="btn secondary" href="{% url 'admin_edit' model_key='publicaciones' pk=publicacion.pk %}">Editar</a>
+                    <a class="btn danger" href="{% url 'admin_delete' model_key='publicaciones' pk=publicacion.pk %}">Eliminar</a>
+                  </div>
+                </li>
+              {% endfor %}
+            </ul>
+          {% else %}
+            <p class="empty-state">Sin publicaciones para esta clase.</p>
+          {% endif %}
+        </div>
+
+        <div class="class-block">
+          <div class="class-block-header">
+            <h4>Asistencia</h4>
+            <div class="class-block-actions">
+              <a class="btn secondary" href="{% url 'admin_create' model_key='asistencias' %}?clase={{ clase.id }}">Agregar asistencia</a>
+              <a class="btn secondary" href="{% url 'admin_list' model_key='asistencias' %}?clase={{ clase.id }}">Ver todo</a>
+            </div>
+          </div>
+          {% if clase.asistencia_set.all %}
+            <table class="admin-table compact">
+              <thead>
+                <tr>
+                  <th>Miembro</th>
+                  <th>Fecha</th>
+                  <th>Estado</th>
+                  <th>Acciones</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for asistencia in clase.asistencia_set.all %}
+                  <tr>
+                    <td>{{ asistencia.miembro.nombre }}</td>
+                    <td>{{ asistencia.fecha_inscripcion }}</td>
+                    <td>
+                      {% if asistencia.asistio %}
+                        <span class="pill pill-green">Asistio</span>
+                      {% else %}
+                        <span class="pill pill-red">No asistio</span>
+                      {% endif %}
+                    </td>
+                    <td class="row">
+                      <a class="btn secondary" href="{% url 'admin_edit' model_key='asistencias' pk=asistencia.pk %}">Editar</a>
+                      <a class="btn danger" href="{% url 'admin_delete' model_key='asistencias' pk=asistencia.pk %}">Eliminar</a>
+                    </td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          {% else %}
+            <p class="empty-state">Sin registros de asistencia.</p>
+          {% endif %}
+        </div>
+
+        <div class="class-block">
+          <div class="class-block-header">
+            <h4>Comentarios</h4>
+            <div class="class-block-actions">
+              <a class="btn secondary" href="{% url 'admin_list' model_key='comentarios' %}?clase={{ clase.id }}">Gestionar comentarios</a>
+            </div>
+          </div>
+          <p class="content-meta">Total comentarios: {{ clase.total_comentarios }}</p>
+        </div>
+      </div>
+    </details>
+  {% empty %}
+    <div class="admin-card">
+      <h2>Sin clases</h2>
+      <p>Este curso aún no tiene clases registradas.</p>
+    </div>
+  {% endfor %}
+{% endblock %}

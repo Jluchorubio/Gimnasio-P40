@@ -1,9 +1,28 @@
 from django import forms
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
+from django.db.models import Count
 from django.contrib import messages
 
-from gym.models import Miembro, Clase, Asistencia, PublicacionClase
+from gym.models import Miembro, Curso, Clase, Asistencia, PublicacionClase
+
+
+class CursoTrainerForm(forms.ModelForm):
+    class Meta:
+        model = Curso
+        fields = ["nombre", "descripcion", "activo"]
+
+    def __init__(self, *args, profesor=None, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._profesor = profesor
+
+    def save(self, commit=True):
+        curso = super().save(commit=False)
+        if self._profesor:
+            curso.profesor = self._profesor
+        if commit:
+            curso.save()
+        return curso
 
 
 class ClaseTrainerForm(forms.ModelForm):
@@ -11,14 +30,17 @@ class ClaseTrainerForm(forms.ModelForm):
         model = Clase
         fields = ["nombre", "descripcion", "fecha", "hora", "cupo_maximo"]
 
-    def __init__(self, *args, instructor=None, **kwargs):
+    def __init__(self, *args, instructor=None, curso=None, **kwargs):
         super().__init__(*args, **kwargs)
         self._instructor = instructor
+        self._curso = curso
 
     def save(self, commit=True):
         clase = super().save(commit=False)
         if self._instructor:
             clase.instructor = self._instructor
+        if self._curso:
+            clase.curso = self._curso
         if commit:
             clase.save()
         return clase
@@ -74,11 +96,115 @@ def trainer_select(request):
 
 
 def trainer_dashboard(request):
+    return redirect(reverse("trainer_courses_list"))
+
+
+def trainer_courses_list(request):
     trainer, redirect_response = _require_trainer(request)
     if redirect_response:
         return redirect_response
 
-    return render(request, "gym/trainer.html", {"trainer": trainer})
+    cursos = (
+        Curso.objects.filter(profesor=trainer)
+        .annotate(total_clases=Count("clases"))
+        .order_by("nombre")
+    )
+    return render(
+        request,
+        "gym/trainer/courses_list.html",
+        {"trainer": trainer, "cursos": cursos},
+    )
+
+
+def trainer_course_create(request):
+    trainer, redirect_response = _require_trainer(request)
+    if redirect_response:
+        return redirect_response
+
+    if request.method == "POST":
+        form = CursoTrainerForm(request.POST, profesor=trainer)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Curso creado correctamente.")
+            return redirect(reverse("trainer_courses_list"))
+    else:
+        form = CursoTrainerForm(profesor=trainer)
+
+    return render(
+        request,
+        "gym/trainer/course_form.html",
+        {"trainer": trainer, "form": form, "action": "Crear"},
+    )
+
+
+def trainer_course_edit(request, curso_id):
+    trainer, redirect_response = _require_trainer(request)
+    if redirect_response:
+        return redirect_response
+
+    curso = get_object_or_404(Curso, pk=curso_id, profesor=trainer)
+
+    if request.method == "POST":
+        form = CursoTrainerForm(request.POST, instance=curso, profesor=trainer)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Curso actualizado correctamente.")
+            return redirect(reverse("trainer_course_detail", kwargs={"curso_id": curso.id}))
+    else:
+        form = CursoTrainerForm(instance=curso, profesor=trainer)
+
+    return render(
+        request,
+        "gym/trainer/course_form.html",
+        {"trainer": trainer, "form": form, "action": "Editar", "curso": curso},
+    )
+
+
+def trainer_course_detail(request, curso_id):
+    trainer, redirect_response = _require_trainer(request)
+    if redirect_response:
+        return redirect_response
+
+    curso = get_object_or_404(Curso, pk=curso_id, profesor=trainer)
+    clases = (
+        Clase.objects.filter(curso=curso, instructor=trainer)
+        .annotate(total_inscritos=Count("asistencia"))
+        .prefetch_related("publicaciones__comentarios", "asistencia_set__miembro")
+        .order_by("fecha", "hora")
+    )
+
+    for clase in clases:
+        clase.total_comentarios = sum(
+            len(pub.comentarios.all()) for pub in clase.publicaciones.all()
+        )
+
+    return render(
+        request,
+        "gym/trainer/course_detail.html",
+        {
+            "trainer": trainer,
+            "curso": curso,
+            "clases": clases,
+            "clases_count": clases.count(),
+        },
+    )
+
+
+def trainer_attendance_overview(request):
+    trainer, redirect_response = _require_trainer(request)
+    if redirect_response:
+        return redirect_response
+
+    clases = (
+        Clase.objects.filter(instructor=trainer)
+        .select_related("curso")
+        .order_by("-fecha", "-hora")
+    )
+    return render(
+        request,
+        "gym/trainer/attendance_overview.html",
+        {"trainer": trainer, "clases": clases},
+    )
 
 
 def trainer_clases_list(request):
@@ -86,7 +212,11 @@ def trainer_clases_list(request):
     if redirect_response:
         return redirect_response
 
-    clases = Clase.objects.filter(instructor=trainer).order_by("fecha", "hora")
+    clases = (
+        Clase.objects.filter(instructor=trainer)
+        .select_related("curso")
+        .order_by("fecha", "hora")
+    )
     return render(
         request,
         "gym/trainer/clases_list.html",
@@ -99,19 +229,29 @@ def trainer_clase_create(request):
     if redirect_response:
         return redirect_response
 
+    curso = None
+    curso_id = request.GET.get("curso")
+    if curso_id:
+        curso = Curso.objects.filter(pk=curso_id, profesor=trainer).first()
+        if not curso:
+            messages.error(request, "No tienes permiso para ese curso.")
+            return redirect(reverse("trainer_courses_list"))
+
     if request.method == "POST":
-        form = ClaseTrainerForm(request.POST, instructor=trainer)
+        form = ClaseTrainerForm(request.POST, instructor=trainer, curso=curso)
         if form.is_valid():
             form.save()
             messages.success(request, "Clase creada correctamente.")
+            if curso:
+                return redirect(reverse("trainer_course_detail", kwargs={"curso_id": curso.id}))
             return redirect(reverse("trainer_clases_list"))
     else:
-        form = ClaseTrainerForm(instructor=trainer)
+        form = ClaseTrainerForm(instructor=trainer, curso=curso)
 
     return render(
         request,
         "gym/trainer/clase_form.html",
-        {"trainer": trainer, "form": form, "action": "Crear"},
+        {"trainer": trainer, "form": form, "action": "Crear", "curso": curso},
     )
 
 
@@ -121,20 +261,51 @@ def trainer_clase_edit(request, pk):
         return redirect_response
 
     clase = get_object_or_404(Clase, pk=pk, instructor=trainer)
+    curso = clase.curso
 
     if request.method == "POST":
-        form = ClaseTrainerForm(request.POST, instance=clase, instructor=trainer)
+        form = ClaseTrainerForm(
+            request.POST, instance=clase, instructor=trainer, curso=curso
+        )
         if form.is_valid():
             form.save()
             messages.success(request, "Clase actualizada correctamente.")
+            if curso:
+                return redirect(
+                    reverse("trainer_course_detail", kwargs={"curso_id": curso.id})
+                )
             return redirect(reverse("trainer_clases_list"))
     else:
-        form = ClaseTrainerForm(instance=clase, instructor=trainer)
+        form = ClaseTrainerForm(instance=clase, instructor=trainer, curso=curso)
 
     return render(
         request,
         "gym/trainer/clase_form.html",
-        {"trainer": trainer, "form": form, "action": "Editar"},
+        {"trainer": trainer, "form": form, "action": "Editar", "curso": curso},
+    )
+
+
+def trainer_clase_delete(request, pk):
+    trainer, redirect_response = _require_trainer(request)
+    if redirect_response:
+        return redirect_response
+
+    clase = get_object_or_404(Clase, pk=pk, instructor=trainer)
+    curso = clase.curso
+
+    if request.method == "POST":
+        clase.delete()
+        messages.success(request, "Clase eliminada correctamente.")
+        if curso:
+            return redirect(
+                reverse("trainer_course_detail", kwargs={"curso_id": curso.id})
+            )
+        return redirect(reverse("trainer_clases_list"))
+
+    return render(
+        request,
+        "gym/trainer/clase_delete.html",
+        {"trainer": trainer, "clase": clase, "curso": curso},
     )
 
 

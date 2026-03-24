@@ -1,16 +1,36 @@
 {% extends "gym/trainer/base.html" %}
 
-{% block title %}{{ action }} clase{% endblock %}
+{% block title %}{{ action }} clase | FITKIT{% endblock %}
 
 {% block content %}
-  <div class="card">
-    <h1 style="margin-top:0;">{{ action }} clase</h1>
+  <section class="page-header">
+    <div>
+      <h1 class="page-title">{{ action }} clase</h1>
+      <p class="page-subtitle">
+        {% if curso %}Curso: {{ curso.nombre }}{% else %}Completa la información de la clase.{% endif %}
+      </p>
+    </div>
+  </section>
+
+  <div class="form-card">
     <form method="post">
       {% csrf_token %}
-      {{ form.as_p }}
-      <div class="row">
-        <button class="btn" type="submit">{{ action }}</button>
-        <a class="btn secondary" href="{% url 'trainer_clases_list' %}">Volver</a>
+      {% for field in form %}
+        <label class="form-field">
+          {{ field.label }}
+          {{ field }}
+          {% if field.errors %}
+            <span class="course-meta">{{ field.errors|striptags }}</span>
+          {% endif %}
+        </label>
+      {% endfor %}
+      <div class="class-actions">
+        <button class="btn primary" type="submit">{{ action }}</button>
+        {% if curso %}
+          <a class="btn ghost" href="{% url 'trainer_course_detail' curso_id=curso.id %}">Cancelar</a>
+        {% else %}
+          <a class="btn ghost" href="{% url 'trainer_clases_list' %}">Cancelar</a>
+        {% endif %}
       </div>
     </form>
   </div>

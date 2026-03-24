@@ -1,24 +1,26 @@
 {% load admin_extras %}
 {% extends "gym/cliente/base.html" %}
 
-{% block title %}Clases disponibles{% endblock %}
+{% block title %}Cursos disponibles{% endblock %}
 
 {% block content %}
-  <div class="card">
-    <h1 style="margin-top:0;">Clases disponibles</h1>
-  </div>
+  <section class="page-header">
+    <div>
+      <h1 class="page-title">Cursos disponibles</h1>
+      <p class="page-subtitle">Explora las clases abiertas por los entrenadores.</p>
+    </div>
+  </section>
 
-  <div class="card">
+  <div class="form-card">
     {% if clases %}
-      <table>
+      <table class="table">
         <thead>
           <tr>
-            <th>Nombre</th>
+            <th>Clase</th>
             <th>Instructor</th>
             <th>Fecha</th>
-            <th>Hora</th>
             <th>Cupo</th>
-            <th>Acciones</th>
+            <th>Acción</th>
           </tr>
         </thead>
         <tbody>
@@ -26,17 +28,16 @@
             <tr>
               <td>{{ clase.nombre }}</td>
               <td>{{ clase.instructor.nombre }}</td>
-              <td>{{ clase.fecha }}</td>
-              <td>{{ clase.hora }}</td>
+              <td>{{ clase.fecha }} · {{ clase.hora }}</td>
               <td>{{ cupos|get_item:clase.id }}/{{ clase.cupo_maximo }}</td>
               <td>
                 {% if clase.id in inscritos_ids %}
-                  Inscrito
+                  <span class="course-meta">Inscrito</span>
                 {% else %}
                   <form method="post" style="margin:0;">
                     {% csrf_token %}
                     <input type="hidden" name="clase_id" value="{{ clase.id }}" />
-                    <button class="btn" type="submit">Inscribirme</button>
+                    <button class="btn primary" type="submit">Inscribirme</button>
                   </form>
                 {% endif %}
               </td>
@@ -45,7 +46,7 @@
         </tbody>
       </table>
     {% else %}
-      <p>No hay clases disponibles.</p>
+      <p class="course-meta">No hay clases disponibles.</p>
     {% endif %}
   </div>
 {% endblock %}

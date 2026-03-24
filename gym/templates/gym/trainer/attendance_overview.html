@@ -1,0 +1,44 @@
+{% extends "gym/trainer/base.html" %}
+
+{% block title %}Asistencia | FITKIT{% endblock %}
+
+{% block content %}
+  <section class="page-header">
+    <div>
+      <h1 class="page-title">Asistencia</h1>
+      <p class="page-subtitle">Accede rápido a la lista de asistencia de cada clase.</p>
+    </div>
+    <div class="page-actions">
+      <a class="btn ghost" href="{% url 'trainer_courses_list' %}">Volver a cursos</a>
+    </div>
+  </section>
+
+  <div class="form-card">
+    {% if clases %}
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Clase</th>
+            <th>Curso</th>
+            <th>Fecha</th>
+            <th>Acción</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for clase in clases %}
+            <tr>
+              <td>{{ clase.nombre }}</td>
+              <td>{{ clase.curso.nombre|default:"Sin curso" }}</td>
+              <td>{{ clase.fecha }} · {{ clase.hora|time:"H:i" }}</td>
+              <td>
+                <a class="btn primary" href="{% url 'trainer_inscritos' pk=clase.id %}">Llenar asistencia</a>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <p class="course-meta">No hay clases creadas todavía.</p>
+    {% endif %}
+  </div>
+{% endblock %}

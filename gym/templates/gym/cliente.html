@@ -1,56 +1,40 @@
-{% load static %}
-<!doctype html>
-<html lang="es">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Panel Cliente</title>
-    <link rel="stylesheet" href="{% static 'gym/css/panel.css' %}" />
-  </head>
-  <body class="page-narrow">
-    <header class="card">
-      <div class="row between">
-        <strong>Panel Cliente</strong>
-        <nav>
-          <a href="/index/">Inicio</a>
-          <a href="/roles/">Roles</a>
-          <a href="/cliente.html">Cliente</a>
-        </nav>
-        <div class="row">
-          <a class="btn secondary" href="/auth-test/">Cambiar sesion</a>
-          <a class="btn" href="/cliente/membresia/">Membresia</a>
-        </div>
-      </div>
-    </header>
+{% extends "gym/cliente/base.html" %}
 
-    <div class="card">
-      <h1>Panel del Cliente</h1>
-      {% if cliente %}
+{% block title %}Panel Cliente{% endblock %}
+
+{% block content %}
+  <section class="page-header">
+    <div>
+      <h1 class="page-title">Panel del Cliente</h1>
+      <p class="page-subtitle">Tu acceso a cursos, clases y comunidad Fitkit.</p>
+    </div>
+  </section>
+
+  <div class="form-card">
+    {% if cliente %}
       <p><strong>Cliente actual:</strong> {{ cliente.nombre }} ({{ cliente.email }})</p>
-      {% else %}
-      <p><a href="/cliente/seleccionar/">Seleccionar cliente</a></p>
-      {% endif %}
-      <p>
-        Aqui el miembro podra solicitar membresia, inscribirse en clases y ver
-        contenido publicado por los entrenadores.
-      </p>
-    </div>
+    {% else %}
+      <p><a class="btn ghost" href="/cliente/seleccionar/">Seleccionar cliente</a></p>
+    {% endif %}
+    <p class="course-meta">
+      Aquí podrás ver cursos, inscribirte cuando tengas membresía activa y comentar en clases.
+    </p>
+  </div>
 
-    <div class="card">
-      <h2>Clases</h2>
-      <p>Consulta clases disponibles e inscribete si tienes membresia activa.</p>
-      <div class="row">
-        <a class="btn" href="/cliente/clases/">Ver clases disponibles</a>
-        <a class="btn secondary" href="/cliente/mis-clases/">Mis clases</a>
-      </div>
+  <div class="form-card">
+    <h2>Clases y cursos</h2>
+    <p class="course-meta">Explora los cursos disponibles y accede a tus clases inscritas.</p>
+    <div class="class-actions">
+      <a class="btn primary" href="/cliente/clases/">Ver cursos</a>
+      <a class="btn ghost" href="/cliente/mis-clases/">Mis clases</a>
     </div>
+  </div>
 
-    <div class="card">
-      <h2>Membresia</h2>
-      <p>Solicitar o revisar el estado de tu membresia.</p>
-      <div class="row">
-        <a class="btn" href="/cliente/membresia/">Gestionar membresia</a>
-      </div>
+  <div class="form-card">
+    <h2>Membresía</h2>
+    <p class="course-meta">Solicita o revisa el estado de tu membresía.</p>
+    <div class="class-actions">
+      <a class="btn primary" href="/cliente/membresia/">Gestionar membresía</a>
     </div>
-  </body>
-</html>
+  </div>
+{% endblock %}

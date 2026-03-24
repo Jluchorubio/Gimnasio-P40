@@ -14,6 +14,8 @@ urlpatterns = [
     path("membresia/", views.membresia, name="membresia"),
     path("admin-home/", views.admin_home, name="admin_home"),
     path("admin.html", views.admin_home, name="admin_home_html"),
+    path("panel/cursos/", admin_views.admin_courses, name="admin_courses"),
+    path("panel/cursos/<int:curso_id>/", admin_views.admin_course_detail, name="admin_course_detail"),
     path("trainer.html", trainer_views.trainer_dashboard, name="trainer_home_html"),
     path("cliente.html", client_views.cliente_dashboard, name="cliente_home_html"),
     path("panel/<str:model_key>/", admin_views.admin_list, name="admin_list"),
@@ -29,6 +31,23 @@ urlpatterns = [
         name="admin_delete",
     ),
     path("trainer/seleccionar/", trainer_views.trainer_select, name="trainer_select"),
+    path("trainer/cursos/", trainer_views.trainer_courses_list, name="trainer_courses_list"),
+    path("trainer/cursos/crear/", trainer_views.trainer_course_create, name="trainer_course_create"),
+    path(
+        "trainer/cursos/<int:curso_id>/",
+        trainer_views.trainer_course_detail,
+        name="trainer_course_detail",
+    ),
+    path(
+        "trainer/cursos/<int:curso_id>/editar/",
+        trainer_views.trainer_course_edit,
+        name="trainer_course_edit",
+    ),
+    path(
+        "trainer/asistencia/",
+        trainer_views.trainer_attendance_overview,
+        name="trainer_attendance_overview",
+    ),
     path("trainer/clases/", trainer_views.trainer_clases_list, name="trainer_clases_list"),
     path(
         "trainer/clases/crear/",
@@ -39,6 +58,11 @@ urlpatterns = [
         "trainer/clases/<int:pk>/editar/",
         trainer_views.trainer_clase_edit,
         name="trainer_clase_edit",
+    ),
+    path(
+        "trainer/clases/<int:pk>/eliminar/",
+        trainer_views.trainer_clase_delete,
+        name="trainer_clase_delete",
     ),
     path(
         "trainer/clases/<int:pk>/inscritos/",

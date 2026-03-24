@@ -101,6 +101,7 @@ SUPABASE_DB_PASSWORD = os.getenv("SUPABASE_DB_PASSWORD")
 SUPABASE_DB_HOST = os.getenv("SUPABASE_DB_HOST")
 SUPABASE_DB_PORT = os.getenv("SUPABASE_DB_PORT", "5432")
 SUPABASE_DB_SSLMODE = os.getenv("SUPABASE_DB_SSLMODE", "require")
+USE_SUPABASE_DB = os.getenv("USE_SUPABASE_DB", "").strip().lower() in {"1", "true", "yes"}
 
 if SUPABASE_DATABASE_URL:
     parsed = urlparse(SUPABASE_DATABASE_URL)
@@ -115,7 +116,7 @@ SUPABASE_DB_READY = all(
     [SUPABASE_DB_NAME, SUPABASE_DB_USER, SUPABASE_DB_PASSWORD, SUPABASE_DB_HOST]
 )
 
-if SUPABASE_DB_READY:
+if SUPABASE_DB_READY and USE_SUPABASE_DB:
     DATABASES = {
         "default": {
             "ENGINE": "django.db.backends.postgresql",

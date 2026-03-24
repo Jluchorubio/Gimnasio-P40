@@ -1,24 +1,31 @@
 {% extends "gym/trainer/base.html" %}
 
-{% block title %}Inscritos{% endblock %}
+{% block title %}Asistencia | FITKIT{% endblock %}
 
 {% block content %}
-  <div class="card">
-    <div class="row" style="justify-content: space-between;">
-      <h1 style="margin:0;">Inscritos en {{ clase.nombre }}</h1>
-      <a class="btn secondary" href="{% url 'trainer_clases_list' %}">Volver</a>
+  <section class="page-header">
+    <div>
+      <h1 class="page-title">Asistencia</h1>
+      <p class="page-subtitle">{{ clase.nombre }} · {{ clase.fecha }} · {{ clase.hora|time:"H:i" }}</p>
     </div>
-  </div>
+    <div class="page-actions">
+      {% if clase.curso %}
+        <a class="btn ghost" href="{% url 'trainer_course_detail' curso_id=clase.curso.id %}">Volver al curso</a>
+      {% else %}
+        <a class="btn ghost" href="{% url 'trainer_clases_list' %}">Volver</a>
+      {% endif %}
+    </div>
+  </section>
 
-  <div class="card">
+  <div class="form-card">
     {% if inscritos %}
-      <table>
+      <table class="table">
         <thead>
           <tr>
             <th>Miembro</th>
             <th>Email</th>
-            <th>Fecha inscripcion</th>
-            <th>Asistio</th>
+            <th>Inscripción</th>
+            <th>Estado</th>
           </tr>
         </thead>
         <tbody>
@@ -27,13 +34,13 @@
               <td>{{ asistencia.miembro.nombre }}</td>
               <td>{{ asistencia.miembro.email }}</td>
               <td>{{ asistencia.fecha_inscripcion }}</td>
-              <td>{{ asistencia.asistio }}</td>
+              <td>{% if asistencia.asistio %}Asistió{% else %}No asistió{% endif %}</td>
             </tr>
           {% endfor %}
         </tbody>
       </table>
     {% else %}
-      <p>No hay inscritos en esta clase.</p>
+      <p class="course-meta">No hay inscritos en esta clase.</p>
     {% endif %}
   </div>
 {% endblock %}

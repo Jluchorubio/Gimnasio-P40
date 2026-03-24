@@ -1,4 +1,5 @@
 from django import forms
+from django.db.models import Count
 from django.forms import modelform_factory
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
@@ -13,6 +14,7 @@ from gym.models import (
     SolicitudMembresia,
     PublicacionClase,
     Comentario,
+    Curso,
 )
 
 
@@ -56,6 +58,11 @@ class MiembroForm(forms.ModelForm):
 
 
 MODEL_CONFIG = {
+    "cursos": {
+        "model": Curso,
+        "label": "Cursos",
+        "list_fields": ["nombre", "profesor", "activo", "creado_en"],
+    },
     "roles": {
         "model": Rol,
         "label": "Roles",
@@ -165,7 +172,12 @@ def admin_create(request, model_key):
             messages.success(request, "Registro creado correctamente.")
             return redirect(reverse("admin_list", kwargs={"model_key": model_key}))
     else:
-        form = form_class()
+        initial = {}
+        sample_form = form_class()
+        for field_name in sample_form.fields.keys():
+            if field_name in request.GET:
+                initial[field_name] = request.GET.get(field_name)
+        form = form_class(initial=initial)
 
     return render(
         request,
@@ -231,5 +243,40 @@ def admin_delete(request, model_key, pk):
             "model_key": model_key,
             "model_label": config["label"],
             "instance": instance,
+        },
+    )
+
+
+def admin_courses(request):
+    cursos = (
+        Curso.objects.select_related("profesor")
+        .annotate(clases_count=Count("clases"))
+        .order_by("nombre")
+    )
+    return render(
+        request,
+        "gym/admin/courses_list.html",
+        {"cursos": cursos},
+    )
+
+
+def admin_course_detail(request, curso_id):
+    curso = get_object_or_404(Curso, pk=curso_id)
+    clases = (
+        Clase.objects.filter(curso=curso)
+        .select_related("instructor")
+        .prefetch_related("publicaciones__comentarios", "asistencia_set__miembro")
+        .order_by("fecha", "hora", "id")
+    )
+    for clase in clases:
+        clase.total_comentarios = sum(
+            len(publicacion.comentarios.all()) for publicacion in clase.publicaciones.all()
+        )
+    return render(
+        request,
+        "gym/admin/course_detail.html",
+        {
+            "curso": curso,
+            "clases": clases,
         },
     )

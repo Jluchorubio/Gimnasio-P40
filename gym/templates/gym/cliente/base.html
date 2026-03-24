@@ -5,35 +5,66 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{% block title %}Panel Cliente{% endblock %}</title>
-    <link rel="stylesheet" href="{% static 'gym/css/panel.css' %}" />
+    <link rel="stylesheet" href="{% static 'gym/css/trainer.css' %}" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;700&family=Poppins:wght@300;400;600&family=Pirata+One&display=swap"
+      rel="stylesheet"
+    />
   </head>
   <body>
-    <header class="card">
-      <div class="row between">
-        <strong>Panel Cliente</strong>
-        <nav>
-          <a href="/cliente.html">Inicio</a>
-          <a href="/cliente/clases/">Clases</a>
-          <a href="/cliente/mis-clases/">Mis clases</a>
-          <a href="/cliente/membresia/">Membresia</a>
+    <header class="trainer-header">
+      <div class="container header-inner">
+        <a class="logo" href="/cliente.html">FIT<span>KIT</span></a>
+        <nav class="nav-links">
+          <a
+            href="/cliente/clases/"
+            class="{% if request.path|slice:':15' == '/cliente/clases' %}active{% endif %}"
+          >
+            Cursos
+          </a>
+          <a
+            href="/cliente/mis-clases/"
+            class="{% if request.path|slice:':18' == '/cliente/mis-clases' %}active{% endif %}"
+          >
+            Mis clases
+          </a>
+          <a
+            href="/cliente/membresia/"
+            class="{% if request.path|slice:':18' == '/cliente/membresia' %}active{% endif %}"
+          >
+            Membresía
+          </a>
           <a href="/index/">Web</a>
         </nav>
+        <div class="user-badge">
+          {% if cliente %}
+          <div class="user-info">
+            <div class="user-name">{{ cliente.nombre }}</div>
+            <div>Cliente</div>
+          </div>
+          {% else %}
+          <div class="user-info">
+            <div class="user-name">Selecciona Cliente</div>
+            <div>Sin sesión</div>
+          </div>
+          {% endif %}
+          <div class="avatar"></div>
+        </div>
       </div>
-      {% if cliente %}
-      <p><strong>Cliente:</strong> {{ cliente.nombre }} ({{ cliente.email }})</p>
-      {% else %}
-      <p><a href="/cliente/seleccionar/">Seleccionar cliente</a></p>
-      {% endif %}
     </header>
 
-    {% if messages %}
-    <ul class="messages">
-      {% for message in messages %}
-      <li>{{ message }}</li>
-      {% endfor %}
-    </ul>
-    {% endif %}
+    <main>
+      <div class="container">
+        {% if messages %}
+        <ul class="messages">
+          {% for message in messages %}
+          <li>{{ message }}</li>
+          {% endfor %}
+        </ul>
+        {% endif %}
 
-    {% block content %}{% endblock %}
+        {% block content %}{% endblock %}
+      </div>
+    </main>
   </body>
 </html>

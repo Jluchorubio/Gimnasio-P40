@@ -1,0 +1,33 @@
+{% extends "gym/admin/base.html" %}
+
+{% block title %}Cursos & Asistencia{% endblock %}
+{% block page_heading %}Cursos & Asistencia{% endblock %}
+
+{% block content %}
+  <div class="admin-card admin-list-header">
+    <div>
+      <p class="admin-eyebrow">Cursos & asistencia</p>
+      <h2>Listado de cursos</h2>
+      <p>Selecciona un curso para ver clases, contenido y asistencia.</p>
+    </div>
+    <a class="btn" href="{% url 'admin_create' model_key='cursos' %}">Crear curso</a>
+  </div>
+
+  <div class="courses-grid">
+    {% for curso in cursos %}
+      <a class="course-card" href="{% url 'admin_course_detail' curso_id=curso.id %}">
+        <div class="course-card-header">
+          <h3>{{ curso.nombre }}</h3>
+          <span class="pill pill-blue">{{ curso.clases_count }} clases</span>
+        </div>
+        <p class="course-meta">Profesor: {{ curso.profesor.nombre }}</p>
+        <p class="course-meta">Estado: {{ curso.activo|yesno:"Activo,Inactivo" }}</p>
+      </a>
+    {% empty %}
+      <div class="admin-card">
+        <h2>Sin cursos</h2>
+        <p>Aún no hay cursos registrados.</p>
+      </div>
+    {% endfor %}
+  </div>
+{% endblock %}

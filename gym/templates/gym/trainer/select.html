@@ -1,22 +1,30 @@
 {% extends "gym/trainer/base.html" %}
 
-{% block title %}Seleccionar entrenador{% endblock %}
+{% block title %}Seleccionar trainer | FITKIT{% endblock %}
 
 {% block content %}
-  <div class="card">
-    <h1 style="margin-top:0;">Seleccionar entrenador</h1>
+  <section class="page-header">
+    <div>
+      <h1 class="page-title">Seleccionar trainer</h1>
+      <p class="page-subtitle">Elige el entrenador con el que vas a trabajar.</p>
+    </div>
+  </section>
+
+  <div class="form-card">
     <form method="post">
       {% csrf_token %}
-      <label for="trainer_id"><strong>Entrenador</strong></label>
-      <select id="trainer_id" name="trainer_id">
-        <option value="">-- Selecciona --</option>
-        {% for t in trainers %}
-          <option value="{{ t.id }}">{{ t.nombre }} ({{ t.email }})</option>
-        {% endfor %}
-      </select>
-      <div class="row" style="margin-top:1rem;">
-        <button class="btn" type="submit">Entrar</button>
-        <a class="btn secondary" href="/trainer.html">Volver</a>
+      <label class="form-field">
+        Entrenador
+        <select id="trainer_id" name="trainer_id">
+          <option value="">-- Selecciona --</option>
+          {% for t in trainers %}
+            <option value="{{ t.id }}">{{ t.nombre }} ({{ t.email }})</option>
+          {% endfor %}
+        </select>
+      </label>
+      <div class="class-actions">
+        <button class="btn primary" type="submit">Entrar</button>
+        <a class="btn ghost" href="/trainer.html">Volver</a>
       </div>
     </form>
   </div>

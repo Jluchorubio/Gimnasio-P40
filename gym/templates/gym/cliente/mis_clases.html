@@ -3,18 +3,20 @@
 {% block title %}Mis clases{% endblock %}
 
 {% block content %}
-  <div class="card">
-    <h1 style="margin-top:0;">Mis clases</h1>
-  </div>
+  <section class="page-header">
+    <div>
+      <h1 class="page-title">Mis clases</h1>
+      <p class="page-subtitle">Accede a contenido y comentarios de tus clases inscritas.</p>
+    </div>
+  </section>
 
-  <div class="card">
+  <div class="form-card">
     {% if asistencias %}
-      <table>
+      <table class="table">
         <thead>
           <tr>
             <th>Clase</th>
             <th>Fecha</th>
-            <th>Hora</th>
             <th>Instructor</th>
             <th>Acciones</th>
           </tr>
@@ -23,18 +25,19 @@
           {% for asistencia in asistencias %}
             <tr>
               <td>{{ asistencia.clase.nombre }}</td>
-              <td>{{ asistencia.clase.fecha }}</td>
-              <td>{{ asistencia.clase.hora }}</td>
+              <td>{{ asistencia.clase.fecha }} · {{ asistencia.clase.hora }}</td>
               <td>{{ asistencia.clase.instructor.nombre }}</td>
               <td>
-                <a class="btn" href="{% url 'cliente_publicaciones_list' pk=asistencia.clase.pk %}">Ver publicaciones</a>
+                <div class="class-actions">
+                  <a class="btn primary" href="{% url 'cliente_publicaciones_list' pk=asistencia.clase.pk %}">Ver contenido</a>
+                </div>
               </td>
             </tr>
           {% endfor %}
         </tbody>
       </table>
     {% else %}
-      <p>No estas inscrito en ninguna clase.</p>
+      <p class="course-meta">No estás inscrito en ninguna clase.</p>
     {% endif %}
   </div>
 {% endblock %}

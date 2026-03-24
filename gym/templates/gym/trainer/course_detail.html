@@ -1,0 +1,101 @@
+{% extends "gym/trainer/base.html" %}
+
+{% block title %}{{ curso.nombre }} | FITKIT{% endblock %}
+
+{% block content %}
+  <section class="course-hero">
+    <div class="course-meta">Curso / {{ clases_count }} clases</div>
+    <h2>{{ curso.nombre }}</h2>
+    <p>{{ curso.descripcion|default:"Sin descripción del curso." }}</p>
+    <div class="hero-actions">
+      <a class="btn ghost" href="{% url 'trainer_course_edit' curso_id=curso.id %}">Editar curso</a>
+      <a class="btn primary" href="{% url 'trainer_clase_create' %}?curso={{ curso.id }}">Nueva clase</a>
+      <a class="btn ghost" href="{% url 'trainer_courses_list' %}">Volver a cursos</a>
+    </div>
+  </section>
+
+  {% if clases %}
+    <div class="accordion" id="accordion-clases">
+      {% for clase in clases %}
+        <div class="accordion-item {% if forloop.first %}active{% endif %}">
+          <button class="accordion-toggle" type="button" data-target="panel-{{ clase.id }}">
+            <div class="accordion-title">
+              <span class="accordion-index">{{ forloop.counter|stringformat:"02d" }}</span>
+              <span>{{ clase.nombre }}</span>
+            </div>
+            <div class="accordion-meta">
+              {{ clase.fecha }} · {{ clase.hora|time:"H:i" }} · Cupo {{ clase.cupo_maximo }}
+            </div>
+          </button>
+          <div class="accordion-panel" id="panel-{{ clase.id }}">
+            <p>{{ clase.descripcion|default:"Sin descripción de clase." }}</p>
+
+            <div class="class-grid">
+              <div class="class-block">
+                <h4>Contenido</h4>
+                {% if clase.publicaciones.all %}
+                  <ul class="list-clean">
+                    {% for pub in clase.publicaciones.all|slice:":3" %}
+                      <li class="list-item">
+                        <span>{{ pub.titulo }}</span>
+                        <span class="course-meta">{{ pub.fecha_publicacion|date:"d M Y" }}</span>
+                      </li>
+                    {% endfor %}
+                  </ul>
+                {% else %}
+                  <p>No hay publicaciones aún.</p>
+                {% endif %}
+                <div class="class-actions">
+                  <a class="btn ghost" href="{% url 'trainer_publicaciones_list' pk=clase.id %}">Ver publicaciones</a>
+                  <a class="btn primary" href="{% url 'trainer_publicacion_create' pk=clase.id %}">Nueva publicación</a>
+                </div>
+              </div>
+
+              <div class="class-block">
+                <h4>Asistencia</h4>
+                <p>{{ clase.total_inscritos }} estudiantes inscritos</p>
+                <p class="course-meta">Gestiona asistencia sin salir del curso.</p>
+                <div class="class-actions">
+                  <a class="btn primary" href="{% url 'trainer_inscritos' pk=clase.id %}">Llenar asistencia</a>
+                </div>
+              </div>
+
+              <div class="class-block">
+                <h4>Comentarios</h4>
+                <p>{{ clase.total_comentarios }} comentarios registrados.</p>
+                <p class="course-meta">Acceso directo al foro de la clase.</p>
+                <div class="class-actions">
+                  <a class="btn ghost" href="{% url 'trainer_publicaciones_list' pk=clase.id %}">Ir al foro</a>
+                </div>
+              </div>
+            </div>
+
+            <div class="class-actions">
+              <a class="btn ghost" href="{% url 'trainer_clase_edit' pk=clase.id %}">Editar clase</a>
+              <a class="btn danger" href="{% url 'trainer_clase_delete' pk=clase.id %}">Eliminar clase</a>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="empty-state">
+      Este curso todavía no tiene clases. Usa “Nueva clase” para crear la primera sección.
+    </div>
+  {% endif %}
+
+  <script>
+    document.querySelectorAll('.accordion-toggle').forEach((toggle) => {
+      toggle.addEventListener('click', () => {
+        const item = toggle.closest('.accordion-item');
+        const all = document.querySelectorAll('.accordion-item');
+        all.forEach((el) => {
+          if (el !== item) {
+            el.classList.remove('active');
+          }
+        });
+        item.classList.toggle('active');
+      });
+    });
+  </script>
+{% endblock %}

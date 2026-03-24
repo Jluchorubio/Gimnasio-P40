@@ -25,7 +25,7 @@
           <div class="nav-section">Gestion</div>
           <a href="{% url 'admin_list' model_key='miembros' %}" data-key="miembros">Miembros</a>
           <a href="{% url 'admin_list' model_key='planes' %}" data-key="planes">Planes</a>
-          <a href="{% url 'admin_list' model_key='clases' %}" data-key="clases">Clases y asistencia</a>
+          <a href="{% url 'admin_courses' %}" data-key="cursos">Cursos y asistencia</a>
         </nav>
 
         <div class="admin-sidebar-footer">
@@ -68,10 +68,11 @@
           roles: "miembros",
           solicitudes: "miembros",
           planes: "planes",
-          clases: "clases",
-          asistencias: "clases",
-          publicaciones: "clases",
-          comentarios: "clases",
+          cursos: "cursos",
+          clases: "cursos",
+          asistencias: "cursos",
+          publicaciones: "cursos",
+          comentarios: "cursos",
         };
         let active = null;
 
@@ -93,6 +94,8 @@
             const key = match[1];
             const mapped = groupMap[key] || key;
             active = document.querySelector(`.admin-nav a[data-key="${mapped}"]`);
+          } else if (path.startsWith("/panel/cursos/")) {
+            active = document.querySelector('.admin-nav a[data-key="cursos"]');
           } else if (path.includes("admin.html")) {
             active = document.querySelector('.admin-nav a[data-key="reportes"]');
           }

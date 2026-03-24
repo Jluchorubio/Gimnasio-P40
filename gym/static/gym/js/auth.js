@@ -6,6 +6,20 @@ const registerBtn = document.getElementById("registerBtn");
 const loginMessage = document.getElementById("loginMessage");
 const registerMessage = document.getElementById("registerMessage");
 
+async function parseResponse(res) {
+  try {
+    const cloned = res.clone();
+    return await cloned.json();
+  } catch (err) {
+    try {
+      const text = await res.text();
+      return text ? { detail: text } : null;
+    } catch (innerErr) {
+      return null;
+    }
+  }
+}
+
 function setToken(token) {
   if (token) {
     localStorage.setItem("auth_token", token);
@@ -26,10 +40,10 @@ function showMessage(el, msg) {
 }
 
 function getErrorMessage(data) {
-  if (!data) return "Error inesperado. Intenta de nuevo.";
+  if (!data) return "";
   if (typeof data === "string") return data;
   const keys = Object.keys(data);
-  if (!keys.length) return "Error inesperado. Intenta de nuevo.";
+  if (!keys.length) return "";
   const value = data[keys[0]];
   if (Array.isArray(value)) return value.join(" ");
   return String(value);
@@ -98,7 +112,7 @@ if (loginBtn) {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, password }),
     });
-    const data = await res.json().catch(() => null);
+    const data = await parseResponse(res);
     if (res.ok && data && data.token) {
       setToken(data.token);
       const rol = data?.miembro?.rol;
@@ -106,7 +120,8 @@ if (loginBtn) {
       redirectByRole(rol, miembroId);
       return;
     }
-    showMessage(loginMessage, getErrorMessage(data));
+    const fallback = res.ok ? "Error inesperado. Intenta de nuevo." : `Error ${res.status}.`;
+    showMessage(loginMessage, getErrorMessage(data) || fallback);
   });
 }
 
@@ -132,7 +147,7 @@ if (registerBtn) {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ nombre, email, password }),
     });
-    const data = await res.json().catch(() => null);
+    const data = await parseResponse(res);
     if (res.ok && data && data.token) {
       setToken(data.token);
       const rol = data?.miembro?.rol;
@@ -140,6 +155,20 @@ if (registerBtn) {
       redirectByRole(rol, miembroId);
       return;
     }
-    showMessage(registerMessage, getErrorMessage(data));
+    const fallback = res.ok ? "Error inesperado. Intenta de nuevo." : `Error ${res.status}.`;
+    showMessage(registerMessage, getErrorMessage(data) || fallback);
   });
 }
+
+const passToggles = document.querySelectorAll(".toggle-pass");
+passToggles.forEach((btn) => {
+  btn.addEventListener("click", () => {
+    const targetId = btn.dataset.toggle;
+    const input = document.getElementById(targetId);
+    if (!input) return;
+    const willShow = input.type === "password";
+    input.type = willShow ? "text" : "password";
+    btn.classList.toggle("is-active", willShow);
+    btn.setAttribute("aria-pressed", willShow ? "true" : "false");
+  });
+});

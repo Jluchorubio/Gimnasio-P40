@@ -1,17 +1,17 @@
 {% extends "gym/trainer/base.html" %}
 
-{% block title %}{{ action }} publicación | FITKIT{% endblock %}
+{% block title %}{{ action }} curso | FITKIT{% endblock %}
 
 {% block content %}
   <section class="page-header">
     <div>
-      <h1 class="page-title">{{ action }} publicación</h1>
-      <p class="page-subtitle">{{ clase.nombre }}</p>
+      <h1 class="page-title">{{ action }} curso</h1>
+      <p class="page-subtitle">Define el nombre, la descripción y el estado del curso.</p>
     </div>
   </section>
 
   <div class="form-card">
-    <form method="post" enctype="multipart/form-data">
+    <form method="post">
       {% csrf_token %}
       {% for field in form %}
         <label class="form-field">
@@ -24,7 +24,11 @@
       {% endfor %}
       <div class="class-actions">
         <button class="btn primary" type="submit">{{ action }}</button>
-        <a class="btn ghost" href="{% url 'trainer_publicaciones_list' pk=clase.pk %}">Cancelar</a>
+        {% if curso %}
+          <a class="btn ghost" href="{% url 'trainer_course_detail' curso_id=curso.id %}">Cancelar</a>
+        {% else %}
+          <a class="btn ghost" href="{% url 'trainer_courses_list' %}">Cancelar</a>
+        {% endif %}
       </div>
     </form>
   </div>

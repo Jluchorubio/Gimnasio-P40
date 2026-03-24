@@ -153,6 +153,60 @@ body {
   text-transform: uppercase;
 }
 
+.password-field {
+  position: relative;
+  width: 100%;
+}
+
+.password-field input {
+  padding-right: 48px;
+  position: relative;
+  z-index: 1;
+}
+
+.toggle-pass {
+  position: absolute;
+  right: 6px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 36px;
+  height: 36px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: #a1a1aa;
+  display: grid;
+  place-items: center;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: color 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+  z-index: 2;
+  pointer-events: auto;
+}
+
+.toggle-pass svg {
+  width: 18px;
+  height: 18px;
+  fill: currentColor;
+}
+
+.toggle-pass:hover {
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.toggle-pass .eye-closed {
+  display: none;
+}
+
+.toggle-pass.is-active .eye-open {
+  display: none;
+}
+
+.toggle-pass.is-active .eye-closed {
+  display: block;
+}
+
 .input-group input:focus {
   outline: none;
   border-color: var(--red);

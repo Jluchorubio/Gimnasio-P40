@@ -1,17 +1,22 @@
 {% extends "gym/trainer/base.html" %}
 
-{% block title %}Eliminar publicacion{% endblock %}
+{% block title %}Eliminar publicación | FITKIT{% endblock %}
 
 {% block content %}
-  <div class="card">
-    <h1 style="margin-top:0;">Eliminar publicacion</h1>
-    <p>¿Seguro que deseas eliminar esta publicacion?</p>
-    <p><strong>{{ publicacion.titulo }}</strong></p>
+  <section class="page-header">
+    <div>
+      <h1 class="page-title">Eliminar publicación</h1>
+      <p class="page-subtitle">Esta acción no se puede deshacer.</p>
+    </div>
+  </section>
+
+  <div class="form-card">
+    <p>¿Seguro que deseas eliminar la publicación <strong>{{ publicacion.titulo }}</strong>?</p>
     <form method="post">
       {% csrf_token %}
-      <div class="row">
+      <div class="class-actions">
         <button class="btn danger" type="submit">Eliminar</button>
-        <a class="btn secondary" href="{% url 'trainer_publicaciones_list' pk=publicacion.clase.pk %}">Cancelar</a>
+        <a class="btn ghost" href="{% url 'trainer_publicaciones_list' pk=publicacion.clase.pk %}">Cancelar</a>
       </div>
     </form>
   </div>

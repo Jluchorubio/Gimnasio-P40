@@ -1,0 +1,27 @@
+{% extends "gym/trainer/base.html" %}
+
+{% block title %}Eliminar clase | FITKIT{% endblock %}
+
+{% block content %}
+  <section class="page-header">
+    <div>
+      <h1 class="page-title">Eliminar clase</h1>
+      <p class="page-subtitle">Esta acción no se puede deshacer.</p>
+    </div>
+  </section>
+
+  <div class="form-card">
+    <p>¿Deseas eliminar la clase <strong>{{ clase.nombre }}</strong>?</p>
+    <form method="post">
+      {% csrf_token %}
+      <div class="class-actions">
+        <button class="btn danger" type="submit">Eliminar</button>
+        {% if curso %}
+          <a class="btn ghost" href="{% url 'trainer_course_detail' curso_id=curso.id %}">Cancelar</a>
+        {% else %}
+          <a class="btn ghost" href="{% url 'trainer_clases_list' %}">Cancelar</a>
+        {% endif %}
+      </div>
+    </form>
+  </div>
+{% endblock %}

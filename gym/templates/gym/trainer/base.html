@@ -4,34 +4,61 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>{% block title %}Panel Entrenador{% endblock %}</title>
-    <link rel="stylesheet" href="{% static 'gym/css/panel.css' %}" />
+    <title>{% block title %}Trainer | FITKIT{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'gym/css/trainer.css' %}" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;700&family=Poppins:wght@300;400;600&family=Pirata+One&display=swap"
+      rel="stylesheet"
+    />
   </head>
   <body>
-    <header class="card">
-      <div class="row between">
-        <strong>Panel Entrenador</strong>
-        <nav>
-          <a href="/trainer.html">Inicio</a>
-          <a href="/trainer/clases/">Mis clases</a>
+    <header class="trainer-header">
+      <div class="container header-inner">
+        <a class="logo" href="{% url 'trainer_courses_list' %}">FIT<span>KIT</span></a>
+        <nav class="nav-links">
+          <a
+            href="{% url 'trainer_courses_list' %}"
+            class="{% if request.path|slice:':15' == '/trainer/cursos' %}active{% endif %}"
+          >
+            Cursos
+          </a>
+          <a
+            href="{% url 'trainer_attendance_overview' %}"
+            class="{% if request.path|slice:':19' == '/trainer/asistencia' %}active{% endif %}"
+          >
+            Asistencia
+          </a>
           <a href="/index/">Web</a>
         </nav>
+        <div class="user-badge">
+          {% if trainer %}
+          <div class="user-info">
+            <div class="user-name">{{ trainer.nombre }}</div>
+            <div>Trainer</div>
+          </div>
+          {% else %}
+          <div class="user-info">
+            <div class="user-name">Selecciona Trainer</div>
+            <div>Sin sesión</div>
+          </div>
+          {% endif %}
+          <div class="avatar"></div>
+        </div>
       </div>
-      {% if trainer %}
-      <p><strong>Entrenador:</strong> {{ trainer.nombre }} ({{ trainer.email }})</p>
-      {% else %}
-      <p><a href="/trainer/seleccionar/">Seleccionar entrenador</a></p>
-      {% endif %}
     </header>
 
-    {% if messages %}
-    <ul class="messages">
-      {% for message in messages %}
-      <li>{{ message }}</li>
-      {% endfor %}
-    </ul>
-    {% endif %}
+    <main>
+      <div class="container">
+        {% if messages %}
+        <ul class="messages">
+          {% for message in messages %}
+          <li>{{ message }}</li>
+          {% endfor %}
+        </ul>
+        {% endif %}
 
-    {% block content %}{% endblock %}
+        {% block content %}{% endblock %}
+      </div>
+    </main>
   </body>
 </html>
