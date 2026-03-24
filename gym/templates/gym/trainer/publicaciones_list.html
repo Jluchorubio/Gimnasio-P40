@@ -1,0 +1,43 @@
+{% extends "gym/trainer/base.html" %}
+
+{% block title %}Publicaciones{% endblock %}
+
+{% block content %}
+  <div class="card">
+    <div class="row" style="justify-content: space-between;">
+      <h1 style="margin:0;">Publicaciones - {{ clase.nombre }}</h1>
+      <a class="btn" href="{% url 'trainer_publicacion_create' pk=clase.pk %}">Crear publicacion</a>
+    </div>
+  </div>
+
+  <div class="card">
+    {% if publicaciones %}
+      <table>
+        <thead>
+          <tr>
+            <th>Titulo</th>
+            <th>Fecha</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for pub in publicaciones %}
+            <tr>
+              <td>{{ pub.titulo }}</td>
+              <td>{{ pub.fecha_publicacion }}</td>
+              <td class="row">
+                <a class="btn secondary" href="{% url 'trainer_publicacion_edit' pk=pub.pk %}">Editar</a>
+                <a class="btn danger" href="{% url 'trainer_publicacion_delete' pk=pub.pk %}">Eliminar</a>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <p>No hay publicaciones para esta clase.</p>
+    {% endif %}
+    <div class="row" style="margin-top:1rem;">
+      <a class="btn secondary" href="{% url 'trainer_clases_list' %}">Volver</a>
+    </div>
+  </div>
+{% endblock %}

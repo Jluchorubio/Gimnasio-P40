@@ -1,0 +1,40 @@
+{% extends "gym/cliente/base.html" %}
+
+{% block title %}Mis clases{% endblock %}
+
+{% block content %}
+  <div class="card">
+    <h1 style="margin-top:0;">Mis clases</h1>
+  </div>
+
+  <div class="card">
+    {% if asistencias %}
+      <table>
+        <thead>
+          <tr>
+            <th>Clase</th>
+            <th>Fecha</th>
+            <th>Hora</th>
+            <th>Instructor</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for asistencia in asistencias %}
+            <tr>
+              <td>{{ asistencia.clase.nombre }}</td>
+              <td>{{ asistencia.clase.fecha }}</td>
+              <td>{{ asistencia.clase.hora }}</td>
+              <td>{{ asistencia.clase.instructor.nombre }}</td>
+              <td>
+                <a class="btn" href="{% url 'cliente_publicaciones_list' pk=asistencia.clase.pk %}">Ver publicaciones</a>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <p>No estas inscrito en ninguna clase.</p>
+    {% endif %}
+  </div>
+{% endblock %}

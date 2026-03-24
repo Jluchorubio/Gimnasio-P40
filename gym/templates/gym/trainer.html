@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Panel Entrenador</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 2rem;
+        max-width: 900px;
+      }
+      .card {
+        border: 1px solid #ddd;
+        border-radius: 10px;
+        padding: 1.5rem;
+        background: #f8fafc;
+        margin-bottom: 1.25rem;
+      }
+      nav a {
+        margin-right: 0.75rem;
+        text-decoration: none;
+        color: #0f172a;
+        font-weight: 600;
+      }
+      .row {
+        display: flex;
+        gap: 0.75rem;
+        flex-wrap: wrap;
+        align-items: center;
+      }
+      .btn {
+        display: inline-block;
+        padding: 0.6rem 1rem;
+        border-radius: 6px;
+        background: #0f172a;
+        color: #fff;
+        text-decoration: none;
+      }
+      .btn.secondary {
+        background: #334155;
+      }
+    </style>
+  </head>
+  <body>
+    <header class="card">
+      <div class="row" style="justify-content: space-between;">
+        <strong>Panel Entrenador</strong>
+        <nav>
+          <a href="/index/">Inicio</a>
+          <a href="/roles/">Roles</a>
+          <a href="/trainer.html">Entrenador</a>
+        </nav>
+        <div class="row">
+          <a class="btn secondary" href="/auth-test/">Cambiar sesion</a>
+          <a class="btn" href="/membresia/">Membresia</a>
+        </div>
+      </div>
+    </header>
+
+    <div class="card">
+      <h1>Panel del Entrenador</h1>
+      {% if trainer %}
+      <p><strong>Entrenador actual:</strong> {{ trainer.nombre }} ({{ trainer.email }})</p>
+      {% else %}
+      <p><a href="/trainer/seleccionar/">Seleccionar entrenador</a></p>
+      {% endif %}
+      <p>
+        Aqui centralizamos la gestion de clases, asistencia y publicaciones del
+        instructor.
+      </p>
+    </div>
+
+    <div class="card">
+      <h2>Mis Clases</h2>
+      <p>Ver y administrar las clases asignadas al entrenador.</p>
+      <div class="row">
+        <a class="btn" href="/trainer/clases/">Ver clases</a>
+        <a class="btn secondary" href="/trainer/clases/crear/">Crear clase</a>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Asistencia</h2>
+      <p>Registrar y revisar asistencia de los miembros en tus clases.</p>
+      <div class="row">
+        <a class="btn" href="/trainer/clases/">Ver clases con inscritos</a>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Publicaciones de Clase</h2>
+      <p>Comparte rutinas, videos y material educativo con tus alumnos.</p>
+      <div class="row">
+        <a class="btn" href="/trainer/clases/">Ir a clases</a>
+      </div>
+    </div>
+  </body>
+</html>

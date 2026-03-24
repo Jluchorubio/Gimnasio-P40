@@ -1,0 +1,18 @@
+{% extends "gym/admin/base.html" %}
+
+{% block title %}Eliminar {{ model_label }}{% endblock %}
+
+{% block content %}
+  <div class="card">
+    <h1 style="margin-top:0;">Eliminar {{ model_label }}</h1>
+    <p>¿Seguro que deseas eliminar este registro?</p>
+    <p><strong>{{ instance }}</strong></p>
+    <form method="post">
+      {% csrf_token %}
+      <div class="row">
+        <button class="btn danger" type="submit">Eliminar</button>
+        <a class="btn secondary" href="{% url 'admin_list' model_key=model_key %}">Cancelar</a>
+      </div>
+    </form>
+  </div>
+{% endblock %}

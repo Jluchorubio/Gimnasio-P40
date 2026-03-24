@@ -10,10 +10,29 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 
+import os
+from urllib.parse import urlparse
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+
+def load_env():
+    env_path = BASE_DIR / ".env"
+    if not env_path.exists():
+        return
+    for raw_line in env_path.read_text().splitlines():
+        line = raw_line.strip()
+        if not line or line.startswith("#") or "=" not in line:
+            continue
+        key, value = line.split("=", 1)
+        key = key.strip()
+        value = value.strip().strip('"').strip("'")
+        os.environ.setdefault(key, value)
+
+
+load_env()
 
 
 # Quick-start development settings - unsuitable for production
@@ -37,6 +56,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework',
     'gym',
 ]
 
@@ -73,12 +93,49 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+SUPABASE_DATABASE_URL = os.getenv("SUPABASE_DATABASE_URL")
+
+SUPABASE_DB_NAME = os.getenv("SUPABASE_DB_NAME")
+SUPABASE_DB_USER = os.getenv("SUPABASE_DB_USER")
+SUPABASE_DB_PASSWORD = os.getenv("SUPABASE_DB_PASSWORD")
+SUPABASE_DB_HOST = os.getenv("SUPABASE_DB_HOST")
+SUPABASE_DB_PORT = os.getenv("SUPABASE_DB_PORT", "5432")
+SUPABASE_DB_SSLMODE = os.getenv("SUPABASE_DB_SSLMODE", "require")
+
+if SUPABASE_DATABASE_URL:
+    parsed = urlparse(SUPABASE_DATABASE_URL)
+    if parsed.scheme in {"postgres", "postgresql"}:
+        SUPABASE_DB_NAME = parsed.path.lstrip("/") or SUPABASE_DB_NAME
+        SUPABASE_DB_USER = parsed.username or SUPABASE_DB_USER
+        SUPABASE_DB_PASSWORD = parsed.password or SUPABASE_DB_PASSWORD
+        SUPABASE_DB_HOST = parsed.hostname or SUPABASE_DB_HOST
+        SUPABASE_DB_PORT = str(parsed.port or SUPABASE_DB_PORT)
+
+SUPABASE_DB_READY = all(
+    [SUPABASE_DB_NAME, SUPABASE_DB_USER, SUPABASE_DB_PASSWORD, SUPABASE_DB_HOST]
+)
+
+if SUPABASE_DB_READY:
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.postgresql",
+            "NAME": SUPABASE_DB_NAME,
+            "USER": SUPABASE_DB_USER,
+            "PASSWORD": SUPABASE_DB_PASSWORD,
+            "HOST": SUPABASE_DB_HOST,
+            "PORT": SUPABASE_DB_PORT,
+            "OPTIONS": {
+                "sslmode": SUPABASE_DB_SSLMODE,
+            },
+        }
     }
-}
+else:
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": BASE_DIR / "db.sqlite3",
+        }
+    }
 
 
 # Password validation
@@ -116,3 +173,17 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = 'static/'
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
+
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+REST_FRAMEWORK = {
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "gym.authentication.MiembroTokenAuthentication",
+    ],
+    "DEFAULT_PERMISSION_CLASSES": [
+        "rest_framework.permissions.AllowAny",
+    ],
+}

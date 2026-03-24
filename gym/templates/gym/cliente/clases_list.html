@@ -1,0 +1,51 @@
+{% load admin_extras %}
+{% extends "gym/cliente/base.html" %}
+
+{% block title %}Clases disponibles{% endblock %}
+
+{% block content %}
+  <div class="card">
+    <h1 style="margin-top:0;">Clases disponibles</h1>
+  </div>
+
+  <div class="card">
+    {% if clases %}
+      <table>
+        <thead>
+          <tr>
+            <th>Nombre</th>
+            <th>Instructor</th>
+            <th>Fecha</th>
+            <th>Hora</th>
+            <th>Cupo</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for clase in clases %}
+            <tr>
+              <td>{{ clase.nombre }}</td>
+              <td>{{ clase.instructor.nombre }}</td>
+              <td>{{ clase.fecha }}</td>
+              <td>{{ clase.hora }}</td>
+              <td>{{ cupos|get_item:clase.id }}/{{ clase.cupo_maximo }}</td>
+              <td>
+                {% if clase.id in inscritos_ids %}
+                  Inscrito
+                {% else %}
+                  <form method="post" style="margin:0;">
+                    {% csrf_token %}
+                    <input type="hidden" name="clase_id" value="{{ clase.id }}" />
+                    <button class="btn" type="submit">Inscribirme</button>
+                  </form>
+                {% endif %}
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <p>No hay clases disponibles.</p>
+    {% endif %}
+  </div>
+{% endblock %}

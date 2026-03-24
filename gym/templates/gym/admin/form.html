@@ -1,0 +1,17 @@
+{% extends "gym/admin/base.html" %}
+
+{% block title %}{{ action }} {{ model_label }}{% endblock %}
+
+{% block content %}
+  <div class="card">
+    <h1 style="margin-top:0;">{{ action }} {{ model_label }}</h1>
+    <form method="post" enctype="multipart/form-data">
+      {% csrf_token %}
+      {{ form.as_p }}
+      <div class="row">
+        <button class="btn" type="submit">{{ action }}</button>
+        <a class="btn secondary" href="{% url 'admin_list' model_key=model_key %}">Volver</a>
+      </div>
+    </form>
+  </div>
+{% endblock %}

@@ -1,0 +1,39 @@
+{% extends "gym/trainer/base.html" %}
+
+{% block title %}Inscritos{% endblock %}
+
+{% block content %}
+  <div class="card">
+    <div class="row" style="justify-content: space-between;">
+      <h1 style="margin:0;">Inscritos en {{ clase.nombre }}</h1>
+      <a class="btn secondary" href="{% url 'trainer_clases_list' %}">Volver</a>
+    </div>
+  </div>
+
+  <div class="card">
+    {% if inscritos %}
+      <table>
+        <thead>
+          <tr>
+            <th>Miembro</th>
+            <th>Email</th>
+            <th>Fecha inscripcion</th>
+            <th>Asistio</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for asistencia in inscritos %}
+            <tr>
+              <td>{{ asistencia.miembro.nombre }}</td>
+              <td>{{ asistencia.miembro.email }}</td>
+              <td>{{ asistencia.fecha_inscripcion }}</td>
+              <td>{{ asistencia.asistio }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <p>No hay inscritos en esta clase.</p>
+    {% endif %}
+  </div>
+{% endblock %}

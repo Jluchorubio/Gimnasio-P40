@@ -1,0 +1,43 @@
+{% extends "gym/admin/base.html" %}
+{% load admin_extras %}
+
+{% block title %}{{ model_label }}{% endblock %}
+
+{% block content %}
+  <div class="card">
+    <div class="row" style="justify-content: space-between;">
+      <h1 style="margin:0;">{{ model_label }}</h1>
+      <a class="btn" href="{% url 'admin_create' model_key=model_key %}">Crear</a>
+    </div>
+  </div>
+
+  <div class="card">
+    {% if objects %}
+      <table>
+        <thead>
+          <tr>
+            {% for label in field_labels %}
+              <th>{{ label }}</th>
+            {% endfor %}
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for obj in objects %}
+            <tr>
+              {% for field in fields %}
+                <td>{{ obj|attr:field }}</td>
+              {% endfor %}
+              <td class="row">
+                <a class="btn secondary" href="{% url 'admin_edit' model_key=model_key pk=obj.pk %}">Editar</a>
+                <a class="btn danger" href="{% url 'admin_delete' model_key=model_key pk=obj.pk %}">Eliminar</a>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <p>No hay registros.</p>
+    {% endif %}
+  </div>
+{% endblock %}

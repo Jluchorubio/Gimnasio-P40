@@ -1,0 +1,23 @@
+{% extends "gym/trainer/base.html" %}
+
+{% block title %}Seleccionar entrenador{% endblock %}
+
+{% block content %}
+  <div class="card">
+    <h1 style="margin-top:0;">Seleccionar entrenador</h1>
+    <form method="post">
+      {% csrf_token %}
+      <label for="trainer_id"><strong>Entrenador</strong></label>
+      <select id="trainer_id" name="trainer_id">
+        <option value="">-- Selecciona --</option>
+        {% for t in trainers %}
+          <option value="{{ t.id }}">{{ t.nombre }} ({{ t.email }})</option>
+        {% endfor %}
+      </select>
+      <div class="row" style="margin-top:1rem;">
+        <button class="btn" type="submit">Entrar</button>
+        <a class="btn secondary" href="/trainer.html">Volver</a>
+      </div>
+    </form>
+  </div>
+{% endblock %}

@@ -1,0 +1,51 @@
+{% extends "gym/cliente/base.html" %}
+
+{% block title %}Publicaciones{% endblock %}
+
+{% block content %}
+  <div class="card">
+    <div class="row" style="justify-content: space-between;">
+      <h1 style="margin:0;">Publicaciones - {{ clase.nombre }}</h1>
+      <a class="btn secondary" href="{% url 'cliente_mis_clases' %}">Volver</a>
+    </div>
+  </div>
+
+  {% if publicaciones %}
+    {% for pub in publicaciones %}
+      <div class="card">
+        <h2 style="margin-top:0;">{{ pub.titulo }}</h2>
+        <p>{{ pub.contenido }}</p>
+        {% if pub.imagen %}
+          <p><a href="{{ pub.imagen.url }}" target="_blank">Ver imagen</a></p>
+        {% endif %}
+        {% if pub.video_archivo %}
+          <p><a href="{{ pub.video_archivo.url }}" target="_blank">Ver video</a></p>
+        {% endif %}
+        {% if pub.video_url %}
+          <p><a href="{{ pub.video_url }}" target="_blank">Ver video externo</a></p>
+        {% endif %}
+        <p><small>Publicado: {{ pub.fecha_publicacion }}</small></p>
+
+        <h3>Comentarios</h3>
+        <ul>
+          {% for comentario in pub.comentarios.all %}
+            <li><strong>{{ comentario.autor.nombre }}:</strong> {{ comentario.contenido }}</li>
+          {% empty %}
+            <li>No hay comentarios.</li>
+          {% endfor %}
+        </ul>
+
+        <form method="post">
+          {% csrf_token %}
+          {{ form.as_p }}
+          <input type="hidden" name="publicacion_id" value="{{ pub.id }}" />
+          <button class="btn" type="submit">Comentar</button>
+        </form>
+      </div>
+    {% endfor %}
+  {% else %}
+    <div class="card">
+      <p>No hay publicaciones en esta clase.</p>
+    </div>
+  {% endif %}
+{% endblock %}

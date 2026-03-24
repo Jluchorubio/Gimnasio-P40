@@ -1,0 +1,602 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FitKit - Potencia tu Cuerpo</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Teko:wght@400;600;700&family=Roboto:wght@300;400;700&display=swap");
+
+      :root {
+        --accent-red: #ff0000;
+        --dark-bg: #0a0a0a;
+      }
+
+      body {
+        font-family: "Roboto", sans-serif;
+        background-color: var(--dark-bg);
+        color: #ffffff;
+        overflow-x: hidden;
+      }
+
+      h1,
+      h2,
+      h3,
+      .nav-link,
+      .btn-teko {
+        font-family: "Teko", sans-serif;
+        text-transform: uppercase;
+      }
+
+      .hero-clip {
+        clip-path: polygon(0 0, 100% 0, 100% 90%, 50% 100%, 0 90%);
+      }
+
+      .section-curve-bottom {
+        clip-path: ellipse(150% 100% at 50% 0%);
+      }
+
+      .card-angled {
+        clip-path: polygon(0 0, 100% 0, 100% 85%, 90% 100%, 0 100%);
+      }
+
+      .hero-bg {
+        background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.8)),
+          url("https://images.unsplash.com/photo-1517836357463-d25dfeac3438?q=80&w=2070&auto=format&fit=crop");
+        background-size: cover;
+        background-position: center;
+      }
+
+      .red-accent {
+        color: var(--accent-red);
+      }
+      .bg-red-accent {
+        background-color: var(--accent-red);
+      }
+
+      .animate-fade-in-up {
+        animation: fadeInUp 0.8s ease-out both;
+      }
+
+      @keyframes fadeInUp {
+        from {
+          opacity: 0;
+          transform: translateY(16px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      .marquee-container {
+        overflow: hidden;
+        background: var(--accent-red);
+        border-top: 1px solid rgba(255, 255, 255, 0.08);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      }
+
+      .marquee-content {
+        display: inline-block;
+        white-space: nowrap;
+        padding: 14px 0;
+        font-family: "Teko", sans-serif;
+        font-size: clamp(20px, 3vw, 36px);
+        letter-spacing: 0.22em;
+        text-transform: uppercase;
+        color: #ffffff;
+        transform: rotate(-1deg);
+        transform-origin: left center;
+        animation: marquee 32s linear infinite;
+      }
+
+      @keyframes marquee {
+        0% {
+          transform: translateX(0);
+        }
+        100% {
+          transform: translateX(-100%);
+        }
+      }
+
+      .reveal {
+        opacity: 0;
+        transform: translateY(24px);
+        transition: opacity 0.8s ease, transform 0.8s ease;
+      }
+
+      .reveal.active {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      .mood-grid {
+        display: grid;
+        grid-template-columns: repeat(12, minmax(0, 1fr));
+        grid-auto-rows: 70px;
+        gap: 12px;
+      }
+
+      .mood-item {
+        position: relative;
+        overflow: hidden;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        background: #0b0b0b;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.45);
+      }
+
+      .mood-item img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        filter: grayscale(1) contrast(1.1) brightness(0.9);
+        transition: transform 0.6s ease, filter 0.6s ease;
+      }
+
+      .mood-item:hover img {
+        transform: scale(1.05);
+        filter: grayscale(0) brightness(1);
+      }
+
+      .mood-caption {
+        position: absolute;
+        left: 12px;
+        bottom: 12px;
+        font-family: "Teko", sans-serif;
+        text-transform: uppercase;
+        font-size: 20px;
+        letter-spacing: 0.2em;
+        color: #fff;
+        text-shadow: 0 6px 18px rgba(0, 0, 0, 0.7);
+      }
+
+      .mood-label {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: "Teko", sans-serif;
+        font-size: clamp(36px, 6vw, 96px);
+        text-transform: uppercase;
+        letter-spacing: 0.25em;
+        color: #ffffff;
+      }
+
+      .mood-red {
+        color: var(--accent-red);
+      }
+
+      .tilt-left {
+        transform: rotate(-1.5deg);
+      }
+
+      .tilt-right {
+        transform: rotate(1.5deg);
+      }
+
+      @media (max-width: 900px) {
+        .mood-grid {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+          grid-auto-rows: 180px;
+        }
+        .mood-item {
+          transform: none !important;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="fixed w-full z-50 bg-black/90 border-b border-white/5 backdrop-blur-sm">
+      <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+        <div class="flex items-center space-x-2">
+          <div class="bg-red-accent p-1 transform skew-x-[-12deg]">
+            <i class="fas fa-bolt text-white text-xl"></i>
+          </div>
+          <span class="text-3xl font-bold tracking-tighter"
+            >FIT<span class="red-accent">KIT</span></span
+          >
+        </div>
+
+        <nav class="hidden lg:flex space-x-8">
+          <a href="#inicio" class="nav-link text-xl tracking-wide hover:text-red-500 transition">Inicio</a>
+          <a href="#nosotros" class="nav-link text-xl tracking-wide hover:text-red-500 transition">Sobre nosotros</a>
+          <a href="#galeria" class="nav-link text-xl tracking-wide hover:text-red-500 transition">Galeria</a>
+          <a href="#contacto" class="nav-link text-xl tracking-wide hover:text-red-500 transition">Contacto</a>
+        </nav>
+
+        <div class="flex items-center space-x-6">
+          <div class="hidden sm:flex items-center space-x-4">
+            <a href="/auth-test/#login" class="nav-link text-lg hover:text-red-500 transition"
+              >Login</a
+            >
+            <a
+              href="/auth-test/#registro"
+              class="bg-red-accent px-5 py-1 rounded-sm text-lg btn-teko hover:bg-red-700 transition transform skew-x-[-10deg]"
+            >
+              <span class="inline-block skew-x-[10deg]">Registro</span>
+            </a>
+            <a
+              href="/cliente/membresia/"
+              id="membresia-link"
+              class="bg-white text-black px-4 py-1 rounded-sm text-lg btn-teko hover:bg-red-600 hover:text-white transition transform skew-x-[-10deg]"
+            >
+              <span class="inline-block skew-x-[10deg]">Membresia</span>
+            </a>
+          </div>
+          <button class="lg:hidden text-2xl"><i class="fas fa-bars"></i></button>
+        </div>
+      </div>
+    </header>
+
+    <section id="inicio" class="relative min-h-[90vh] flex items-center hero-bg hero-clip">
+      <div class="container mx-auto px-4 grid lg:grid-cols-2 gap-12 items-center pt-20">
+        <div class="z-10 animate-fade-in-up">
+          <h4 class="text-red-accent font-bold tracking-[0.3em] mb-4 flex items-center">
+            <span class="w-12 h-[3px] bg-red-accent mr-4"></span>
+            SUPERA TUS LIMITES
+          </h4>
+          <h1 class="text-7xl md:text-[120px] font-bold leading-[0.85] mb-8 italic">
+            TU FITNESS<br /><span
+              class="text-transparent bg-clip-text bg-gradient-to-r from-red-600 to-white"
+              >TU VICTORIA</span
+            >
+          </h1>
+          <p class="text-gray-300 text-lg max-w-lg mb-10 border-l-4 border-red-600 pl-6">
+            Entrenamiento inteligente para resultados reales. Unete a la elite del
+            fitness y transforma tu cuerpo con tecnologia de vanguardia.
+          </p>
+          <div class="flex flex-wrap gap-6">
+            <a
+              href="/auth-test/#registro"
+              class="bg-red-accent hover:bg-red-700 text-white px-10 py-4 btn-teko text-2xl rounded-tr-2xl transition-all hover:tracking-widest"
+            >
+              EMPEZAR AHORA
+            </a>
+            <div class="flex items-center space-x-3">
+              <div class="flex -space-x-3">
+                <img class="w-10 h-10 rounded-full border-2 border-black" src="https://i.pravatar.cc/100?u=1" alt="Usuario" />
+                <img class="w-10 h-10 rounded-full border-2 border-black" src="https://i.pravatar.cc/100?u=2" alt="Usuario" />
+                <img class="w-10 h-10 rounded-full border-2 border-black" src="https://i.pravatar.cc/100?u=3" alt="Usuario" />
+              </div>
+              <span class="text-sm text-gray-400 font-bold tracking-tighter uppercase"
+                >Mas de 2k Clientes</span
+              >
+            </div>
+          </div>
+          <p id="membresia-note" class="text-sm text-gray-400 mt-6"></p>
+        </div>
+      </div>
+
+      <div class="absolute bottom-10 right-10 hidden xl:block opacity-20">
+        <span class="text-[200px] font-black italic select-none">GYM</span>
+      </div>
+    </section>
+
+    <!-- MARQUEE (Bucle infinito) -->
+    <div class="marquee-container">
+      <div class="marquee-content">
+        FUERZA • DISCIPLINA • RESULTADOS • COMUNIDAD • PASION • EXITO • RENDIMIENTO • MOTIVACION • FUERZA • DISCIPLINA • RESULTADOS • COMUNIDAD • PASION • EXITO • RENDIMIENTO • MOTIVACION •
+      </div>
+    </div>
+
+    <section class="relative z-20 py-12 bg-white text-black section-curve-bottom reveal">
+      <div class="container mx-auto px-4">
+        <div class="max-w-5xl mx-auto bg-[#1a1a1a] p-1 rounded-3xl shadow-2xl overflow-hidden">
+          <div class="bg-black text-white p-8 md:p-12">
+            <div class="grid lg:grid-cols-4 gap-6 items-end">
+              <div class="lg:col-span-1">
+                <h2 class="text-3xl font-bold italic leading-none mb-2">CALCULA TU <span class="red-accent">IMC</span></h2>
+                <p class="text-xs text-gray-500 uppercase tracking-tighter">Conoce tu estado fisico actual</p>
+              </div>
+              <div class="space-y-2">
+                <label class="text-[10px] text-gray-400 font-bold ml-1 uppercase">Peso (kg)</label>
+                <input type="number" id="weight" placeholder="00" class="w-full bg-[#111] border border-white/10 p-4 rounded-xl focus:border-red-500 outline-none transition" />
+              </div>
+              <div class="space-y-2">
+                <label class="text-[10px] text-gray-400 font-bold ml-1 uppercase">Altura (cm)</label>
+                <input type="number" id="height" placeholder="000" class="w-full bg-[#111] border border-white/10 p-4 rounded-xl focus:border-red-500 outline-none transition" />
+              </div>
+              <button onclick="calculateBMI()" class="bg-red-accent py-4 rounded-xl btn-teko text-2xl font-bold hover:bg-white hover:text-black transition-all">
+                CALCULAR
+              </button>
+            </div>
+            <div id="bmi-result" class="mt-8 pt-8 border-t border-white/10 text-center hidden">
+              <span class="text-gray-500 uppercase text-xs tracking-[0.5em]">Tu resultado es</span>
+              <div class="text-5xl font-black italic mt-2" id="bmi-value">24.5</div>
+              <div class="text-red-accent font-bold uppercase mt-1 tracking-widest" id="bmi-status">Peso Normal</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="nosotros" class="py-32 bg-white text-black reveal">
+      <div class="container mx-auto px-4 grid lg:grid-cols-2 gap-20 items-center">
+        <div class="relative group">
+          <div class="absolute -inset-4 bg-red-600 rounded-2xl rotate-3 group-hover:rotate-1 transition duration-500"></div>
+          <img src="https://images.unsplash.com/photo-1534438327276-14e5300c3a48?q=80&w=2070&auto=format&fit=crop" class="relative rounded-2xl shadow-2xl grayscale group-hover:grayscale-0 transition duration-500" alt="Nosotros" />
+          <div class="absolute top-1/2 -right-10 bg-black text-white p-6 rounded-2xl hidden md:block shadow-2xl">
+            <p class="text-5xl font-bold italic line-none red-accent">15</p>
+            <p class="text-xs font-bold uppercase tracking-tighter">Anios de<br />experiencia</p>
+          </div>
+        </div>
+        <div>
+          <span class="bg-red-accent/10 text-red-600 px-4 py-1 rounded-full text-xs font-black uppercase tracking-widest">Sobre FitKit</span>
+          <h2 class="text-6xl font-black italic mt-6 leading-none uppercase">Tenemos gran experiencia en entrenamiento</h2>
+          <p class="mt-8 text-gray-600 text-lg leading-relaxed">
+            No somos solo un gimnasio, somos una comunidad dedicada a la excelencia. Cada rutina esta respaldada por ciencia y ejecutada con pasion para asegurar que cada gota de sudor cuente.
+          </p>
+          <div class="grid grid-cols-2 gap-8 mt-10">
+            <div>
+              <i class="fas fa-certificate text-red-600 text-3xl mb-4"></i>
+              <h4 class="font-bold text-xl uppercase">Certificados</h4>
+              <p class="text-sm text-gray-500 italic">Entrenadores con aval internacional.</p>
+            </div>
+            <div>
+              <i class="fas fa-heartbeat text-red-600 text-3xl mb-4"></i>
+              <h4 class="font-bold text-xl uppercase">Resultados</h4>
+              <p class="text-sm text-gray-500 italic">Planes basados en tu metabolismo.</p>
+            </div>
+          </div>
+          <a href="/roles/" class="mt-12 inline-block bg-black text-white px-10 py-4 btn-teko text-2xl hover:bg-red-600 transition shadow-xl">
+            SABER MAS
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <section id="galeria" class="py-24 bg-[#0a0a0a] reveal">
+      <div class="container mx-auto px-4 text-center mb-16">
+        <h2 class="text-6xl font-black italic">NUESTRA <span class="red-accent tracking-tighter">GALERIA</span></h2>
+        <div class="w-24 h-1 bg-red-600 mx-auto mt-4"></div>
+      </div>
+
+      <div class="container mx-auto px-4">
+        <div class="mood-grid">
+          <div class="mood-item tilt-left" style="grid-column: 1 / span 4; grid-row: 1 / span 4;">
+            <img src="https://images.unsplash.com/photo-1517836357463-d25dfeac3438?q=80&w=1400&auto=format&fit=crop" alt="Gym 1" loading="lazy" />
+            <span class="mood-caption">No risk no story</span>
+          </div>
+
+          <div class="mood-item" style="grid-column: 5 / span 3; grid-row: 1 / span 3;">
+            <img src="https://images.unsplash.com/photo-1517963879433-6ad2b056d712?q=80&w=1000&auto=format&fit=crop" alt="Gym 2" loading="lazy" />
+          </div>
+
+          <div class="mood-item tilt-right" style="grid-column: 8 / span 5; grid-row: 1 / span 5;">
+            <img src="https://images.unsplash.com/photo-1534438327276-14e5300c3a48?q=80&w=1400&auto=format&fit=crop" alt="Gym 3" loading="lazy" />
+            <span class="mood-caption">You can quit or keep going</span>
+          </div>
+
+          <div class="mood-item" style="grid-column: 1 / span 5; grid-row: 5 / span 4;">
+            <img src="https://images.unsplash.com/photo-1526506118085-60ce8714f8c5?q=80&w=1400&auto=format&fit=crop" alt="Gym 4" loading="lazy" />
+            <span class="mood-caption">Trust the process</span>
+          </div>
+
+          <div class="mood-item tilt-left" style="grid-column: 6 / span 4; grid-row: 4 / span 4;">
+            <img src="https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?q=80&w=1200&auto=format&fit=crop" alt="Gym 5" loading="lazy" />
+          </div>
+
+          <div class="mood-item" style="grid-column: 10 / span 3; grid-row: 6 / span 3;">
+            <img src="https://images.unsplash.com/photo-1517964603305-11c0f6f66012?q=80&w=1000&auto=format&fit=crop" alt="Gym 6" loading="lazy" />
+          </div>
+
+          <div class="mood-item tilt-right" style="grid-column: 1 / span 4; grid-row: 9 / span 4;">
+            <img src="https://images.unsplash.com/photo-1517838277536-f5f99be5019a?q=80&w=1200&auto=format&fit=crop" alt="Gym 7" loading="lazy" />
+            <span class="mood-caption">Again again again</span>
+          </div>
+
+          <div class="mood-item" style="grid-column: 5 / span 5; grid-row: 8 / span 5; background:#050505;">
+            <div class="mood-label">FOCUS</div>
+          </div>
+
+          <div class="mood-item tilt-left" style="grid-column: 10 / span 3; grid-row: 9 / span 4;">
+            <img src="https://images.unsplash.com/photo-1546483875-ad9014c88eba?q=80&w=1200&auto=format&fit=crop" alt="Gym 8" loading="lazy" />
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="servicios" class="py-32 bg-[#111] reveal">
+      <div class="container mx-auto px-4">
+        <div class="flex flex-wrap items-end justify-between mb-16 gap-6">
+          <div class="max-w-xl">
+            <span class="red-accent font-bold tracking-widest uppercase">Metas 2024</span>
+            <h2 class="text-6xl font-black italic mt-2">NUESTROS OBJETIVOS DE EMPRESA</h2>
+          </div>
+          <button class="bg-transparent border border-white/20 px-8 py-3 btn-teko text-xl hover:bg-white hover:text-black transition">VER TODOS LOS PLANES</button>
+        </div>
+
+        <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div class="card-angled bg-black p-10 hover:bg-red-accent transition duration-500 group">
+            <span class="text-5xl font-black opacity-10 group-hover:opacity-40 transition">01</span>
+            <h4 class="text-2xl font-bold mt-4 mb-4 uppercase">Disciplina</h4>
+            <p class="text-gray-500 group-hover:text-white transition text-sm">Fomentar el habito constante como base del exito fisico.</p>
+          </div>
+          <div class="card-angled bg-black p-10 hover:bg-red-accent transition duration-500 group">
+            <span class="text-5xl font-black opacity-10 group-hover:opacity-40 transition">02</span>
+            <h4 class="text-2xl font-bold mt-4 mb-4 uppercase">Tecnologia</h4>
+            <p class="text-gray-500 group-hover:text-white transition text-sm">Uso de apps y wearables para traquear cada progreso.</p>
+          </div>
+          <div class="card-angled bg-black p-10 hover:bg-red-accent transition duration-500 group">
+            <span class="text-5xl font-black opacity-10 group-hover:opacity-40 transition">03</span>
+            <h4 class="text-2xl font-bold mt-4 mb-4 uppercase">Comunidad</h4>
+            <p class="text-gray-500 group-hover:text-white transition text-sm">Crear un ambiente de apoyo mutuo y competencia sana.</p>
+          </div>
+          <div class="card-angled bg-black p-10 hover:bg-red-accent transition duration-500 group">
+            <span class="text-5xl font-black opacity-10 group-hover:opacity-40 transition">04</span>
+            <h4 class="text-2xl font-bold mt-4 mb-4 uppercase">Salud</h4>
+            <p class="text-gray-500 group-hover:text-white transition text-sm">Priorizar el bienestar integral sobre la estetica.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="contacto" class="py-24 bg-black reveal">
+      <div class="container mx-auto px-4">
+        <div class="grid lg:grid-cols-2 gap-12 items-center">
+          <div>
+            <span class="bg-red-accent/20 text-red-400 px-4 py-1 rounded-full text-xs font-black uppercase tracking-widest">Contacto</span>
+            <h2 class="text-6xl font-black italic mt-6 leading-none uppercase">Hablemos de tu transformacion</h2>
+            <p class="text-gray-400 text-lg mt-6">
+              Nuestro equipo esta listo para ayudarte con planes, horarios y clases personalizadas.
+              Resolvemos tus dudas y te guiamos en tu proceso.
+            </p>
+            <div class="mt-8 space-y-3 text-gray-300">
+              <p><i class="fas fa-phone red-accent mr-3"></i> +57 300 123 4567</p>
+              <p><i class="fas fa-envelope red-accent mr-3"></i> contacto@gym.com</p>
+              <p><i class="fas fa-location-dot red-accent mr-3"></i> Calle 123 #45-67, Bogota</p>
+            </div>
+          </div>
+          <div class="bg-[#0f0f0f] border border-white/10 rounded-3xl p-8 shadow-2xl">
+            <h3 class="text-3xl font-bold italic mb-6">Escribenos</h3>
+            <form class="space-y-4">
+              <div>
+                <label class="block text-xs uppercase tracking-widest text-gray-400 mb-2">Nombre</label>
+                <input type="text" placeholder="Tu nombre" class="w-full bg-black/60 border border-white/10 px-4 py-3 rounded-xl focus:border-red-500 outline-none transition" />
+              </div>
+              <div>
+                <label class="block text-xs uppercase tracking-widest text-gray-400 mb-2">Correo</label>
+                <input type="email" placeholder="tu@email.com" class="w-full bg-black/60 border border-white/10 px-4 py-3 rounded-xl focus:border-red-500 outline-none transition" />
+              </div>
+              <div>
+                <label class="block text-xs uppercase tracking-widest text-gray-400 mb-2">Mensaje</label>
+                <textarea rows="4" placeholder="Cuentanos que necesitas" class="w-full bg-black/60 border border-white/10 px-4 py-3 rounded-xl focus:border-red-500 outline-none transition"></textarea>
+              </div>
+              <button type="button" class="bg-red-accent text-white px-8 py-3 btn-teko text-2xl rounded-tr-2xl hover:bg-red-700 transition">ENVIAR</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <footer class="bg-black pt-24 pb-12">
+      <div class="container mx-auto px-4 grid md:grid-cols-4 gap-12 border-b border-white/5 pb-16">
+        <div class="col-span-1 md:col-span-1">
+          <div class="flex items-center space-x-2 mb-8">
+            <div class="bg-red-accent p-1 transform skew-x-[-12deg]">
+              <i class="fas fa-bolt text-white text-xl"></i>
+            </div>
+            <span class="text-4xl font-bold tracking-tighter italic">FIT<span class="red-accent">KIT</span></span>
+          </div>
+          <p class="text-gray-500 italic mb-8">Transformando vidas desde 2009 con los estandares mas altos del fitness competitivo.</p>
+          <div class="flex space-x-4">
+            <a href="#" class="text-xl hover:text-red-500 transition"><i class="fab fa-instagram"></i></a>
+            <a href="#" class="text-xl hover:text-red-500 transition"><i class="fab fa-youtube"></i></a>
+            <a href="#" class="text-xl hover:text-red-500 transition"><i class="fab fa-tiktok"></i></a>
+          </div>
+        </div>
+
+        <div>
+          <h4 class="text-2xl font-bold mb-8 italic red-accent">Explorar</h4>
+          <ul class="space-y-4 text-gray-400 uppercase text-sm font-bold tracking-widest">
+            <li><a href="#servicios" class="hover:text-white transition">Nuestras Clases</a></li>
+            <li><a href="#nosotros" class="hover:text-white transition">Entrenadores</a></li>
+            <li><a href="/cliente/membresia/" class="hover:text-white transition">Membresias</a></li>
+            <li><a href="/roles/" class="hover:text-white transition">Roles</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h4 class="text-2xl font-bold mb-8 italic red-accent">Horarios</h4>
+          <ul class="space-y-4 text-gray-400 text-sm italic">
+            <li class="flex justify-between border-b border-white/5 pb-2"><span>Lunes - Viernes:</span> <span class="text-white">06:00 - 22:00</span></li>
+            <li class="flex justify-between border-b border-white/5 pb-2"><span>Sabados:</span> <span class="text-white">08:00 - 18:00</span></li>
+            <li class="flex justify-between border-b border-white/5 pb-2"><span>Domingos:</span> <span class="text-white">Cerrado</span></li>
+          </ul>
+        </div>
+
+        <div>
+          <h4 class="text-2xl font-bold mb-8 italic red-accent">Suscribete</h4>
+          <div class="relative">
+            <input type="email" placeholder="TU EMAIL..." class="w-full bg-[#111] border border-white/10 p-4 outline-none focus:border-red-500 italic" />
+            <button class="absolute right-2 top-2 bg-red-accent p-2 hover:bg-red-700 transition">
+              <i class="fas fa-arrow-right"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+      <div class="container mx-auto px-4 mt-8 flex flex-wrap justify-between items-center gap-4 text-xs text-gray-600 uppercase font-black">
+        <p>&copy; 2024 FITKIT GYM ELITE. ALL RIGHTS RESERVED.</p>
+        <div class="flex space-x-6">
+          <a href="#">Privacidad</a>
+          <a href="#">Terminos</a>
+        </div>
+      </div>
+    </footer>
+
+    <script>
+      function calculateBMI() {
+        const weight = parseFloat(document.getElementById("weight").value);
+        const height = parseFloat(document.getElementById("height").value) / 100;
+        const resultDiv = document.getElementById("bmi-result");
+        const valueSpan = document.getElementById("bmi-value");
+        const statusP = document.getElementById("bmi-status");
+
+        if (weight > 0 && height > 0) {
+          const bmi = (weight / (height * height)).toFixed(1);
+          valueSpan.innerText = bmi;
+          resultDiv.classList.remove("hidden");
+
+          let status = "";
+          if (bmi < 18.5) status = "Bajo peso";
+          else if (bmi < 24.9) status = "Peso saludable";
+          else if (bmi < 29.9) status = "Sobrepeso";
+          else status = "Obesidad";
+
+          statusP.innerText = status;
+
+          resultDiv.style.opacity = 0;
+          let op = 0;
+          const timer = setInterval(function () {
+            if (op >= 1) clearInterval(timer);
+            resultDiv.style.opacity = op;
+            op += 0.1;
+          }, 30);
+        }
+      }
+
+      const token = localStorage.getItem("auth_token");
+      const note = document.getElementById("membresia-note");
+      const btn = document.getElementById("membresia-link");
+
+      if (!token) {
+        if (note) {
+          note.textContent = "Para pagar la membresia debes iniciar sesion.";
+        }
+        if (btn) {
+          btn.addEventListener("click", (e) => {
+            e.preventDefault();
+            window.location.href = "/auth-test/#login";
+          });
+        }
+      }
+
+      // Script para detectar scroll y activar animaciones
+      function reveal() {
+        var reveals = document.querySelectorAll(".reveal");
+        for (var i = 0; i < reveals.length; i++) {
+          var windowHeight = window.innerHeight;
+          var elementTop = reveals[i].getBoundingClientRect().top;
+          var elementVisible = 150;
+          if (elementTop < windowHeight - elementVisible) {
+            reveals[i].classList.add("active");
+          }
+        }
+      }
+
+      window.addEventListener("scroll", reveal);
+      // Ejecutar una vez al cargar para elementos ya visibles
+      window.onload = reveal;
+    </script>
+  </body>
+</html>

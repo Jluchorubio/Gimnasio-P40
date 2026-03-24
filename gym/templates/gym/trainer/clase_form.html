@@ -1,0 +1,17 @@
+{% extends "gym/trainer/base.html" %}
+
+{% block title %}{{ action }} clase{% endblock %}
+
+{% block content %}
+  <div class="card">
+    <h1 style="margin-top:0;">{{ action }} clase</h1>
+    <form method="post">
+      {% csrf_token %}
+      {{ form.as_p }}
+      <div class="row">
+        <button class="btn" type="submit">{{ action }}</button>
+        <a class="btn secondary" href="{% url 'trainer_clases_list' %}">Volver</a>
+      </div>
+    </form>
+  </div>
+{% endblock %}
