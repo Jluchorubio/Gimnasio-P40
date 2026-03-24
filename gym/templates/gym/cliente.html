@@ -1,126 +1,481 @@
-﻿{% extends "gym/cliente/base.html" %}
-{% load static %}
+﻿{% load static file_extras %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FITKIT | Panel del Cliente</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;700&family=Poppins:wght@300;400;600&family=Pirata+One&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Teko:wght@400;600;700&family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{% static 'gym/css/index.css' %}">
+  <link rel="stylesheet" href="{% static 'gym/css/trainer_panel.css' %}">
+  <link rel="stylesheet" href="{% static 'gym/css/cliente_panel.css' %}">
+</head>
+<body>
 
-{% block title %}Mis cursos | Cliente{% endblock %}
+  <!-- SIDEBAR CLIENTE (estilo trainer) -->
+  <aside id="sidebar" class="sidebar">
+    <div class="p-6 flex items-center justify-between">
+      <div class="font-oswald text-2xl font-bold tracking-tighter hide-collapsed">
+        FIT<span class="text-red-600">KIT</span>
+      </div>
+      <button onclick="toggleSidebar()" class="p-2 hover:bg-zinc-900 rounded-lg text-zinc-500">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+      </button>
+    </div>
 
-{% block extra_head %}
-  <link rel="stylesheet" href="{% static 'gym/css/cliente_moodle.css' %}" />
-{% endblock %}
+    <nav class="flex-grow mt-4">
+      <div class="px-6 py-2 text-[10px] font-bold text-zinc-600 uppercase tracking-widest hide-collapsed">Mi entrenamiento</div>
 
-{% block content %}
-  <div class="client-lms">
-    <section class="client-window">
-      <div class="window-header">
-        <div>
-          <h1>Mis cursos</h1>
-          <p>Vista general tipo Moodle con acceso rápido a clases, contenido y comentarios.</p>
+      <div id="nav-my-courses" class="nav-item flex items-center gap-3 px-6 py-3 cursor-pointer text-zinc-500 hover:bg-zinc-900 hover:text-white transition mb-2" onclick="showView('my-courses')">
+        <svg class="w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253"></path></svg>
+        <span class="hide-collapsed text-sm font-medium">Mis Cursos</span>
+      </div>
+
+      <div id="nav-calendar" class="nav-item flex items-center gap-3 px-6 py-3 cursor-pointer text-zinc-500 hover:bg-zinc-900 hover:text-white transition mb-2" onclick="showView('calendar')">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+        <span class="hide-collapsed text-sm font-medium">Calendario</span>
+      </div>
+
+      <div class="mt-6 px-6 py-2 text-[10px] font-bold text-zinc-600 uppercase tracking-widest hide-collapsed">Ajustes</div>
+
+      <div id="nav-profile" class="nav-item flex items-center gap-3 px-6 py-3 cursor-pointer text-zinc-500 hover:bg-zinc-900 hover:text-white transition" onclick="showView('profile')">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+        <span class="hide-collapsed text-sm font-medium">Mi Perfil</span>
+      </div>
+    </nav>
+
+    <div class="p-6 border-t border-zinc-900">
+      <div class="hide-collapsed">
+        <p class="text-[9px] font-bold text-zinc-500 uppercase mb-2 tracking-widest">Suscripcion</p>
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-bold text-white uppercase">{{ cliente.plan.nombre|default:"Sin plan" }}</span>
+          <span class="membership-badge {% if cliente.estado_membresia %}status-active{% else %}status-inactive{% endif %}">
+            {% if cliente.estado_membresia %}Activa{% else %}Inactiva{% endif %}
+          </span>
         </div>
-        <div class="client-badges">
-          {% if cliente.estado_membresia %}
-            <span class="client-badge ok">Membresía activa</span>
-          {% else %}
-            <span class="client-badge">Membresía requerida para inscribirte</span>
-          {% endif %}
-          <span class="client-badge">Cliente: {{ cliente.nombre }}</span>
+        <div class="mt-3 w-full bg-zinc-800 h-1 rounded-full overflow-hidden">
+          <div class="h-full {% if cliente.estado_membresia %}bg-red-600 w-full{% else %}bg-zinc-700 w-0{% endif %}"></div>
+        </div>
+        <p class="text-[8px] text-zinc-600 mt-2 italic">
+          {% if cliente.estado_membresia %}Membresia activa{% else %}Acceso restringido{% endif %}
+        </p>
+      </div>
+    </div>
+
+    <div class="p-6 border-t border-zinc-900 flex items-center gap-3">
+      <div class="w-8 h-8 rounded-full bg-zinc-800 border border-zinc-700 flex items-center justify-center font-bold text-white text-[10px]">
+        {{ cliente.nombre|slice:":2"|upper }}
+      </div>
+      <div class="hide-collapsed overflow-hidden">
+        <p class="text-[10px] font-bold text-white truncate uppercase">{{ cliente.nombre }}</p>
+        <p class="text-[8px] text-zinc-500 uppercase tracking-widest">Cliente</p>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main-container">
+
+    <!-- HEADER estilo trainer -->
+    <header class="w-full z-40 bg-black/90 border-b border-white/5 backdrop-blur-sm">
+      <div class="container mx-auto px-4 py-4 flex flex-wrap justify-between items-center gap-4">
+        <div class="flex items-center space-x-2">
+          <div class="bg-red-accent p-1 transform skew-x-[-12deg]">
+            <i class="fas fa-bolt text-white text-xl"></i>
+          </div>
+          <span class="text-3xl font-bold tracking-tighter">FIT<span class="red-accent">KIT</span></span>
+          <span id="view-title" class="hidden md:inline text-[10px] font-bold uppercase tracking-[0.3em] text-zinc-500 ml-4">Cursos</span>
+        </div>
+
+        <nav class="hidden lg:flex space-x-8">
+          <a href="#" class="nav-link text-xl tracking-wide hover:text-red-500 transition" onclick="showView('courses')">Cursos</a>
+          <a href="#" class="nav-link text-xl tracking-wide hover:text-red-500 transition" onclick="showView('calendar')">Calendario</a>
+          <a href="#" class="nav-link text-xl tracking-wide hover:text-red-500 transition" onclick="showView('profile')">Perfil</a>
+        </nav>
+
+        <div class="flex items-center space-x-4">
+          <div class="text-right">
+            <p class="text-[10px] font-bold text-white uppercase">{{ cliente.nombre }}</p>
+            {% if cliente.estado_membresia %}
+              <span class="text-[8px] text-green-500 font-bold uppercase tracking-widest">● Membresia activa</span>
+            {% else %}
+              <span class="text-[8px] text-red-500 font-bold uppercase tracking-widest">● Membresia inactiva</span>
+            {% endif %}
+          </div>
+          <a href="/cliente/membresia/" class="bg-white text-black px-4 py-1 rounded-sm text-lg btn-teko hover:bg-red-600 hover:text-white transition transform skew-x-[-10deg]">
+            <span class="inline-block skew-x-[10deg]">Membresia</span>
+          </a>
+          <a href="/auth-test/" class="nav-link text-lg hover:text-red-500 transition">Cerrar sesion</a>
         </div>
       </div>
-      <div class="window-banner"></div>
-      <h2>Mis cursos activos</h2>
+    </header>
+
+    {% if messages %}
+      <ul class="messages px-10 pt-6">
+        {% for message in messages %}
+          <li>{{ message }}</li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+
+    <!-- VISTA: CURSOS DISPONIBLES -->
+    <div id="courses" class="content-view active p-10 overflow-y-auto">
+      <div class="flex items-end justify-between mb-8 flex-wrap gap-4">
+        <div>
+          <h1 class="text-4xl font-bold text-white uppercase font-oswald tracking-tighter">Cursos disponibles</h1>
+          <p class="text-zinc-500 text-sm mt-1">Inscribete en las clases abiertas por los entrenadores.</p>
+        </div>
+        <div class="text-[10px] uppercase tracking-widest text-zinc-500">
+          Membresia:
+          <span class="font-bold {% if cliente.estado_membresia %}text-green-500{% else %}text-red-500{% endif %}">
+            {% if cliente.estado_membresia %}Activa{% else %}Inactiva{% endif %}
+          </span>
+        </div>
+      </div>
+
+      <div class="bg-zinc-900/40 border border-zinc-800 rounded-2xl p-6">
+        <div class="grid gap-4">
+          {% for clase in clases_disponibles %}
+            <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 bg-zinc-950/60 border border-zinc-800 rounded-xl p-4">
+              <div>
+                <p class="text-[10px] uppercase tracking-widest text-zinc-500">{{ clase.curso.nombre|default:"Curso" }}</p>
+                <h3 class="text-lg font-bold text-white uppercase font-oswald">{{ clase.nombre }}</h3>
+                <p class="text-xs text-zinc-500">{{ clase.instructor.nombre }} · {{ clase.fecha }} · {{ clase.hora }}</p>
+              </div>
+              <div class="text-[10px] uppercase text-zinc-500">
+                Cupo:
+                <span class="text-white font-bold">{{ clase.total_inscritos }}/{{ clase.cupo_maximo }}</span>
+              </div>
+              <div>
+                {% if clase.is_inscrito %}
+                  <span class="text-[10px] font-bold text-green-400 uppercase tracking-widest">Inscrito</span>
+                {% elif clase.cupo_lleno %}
+                  <span class="text-[10px] font-bold text-red-400 uppercase tracking-widest">Cupo lleno</span>
+                {% elif not cliente.estado_membresia %}
+                  <span class="text-[10px] font-bold text-red-400 uppercase tracking-widest">Membresia requerida</span>
+                {% else %}
+                  <form method="post" action="{% url 'cliente_clases_list' %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="clase_id" value="{{ clase.id }}">
+                    <button class="btn-action" type="submit">Inscribirme</button>
+                  </form>
+                {% endif %}
+              </div>
+            </div>
+          {% empty %}
+            <p class="text-zinc-500">No hay clases disponibles.</p>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+
+    <!-- VISTA: MIS CURSOS -->
+    <div id="my-courses" class="content-view p-10 overflow-y-auto">
+      <div class="flex items-end justify-between mb-8 flex-wrap gap-4">
+        <div>
+          <h1 class="text-4xl font-bold text-white uppercase font-oswald tracking-tighter">Continua Entrenando</h1>
+          <p class="text-zinc-500 text-sm mt-1">Hola {{ cliente.nombre }}, tienes <span class="text-red-500 font-bold">{{ mis_cursos|length }}</span> cursos activos.</p>
+        </div>
+      </div>
+
       {% if mis_cursos %}
-        <div class="course-grid window-courses">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
           {% for curso in mis_cursos %}
-            <div class="client-course-card">
-              <strong>{{ curso.nombre }}</strong>
-              <small>{{ curso.descripcion|default:"Sin descripción" }}</small>
-              <button class="btn btn-card" type="button" data-course-target="curso-{{ curso.id }}">Entrar</button>
+            <div class="course-grid-card group" onclick="enterCourse('{{ curso.id }}')">
+              <div class="h-44 relative overflow-hidden">
+                {% if forloop.counter|divisibleby:"2" %}
+                  <img src="https://images.unsplash.com/photo-1594381898411-846e7d193883?q=80&w=600" class="w-full h-full object-cover opacity-60 group-hover:scale-110 transition duration-500" alt="Curso">
+                {% else %}
+                  <img src="https://images.unsplash.com/photo-1517836357463-d25dfeac3438?q=80&w=600" class="w-full h-full object-cover opacity-60 group-hover:scale-110 transition duration-500" alt="Curso">
+                {% endif %}
+                <div class="absolute bottom-4 left-4">
+                  <span class="bg-red-600 text-white text-[9px] font-bold px-2 py-1 rounded uppercase">{{ curso.inscritas_count }} clases</span>
+                </div>
+              </div>
+              <div class="p-6">
+                <h3 class="font-bold text-white uppercase text-lg font-oswald mb-1">{{ curso.nombre }}</h3>
+                <p class="text-[10px] text-zinc-500 uppercase mb-4">Progreso: {{ curso.progress_percent|floatformat:0 }}% completado</p>
+                <div class="w-full bg-zinc-800 h-1 rounded-full overflow-hidden">
+                  <div class="bg-red-600 h-full course-progress-bar" data-progress="{{ curso.progress_percent|floatformat:0 }}"></div>
+                </div>
+                <p class="text-[9px] text-zinc-600 uppercase mt-3">{{ curso.inscritas_count }} de {{ curso.total_clases }} clases inscritas</p>
+              </div>
             </div>
           {% endfor %}
         </div>
       {% else %}
-        <p class="course-meta">Aún no tienes cursos inscritos.</p>
+        <p class="text-zinc-500">Aun no tienes cursos inscritos.</p>
       {% endif %}
-    </section>
+    </div>
 
-    <div class="lms-grid course-shell">
-      <aside class="lms-sidebar">
-        <h3>Cursos disponibles</h3>
-        {% for curso in cursos %}
-          <button class="course-link" type="button" data-course-target="curso-{{ curso.id }}">
-            {{ curso.nombre }}
-            <span>{{ curso.total_clases }} clases</span>
+    <!-- VISTA: CALENDARIO -->
+    <div id="calendar" class="content-view p-10 overflow-y-auto">
+      <div class="flex items-center justify-between mb-8 flex-wrap gap-4">
+        <h1 class="text-4xl font-bold text-white uppercase font-oswald tracking-tighter">Mi Agenda</h1>
+        <div class="flex gap-2">
+          <button id="calendar-prev" class="w-10 h-10 rounded-lg bg-zinc-900 border border-zinc-800 flex items-center justify-center text-white">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="3" d="M15 19l-7-7 7-7"></path></svg>
           </button>
-        {% empty %}
-          <p class="course-meta">No hay cursos aún.</p>
-        {% endfor %}
-      </aside>
+          <div id="calendar-month-label" class="px-4 h-10 rounded-lg bg-zinc-900 border border-zinc-800 flex items-center justify-center text-[10px] font-bold uppercase text-white tracking-widest">Mes</div>
+          <button id="calendar-next" class="w-10 h-10 rounded-lg bg-zinc-900 border border-zinc-800 flex items-center justify-center text-white">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="3" d="M9 5l7 7-7 7"></path></svg>
+          </button>
+        </div>
+      </div>
 
-      <section class="course-content">
-        {% for curso in cursos %}
-          <div class="course-view" data-course="curso-{{ curso.id }}">
-            <div class="course-header">
-              <div>
-                <h2>{{ curso.nombre }}</h2>
-                <p class="course-meta">{{ curso.descripcion|default:"Sin descripción del curso." }}</p>
+      <div class="bg-zinc-950 border border-zinc-900 rounded-2xl overflow-hidden">
+        <div class="grid grid-cols-7 border-b border-zinc-900 bg-zinc-900/50">
+          <div class="p-4 text-center text-[10px] font-bold text-zinc-500 uppercase">Dom</div>
+          <div class="p-4 text-center text-[10px] font-bold text-zinc-500 uppercase">Lun</div>
+          <div class="p-4 text-center text-[10px] font-bold text-zinc-500 uppercase">Mar</div>
+          <div class="p-4 text-center text-[10px] font-bold text-zinc-500 uppercase">Mie</div>
+          <div class="p-4 text-center text-[10px] font-bold text-zinc-500 uppercase">Jue</div>
+          <div class="p-4 text-center text-[10px] font-bold text-zinc-500 uppercase">Vie</div>
+          <div class="p-4 text-center text-[10px] font-bold text-zinc-500 uppercase">Sab</div>
+        </div>
+        <div class="grid grid-cols-7" id="calendar-grid"></div>
+      </div>
+      {{ calendar_events|json_script:"calendar-events" }}
+    </div>
+
+    <!-- VISTA: PERFIL -->
+    <div id="profile" class="content-view p-10 overflow-y-auto">
+      <div class="max-w-4xl mx-auto">
+        <h1 class="text-4xl font-bold text-white uppercase font-oswald tracking-tighter mb-10">Mi Perfil</h1>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div class="md:col-span-1 space-y-6">
+            <div class="p-8 bg-zinc-900 border border-zinc-800 rounded-3xl text-center">
+              <div class="w-24 h-24 mx-auto rounded-2xl bg-zinc-800 border border-zinc-700 flex items-center justify-center font-bold text-white text-3xl mb-4">
+                {{ cliente.nombre|slice:":2"|upper }}
               </div>
-              <div class="course-actions">
-                <button class="btn-outline" type="button">Darse de baja</button>
+              <h2 class="text-xl font-bold text-white uppercase font-oswald">{{ cliente.nombre }}</h2>
+              <p class="text-xs text-zinc-500 mb-6">{{ cliente.email }}</p>
+              <a class="w-full py-3 bg-zinc-800 hover:bg-zinc-700 rounded-xl text-[10px] font-bold uppercase tracking-widest text-white transition block" href="{% url 'cliente_membresia' %}">Gestionar membresia</a>
+            </div>
+
+            <div class="p-6 bg-zinc-900 border border-zinc-800 rounded-3xl">
+              <h3 class="text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-4">Membresia</h3>
+              <div class="p-4 rounded-2xl bg-zinc-950 border border-zinc-800 mb-4">
+                <div class="flex items-center justify-between mb-2">
+                  <span class="text-xs font-bold text-white uppercase">{{ cliente.plan.nombre|default:"Sin plan" }}</span>
+                  <span class="membership-badge {% if cliente.estado_membresia %}status-active{% else %}status-inactive{% endif %}">
+                    {% if cliente.estado_membresia %}Activa{% else %}Inactiva{% endif %}
+                  </span>
+                </div>
+                <p class="text-[9px] text-zinc-500">Estado actual de tu suscripcion.</p>
+              </div>
+              <p class="text-[9px] text-zinc-500 uppercase tracking-widest">Recuerda mantener tu plan activo para inscribirte.</p>
+            </div>
+          </div>
+
+          <div class="md:col-span-2 space-y-6">
+            <div class="grid grid-cols-2 gap-4">
+              <div class="p-6 bg-zinc-900 border border-zinc-800 rounded-3xl">
+                <p class="text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-2">Clases inscritas</p>
+                <div class="text-3xl font-bold text-white font-oswald">{{ total_clases_inscritas }}</div>
+              </div>
+              <div class="p-6 bg-zinc-900 border border-zinc-800 rounded-3xl">
+                <p class="text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-2">Clases asistidas</p>
+                <div class="text-3xl font-bold text-white font-oswald">{{ total_clases_asistidas }}</div>
               </div>
             </div>
 
-            {% if curso.clases.all %}
-              {% for clase in curso.clases.all %}
-                <details class="class-item">
-                  <summary>
-                    {{ clase.nombre }}
-                    <span>{{ clase.fecha }} · {{ clase.hora }}</span>
-                  </summary>
-                  <div class="class-body">
-                    <p>{{ clase.descripcion|default:"Sin descripción de clase." }}</p>
+            <div class="p-8 bg-zinc-900 border border-zinc-800 rounded-3xl">
+              <h3 class="text-lg font-bold text-white uppercase font-oswald mb-6 tracking-tight">Datos de Cuenta</h3>
+              <div class="space-y-4">
+                <div class="flex flex-col gap-2">
+                  <label class="text-[9px] font-bold text-zinc-600 uppercase">Nombre Completo</label>
+                  <input type="text" value="{{ cliente.nombre }}" readonly class="bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none">
+                </div>
+                <div class="flex flex-col gap-2">
+                  <label class="text-[9px] font-bold text-zinc-600 uppercase">Correo</label>
+                  <input type="email" value="{{ cliente.email }}" readonly class="bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none">
+                </div>
+                <div class="pt-4">
+                  <a class="btn-action px-10 inline-block" href="{% url 'cliente_membresia' %}">Ver membresia</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
 
-                    <div class="content-block">
-                      <div class="media-placeholder"></div>
-                      <h4>Contenido de la clase</h4>
-                      <p>Video principal + materiales descargables.</p>
-                      <div class="file-list">
-                        <div class="file-item">
-                          <span>Guía.pdf</span>
-                          <span>Descargar</span>
-                        </div>
-                        <div class="file-item">
-                          <span>Resumen.docx</span>
-                          <span>Descargar</span>
-                        </div>
+    <!-- VISTA: DETALLE DE CURSO / CLASE -->
+    <div id="course-player" class="content-view flex-row">
+      {% if mis_cursos %}
+        {% for curso in mis_cursos %}
+          <div class="course-instance {% if forloop.first %}active{% endif %}" data-course-id="{{ curso.id }}" data-course-name="{{ curso.nombre }}">
+            <aside class="w-80 bg-zinc-950 border-r border-zinc-900 flex flex-col">
+              <div class="p-6 border-b border-zinc-900">
+                <button class="text-[10px] font-bold text-zinc-500 uppercase flex items-center gap-2 hover:text-white mb-4" onclick="showView('my-courses')">
+                  <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="3" d="M15 19l-7-7 7-7"></path></svg> Volver
+                </button>
+                <h4 class="player-course-name font-oswald text-xl uppercase text-white tracking-tighter">{{ curso.nombre }}</h4>
+              </div>
+              <div class="flex-grow overflow-y-auto p-4 space-y-2">
+                {% if curso.clases_inscritas %}
+                  {% for clase in curso.clases_inscritas %}
+                    <div class="lesson-item {% if forloop.first %}active{% endif %}" data-class-id="{{ clase.id }}">
+                      <div class="flex items-center justify-between mb-1">
+                        <span class="text-[9px] font-bold {% if forloop.first %}text-red-500{% else %}text-zinc-600{% endif %} uppercase tracking-widest">Leccion {{ forloop.counter|stringformat:"02d" }}</span>
+                        <svg class="w-3 h-3 {% if forloop.first %}text-red-500{% else %}text-zinc-600{% endif %}" fill="currentColor" viewBox="0 0 20 20"><path d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"></path></svg>
                       </div>
-                      <div class="course-actions" style="margin-top:12px;">
-                        <button class="btn-light" type="button">Marcar como finalizada</button>
-                      </div>
+                      <h5 class="text-xs font-bold {% if forloop.first %}text-white{% else %}text-zinc-400{% endif %} uppercase">{{ clase.nombre }}</h5>
+                      <p class="text-[9px] text-zinc-600 mt-2">{{ clase.fecha }} · {{ clase.hora }}</p>
                     </div>
+                  {% endfor %}
+                {% else %}
+                  <div class="p-4 text-xs text-zinc-600">No tienes clases inscritas en este curso.</div>
+                {% endif %}
+              </div>
+            </aside>
 
-                    <div class="comment-box">
-                      <h4>Comentarios</h4>
-                      <div class="comment-list">
-                        <div class="comment-item"><strong>Usuario</strong>: Excelente clase.</div>
-                        <div class="comment-item"><strong>Cliente</strong>: ¿Podrían subir el PDF?</div>
+            <div class="flex-grow overflow-y-auto p-10 bg-zinc-950/20">
+              <div class="max-w-4xl mx-auto">
+                {% if curso.clases_inscritas %}
+                  {% for clase in curso.clases_inscritas %}
+                    <div class="class-content {% if forloop.first %}active{% endif %}" data-class-id="{{ clase.id }}">
+                      <div class="video-player mb-10 group">
+                        {% if clase.primary_media_type == "video" %}
+                          <video controls src="{{ clase.primary_media_url }}" class="w-full h-full object-cover"></video>
+                        {% elif clase.primary_media_type == "video_url" %}
+                          <a href="{{ clase.primary_media_url }}" target="_blank" class="w-full h-full flex items-center justify-center text-white text-xs uppercase tracking-widest bg-black/60">Ver video externo</a>
+                        {% elif clase.primary_media_type == "image" %}
+                          <img src="{{ clase.primary_media_url }}" class="w-full h-full object-cover opacity-40 group-hover:scale-105 transition duration-700" alt="Media">
+                          <div class="absolute inset-0 flex items-center justify-center">
+                            <div class="w-16 h-16 bg-red-600 rounded-full flex items-center justify-center shadow-2xl">
+                              <svg class="w-6 h-6 text-white ml-1" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                            </div>
+                          </div>
+                        {% else %}
+                          <div class="w-full h-full flex items-center justify-center text-zinc-600 text-xs uppercase tracking-widest">Sin video disponible</div>
+                        {% endif %}
                       </div>
-                      <textarea placeholder="Escribe tu comentario..."></textarea>
-                      <div class="course-actions" style="margin-top:10px;">
-                        <button class="btn-light" type="button">Comentar</button>
+
+                      <div class="mb-12">
+                        <h1 class="text-3xl font-bold text-white uppercase font-oswald mb-4 tracking-tight">{{ clase.nombre }}</h1>
+                        <div class="prose prose-invert max-w-none text-zinc-400 text-sm leading-relaxed">
+                          <p>{{ clase.descripcion|default:"Sin descripcion de clase." }}</p>
+                          {% if clase.latest_publicacion %}
+                            <p class="mt-4"><strong>{{ clase.latest_publicacion.titulo }}</strong></p>
+                            <p>{{ clase.latest_publicacion.contenido }}</p>
+                          {% endif %}
+                        </div>
                       </div>
+
+                      {% if clase.media_images %}
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
+                          {% for img in clase.media_images %}
+                            <div class="rounded-2xl overflow-hidden border border-zinc-900">
+                              <img src="{{ img.url }}" class="w-full h-56 object-cover grayscale hover:grayscale-0 transition" alt="{{ img.label }}">
+                              <div class="p-4 bg-zinc-900/50">
+                                <p class="text-[10px] text-zinc-500 uppercase font-bold">{{ img.label }}</p>
+                              </div>
+                            </div>
+                          {% endfor %}
+                        </div>
+                      {% else %}
+                        <div class="mb-12 text-xs text-zinc-600 uppercase tracking-widest">Sin multimedia</div>
+                      {% endif %}
+
+                      <div class="mb-16">
+                        <h4 class="text-[10px] font-bold text-zinc-600 uppercase tracking-widest mb-4">Material de Apoyo</h4>
+                        {% if clase.media_files %}
+                          <div class="space-y-3">
+                            {% for file in clase.media_files %}
+                              <a href="{{ file.url }}" target="_blank" download class="p-4 bg-zinc-900/40 border border-zinc-800 rounded-2xl flex items-center justify-between hover:border-red-600/40 transition group">
+                                <div class="flex items-center gap-4">
+                                  <div class="w-10 h-10 bg-zinc-800 rounded-xl flex items-center justify-center text-red-600">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                                  </div>
+                                  <div>
+                                    <p class="text-xs font-bold text-white uppercase">{{ file.name }}</p>
+                                    <p class="text-[9px] text-zinc-500 uppercase">{{ file.ext }}</p>
+                                  </div>
+                                </div>
+                                <span class="text-zinc-600 group-hover:text-white transition">
+                                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                                </span>
+                              </a>
+                            {% endfor %}
+                          </div>
+                        {% else %}
+                          <p class="text-xs text-zinc-600 uppercase tracking-widest">Sin archivos de apoyo</p>
+                        {% endif %}
+                      </div>
+
+                      <section class="border-t border-zinc-900 pt-16 pb-20">
+                        <div class="flex justify-between items-center mb-8">
+                          <h3 class="text-2xl font-bold text-white uppercase font-oswald tracking-tight flex items-center gap-3">
+                            <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path></svg>
+                            Foro de Preguntas
+                          </h3>
+                          <span class="text-[10px] font-bold text-zinc-600 uppercase" data-comments-count="{{ clase.id }}">{{ clase.total_comentarios }} comentarios</span>
+                        </div>
+
+                        <div class="space-y-6 mb-10" data-comments-list="{{ clase.id }}">
+                          {% if clase.total_comentarios %}
+                            {% for pub in clase.publicaciones.all %}
+                              {% for comentario in pub.comentarios.all %}
+                                <div class="bg-zinc-900/20 p-6 rounded-2xl border border-zinc-900 flex gap-5" data-comment-id="{{ comentario.id }}">
+                                  <div class="w-10 h-10 rounded-full bg-zinc-800 border border-zinc-700 flex items-center justify-center text-xs font-bold text-white">
+                                    {{ comentario.autor.nombre|slice:":2"|upper }}
+                                  </div>
+                                  <div class="flex-grow">
+                                    <div class="flex justify-between items-center mb-2">
+                                      <span class="text-xs font-bold text-zinc-300 uppercase">{{ comentario.autor.nombre }}</span>
+                                      <div class="flex items-center gap-3">
+                                        <span class="text-[9px] text-zinc-600 uppercase font-bold tracking-widest">{{ comentario.fecha|date:"d M" }}</span>
+                                        {% if comentario.autor_id == cliente.id %}
+                                          <button type="button" class="comment-delete text-[9px] font-bold text-zinc-600 uppercase hover:text-red-500 transition" data-comment-id="{{ comentario.id }}">Eliminar</button>
+                                        {% endif %}
+                                      </div>
+                                    </div>
+                                    <p class="text-sm text-zinc-500 leading-relaxed italic">"{{ comentario.contenido }}"</p>
+                                  </div>
+                                </div>
+                              {% endfor %}
+                            {% endfor %}
+                          {% else %}
+                            <p class="text-[10px] text-zinc-600 italic" data-comments-empty="{{ clase.id }}">No hay comentarios aun.</p>
+                          {% endif %}
+                        </div>
+
+                        {% if clase.first_publicacion_id %}
+                          <form method="post" class="bg-zinc-900/40 p-6 rounded-2xl border border-zinc-800 comment-form">
+                            {% csrf_token %}
+                            <input type="hidden" name="action" value="add_comment">
+                            <input type="hidden" name="publication_id" value="{{ clase.first_publicacion_id }}">
+                            <p class="text-[10px] font-bold text-zinc-500 uppercase mb-4 tracking-widest">Nueva Pregunta</p>
+                            <textarea name="comment_content" placeholder="Escribe tu duda tecnica aqui..." class="w-full bg-zinc-950 border border-zinc-900 rounded-xl p-4 text-xs text-white focus:outline-none focus:border-red-600 h-24 resize-none transition-all mb-4"></textarea>
+                            <div class="flex justify-end">
+                              <button type="submit" class="btn-action px-8">Publicar Pregunta</button>
+                            </div>
+                          </form>
+                        {% else %}
+                          <p class="text-[10px] text-zinc-600 italic">Aun no hay publicaciones para comentar.</p>
+                        {% endif %}
+                      </section>
                     </div>
-                  </div>
-                </details>
-              {% endfor %}
-            {% else %}
-              <p class="course-meta">Este curso no tiene clases todavía.</p>
-            {% endif %}
+                  {% endfor %}
+                {% else %}
+                  <p class="text-zinc-500">No tienes clases inscritas en este curso.</p>
+                {% endif %}
+              </div>
+            </div>
           </div>
         {% endfor %}
-      </section>
+      {% else %}
+        <div class="p-10 text-zinc-500">No tienes cursos inscritos.</div>
+      {% endif %}
     </div>
-  </div>
-{% endblock %}
+  </main>
 
-{% block extra_scripts %}
-  <script src="{% static 'gym/js/cliente_moodle.js' %}"></script>
-{% endblock %}
-
+  <script src="{% static 'gym/js/cliente_panel.js' %}"></script>
+</body>
+</html>

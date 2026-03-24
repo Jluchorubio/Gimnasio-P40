@@ -43,20 +43,21 @@ function reveal() {
 document.addEventListener("DOMContentLoaded", () => {
   const token = localStorage.getItem("auth_token");
   const note = document.getElementById("membresia-note");
-  const btn = document.getElementById("membresia-link");
   const bmiBtn = document.getElementById("bmiBtn");
 
   if (!token) {
     if (note) {
-      note.textContent = "Para pagar la membresia debes iniciar sesion.";
-    }
-    if (btn) {
-      btn.addEventListener("click", (e) => {
-        e.preventDefault();
-        window.location.href = "/auth-test/#login";
-      });
+      note.textContent = "Para solicitar la membresia debes iniciar sesion.";
     }
   }
+
+  const updateMembershipOnly = () => {
+    const only = window.location.hash === "#membresia";
+    document.body.classList.toggle("only-membresia", only);
+  };
+
+  updateMembershipOnly();
+  window.addEventListener("hashchange", updateMembershipOnly);
 
   if (bmiBtn) {
     bmiBtn.addEventListener("click", calculateBMI);

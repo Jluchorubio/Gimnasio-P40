@@ -1,0 +1,196 @@
+:root {
+  --ego-red: #dc2626;
+  --ego-dark: #050505;
+  --ego-sidebar: #0a0a0a;
+}
+
+.membership-view {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  position: relative;
+}
+
+.membership-hero {
+  position: relative;
+  min-height: 100%;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 120px 40px 100px;
+  background-image:
+    linear-gradient(rgba(0, 0, 0, 0.45), rgba(0, 0, 0, 0.92)),
+    url("https://images.unsplash.com/photo-1540497077202-7c8a3999166f?q=80&w=2070");
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+}
+
+.glow-text {
+  text-shadow: 0 0 20px rgba(220, 38, 38, 0.6);
+}
+
+.clan-btn {
+  position: relative;
+  padding: 18px 40px;
+  background: var(--ego-red);
+  font-family: "Oswald", sans-serif;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 4px;
+  font-size: 1rem;
+  color: white;
+  border: none;
+  cursor: pointer;
+  transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  clip-path: polygon(10% 0%, 100% 0%, 90% 100%, 0% 100%);
+  overflow: hidden;
+}
+
+.clan-btn:hover {
+  transform: scale(1.05) skewX(-2deg);
+  background: white;
+  color: black;
+  box-shadow: 0 0 40px rgba(220, 38, 38, 0.5);
+}
+
+.clan-btn:disabled,
+.clan-btn[disabled] {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.clan-btn::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(120deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+  transition: 0.5s;
+}
+
+.clan-btn:hover::before {
+  left: 100%;
+}
+
+.fade-up {
+  animation: fadeUp 1s ease forwards;
+  opacity: 0;
+  transform: translateY(30px);
+}
+
+@keyframes fadeUp {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.corner-decoration {
+  position: absolute;
+  width: 40px;
+  height: 40px;
+  border: 2px solid var(--ego-red);
+  opacity: 0.5;
+}
+
+.corner-decoration.top-left {
+  top: 40px;
+  left: 40px;
+  border-right: 0;
+  border-bottom: 0;
+}
+
+.corner-decoration.bottom-right {
+  bottom: 40px;
+  right: 40px;
+  border-left: 0;
+  border-top: 0;
+}
+
+.membership-overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(circle at center, transparent 0%, rgba(0, 0, 0, 0.9) 90%);
+  opacity: 0.6;
+}
+
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  font-weight: 700;
+  border: 1px solid transparent;
+}
+
+.status-pill.active {
+  background: rgba(34, 197, 94, 0.12);
+  color: #22c55e;
+  border-color: rgba(34, 197, 94, 0.3);
+}
+
+.status-pill.pending {
+  background: rgba(250, 204, 21, 0.12);
+  color: #facc15;
+  border-color: rgba(250, 204, 21, 0.3);
+}
+
+.status-pill.inactive {
+  background: rgba(220, 38, 38, 0.12);
+  color: #f87171;
+  border-color: rgba(220, 38, 38, 0.3);
+}
+
+.membership-history {
+  background: #050505;
+  border-top: 1px solid #1a1a1a;
+  padding: 60px 40px 80px;
+}
+
+.history-card {
+  background: rgba(8, 8, 8, 0.9);
+  border: 1px solid #1f1f1f;
+  border-radius: 20px;
+  padding: 24px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.45);
+}
+
+.history-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 0;
+  border-bottom: 1px solid #1f1f1f;
+  font-size: 12px;
+  color: #a1a1aa;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+}
+
+.history-item:last-child {
+  border-bottom: 0;
+}
+
+.history-status {
+  font-weight: 700;
+  color: #e5e7eb;
+}
+
+@media (max-width: 900px) {
+  .membership-hero {
+    padding: 120px 24px 80px;
+    background-attachment: scroll;
+  }
+}

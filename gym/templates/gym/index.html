@@ -48,7 +48,7 @@
               <span class="inline-block skew-x-[10deg]">Registro</span>
             </a>
             <a
-              href="/cliente/membresia/"
+              href="#membresia"
               id="membresia-link"
               class="bg-white text-black px-4 py-1 rounded-sm text-lg btn-teko hover:bg-red-600 hover:text-white transition transform skew-x-[-10deg]"
             >
@@ -102,6 +102,41 @@
       <div class="absolute bottom-10 right-10 hidden xl:block opacity-20">
         <span class="text-[200px] font-black italic select-none">GYM</span>
       </div>
+    </section>
+
+    <section id="membresia" class="membership-hero reveal">
+      <div class="container mx-auto px-4 relative z-10">
+        <div class="max-w-3xl mx-auto text-center">
+          <span class="membership-kicker">EL LLAMADO DEL GUERRERO</span>
+          <h2 class="text-6xl md:text-7xl font-black italic mt-6 leading-none uppercase">
+            La disciplina abre la puerta<br />
+            <span class="red-accent">la membresia la sostiene</span>
+          </h2>
+          <p class="text-gray-300 text-lg mt-6 leading-relaxed">
+            Solicita tu membresia para desbloquear entrenamientos, clases guiadas y el
+            seguimiento de tu progreso dentro del clan FitKit.
+          </p>
+          <div class="flex flex-wrap gap-4 justify-center mt-10">
+            <a
+              id="membresia-cta"
+              href="/auth-test/#login"
+              class="bg-red-accent hover:bg-red-700 text-white px-12 py-4 btn-teko text-2xl rounded-tr-2xl transition-all hover:tracking-widest"
+            >
+              SOLICITAR MEMBRESIA
+            </a>
+            <a
+              href="#contacto"
+              class="bg-white/10 border border-white/20 px-10 py-4 btn-teko text-2xl text-white hover:bg-white hover:text-black transition"
+            >
+              HABLAR CON EL EQUIPO
+            </a>
+          </div>
+          <p class="text-xs text-gray-400 mt-6 uppercase tracking-[0.4em]">
+            Necesitas iniciar sesion para enviar la solicitud.
+          </p>
+        </div>
+      </div>
+      <div class="membership-overlay"></div>
     </section>
 
     <!-- MARQUEE (Bucle infinito) -->
@@ -323,7 +358,7 @@
           <ul class="space-y-4 text-gray-400 uppercase text-sm font-bold tracking-widest">
             <li><a href="#servicios" class="hover:text-white transition">Nuestras Clases</a></li>
             <li><a href="#nosotros" class="hover:text-white transition">Entrenadores</a></li>
-            <li><a href="/cliente/membresia/" class="hover:text-white transition">Membresias</a></li>
+            <li><a href="#membresia" class="hover:text-white transition">Membresias</a></li>
             <li><a href="/roles/" class="hover:text-white transition">Roles</a></li>
           </ul>
         </div>

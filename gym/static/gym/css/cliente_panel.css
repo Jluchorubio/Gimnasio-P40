@@ -1,0 +1,112 @@
+﻿:root {
+  --ego-red: #dc2626;
+  --ego-dark: #070707;
+  --ego-card: #111111;
+  --ego-border: #1f1f1f;
+  --ego-sidebar: #0a0a0a;
+}
+
+.membership-badge {
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+}
+
+.status-active {
+  background: rgba(34, 197, 94, 0.1);
+  color: #22c55e;
+  border: 1px solid rgba(34, 197, 94, 0.2);
+}
+
+.status-inactive {
+  background: rgba(220, 38, 38, 0.1);
+  color: #dc2626;
+  border: 1px solid rgba(220, 38, 38, 0.2);
+}
+
+.video-player {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background: #000;
+  border-radius: 20px;
+  border: 1px solid var(--ego-border);
+  overflow: hidden;
+  position: relative;
+}
+
+.course-grid-card {
+  background: var(--ego-card);
+  border: 1px solid var(--ego-border);
+  border-radius: 15px;
+  overflow: hidden;
+  transition: 0.3s;
+  cursor: pointer;
+}
+
+.course-grid-card:hover {
+  transform: translateY(-5px);
+  border-color: var(--ego-red);
+}
+
+.course-progress-bar {
+  width: 0;
+  transition: width 0.4s ease;
+}
+
+.btn-action {
+  background: var(--ego-red);
+  color: white;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: bold;
+  text-transform: uppercase;
+  transition: 0.2s;
+}
+
+.btn-action:hover {
+  filter: brightness(1.2);
+}
+
+.calendar-day {
+  aspect-ratio: 1 / 1;
+  border: 1px solid var(--ego-border);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 8px;
+  font-size: 12px;
+  transition: 0.2s;
+}
+
+.calendar-day:hover {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.calendar-day.active-workout {
+  border-top: 3px solid var(--ego-red);
+  background: rgba(220, 38, 38, 0.05);
+}
+
+.calendar-day.empty {
+  border-color: transparent;
+  background: transparent;
+}
+
+.messages {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 16px;
+}
+
+.messages li {
+  background: rgba(16, 185, 129, 0.12);
+  border: 1px solid rgba(16, 185, 129, 0.4);
+  color: #34d399;
+  padding: 10px 14px;
+  border-radius: 12px;
+  font-size: 0.8rem;
+}
