@@ -1,59 +1,24 @@
+{% load static %}
 <!doctype html>
 <html lang="es">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Panel Administrador</title>
-    <style>
-      body {
-        font-family: Arial, sans-serif;
-        margin: 2rem;
-        max-width: 900px;
-      }
-      .card {
-        border: 1px solid #ddd;
-        border-radius: 10px;
-        padding: 1.5rem;
-        background: #f8fafc;
-        margin-bottom: 1.25rem;
-      }
-      nav a {
-        margin-right: 0.75rem;
-        text-decoration: none;
-        color: #0f172a;
-        font-weight: 600;
-      }
-      .row {
-        display: flex;
-        gap: 0.75rem;
-        flex-wrap: wrap;
-        align-items: center;
-      }
-      .btn {
-        display: inline-block;
-        padding: 0.6rem 1rem;
-        border-radius: 6px;
-        background: #0f172a;
-        color: #fff;
-        text-decoration: none;
-      }
-      .btn.secondary {
-        background: #334155;
-      }
-    </style>
+    <link rel="stylesheet" href="{% static 'gym/css/panel.css' %}" />
   </head>
-  <body>
+  <body class="page-narrow">
     <header class="card">
-      <div class="row" style="justify-content: space-between;">
+      <div class="row between">
         <strong>Gimnasio</strong>
         <nav>
           <a href="/index/">Inicio</a>
           <a href="/roles/">Roles</a>
-          <a href="/membresia/">Membresía</a>
+          <a href="/membresia/">Membresia</a>
         </nav>
         <div class="row">
           <a class="btn secondary" href="/admin/">Django Admin</a>
-          <a class="btn" href="/auth-test/">Cerrar sesión</a>
+          <a class="btn" href="/auth-test/">Cerrar sesion</a>
         </div>
       </div>
     </header>
@@ -61,18 +26,18 @@
     <div class="card">
       <h1>Panel del Administrador</h1>
       <p>
-        Esta es la página base del administrador. Aquí iremos agregando accesos
-        a gestión de planes, clases, miembros y reportes.
+        Esta es la pagina base del administrador. Aqui iremos agregando accesos
+        a gestion de planes, clases, miembros y reportes.
       </p>
     </div>
 
     <div class="card">
       <h2>Panel de Usuarios y Roles</h2>
-      <p>Gestión completa de cuentas y permisos.</p>
+      <p>Gestion completa de cuentas y permisos.</p>
       <ul>
         <li>Crear, editar y desactivar miembros</li>
         <li>Asignar roles: Administrador, Entrenador, Cliente</li>
-        <li>Ver historial de registro y estado de membresía</li>
+        <li>Ver historial de registro y estado de membresia</li>
         <li>Restablecer credenciales cuando sea necesario</li>
       </ul>
       <div class="row">
@@ -82,12 +47,12 @@
     </div>
 
     <div class="card">
-      <h2>Panel de Membresías y Planes</h2>
+      <h2>Panel de Membresias y Planes</h2>
       <p>Control de planes, precios y solicitudes.</p>
       <ul>
-        <li>Crear y editar planes (precio y duración)</li>
-        <li>Aprobar o rechazar solicitudes de membresía</li>
-        <li>Activar o suspender membresías</li>
+        <li>Crear y editar planes (precio y duracion)</li>
+        <li>Aprobar o rechazar solicitudes de membresia</li>
+        <li>Activar o suspender membresias</li>
         <li>Consultar historial de pagos</li>
       </ul>
       <div class="row">
@@ -98,12 +63,12 @@
 
     <div class="card">
       <h2>Panel de Clases</h2>
-      <p>Administración de la oferta de clases del gimnasio.</p>
+      <p>Administracion de la oferta de clases del gimnasio.</p>
       <ul>
         <li>Crear y editar clases</li>
-        <li>Asignar instructor y cupo máximo</li>
+        <li>Asignar instructor y cupo maximo</li>
         <li>Ver inscritos por clase</li>
-        <li>Bloquear inscripciones cuando el cupo esté lleno</li>
+        <li>Bloquear inscripciones cuando el cupo este lleno</li>
       </ul>
       <div class="row">
         <a class="btn" href="/panel/clases/">Administrar clases</a>
@@ -125,7 +90,7 @@
 
     <div class="card">
       <h2>Panel de Contenido</h2>
-      <p>Supervisión del foro y material educativo.</p>
+      <p>Supervision del foro y material educativo.</p>
       <ul>
         <li>Revisar publicaciones por clase</li>
         <li>Moderar comentarios</li>
@@ -142,11 +107,11 @@
       <p>Indicadores clave del gimnasio.</p>
       <ul>
         <li>Miembros activos vs. inactivos</li>
-        <li>Clases más demandadas</li>
+        <li>Clases mas demandadas</li>
         <li>Ingresos por planes</li>
         <li>Asistencia promedio mensual</li>
       </ul>
-      <p style="color:#64748b;">(Se conectará en la siguiente fase)</p>
+      <p class="text-muted">(Se conectara en la siguiente fase)</p>
     </div>
   </body>
 </html>

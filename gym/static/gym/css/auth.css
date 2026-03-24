@@ -1,0 +1,219 @@
+:root {
+  --accent-red: #ff0000;
+  --dark-bg: #0a0a0a;
+  --panel: #0d0d0d;
+  --line: rgba(255, 255, 255, 0.12);
+  --text-muted: #9ca3af;
+  --red: var(--accent-red);
+  --dark: var(--dark-bg);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Roboto", sans-serif;
+  background-color: var(--dark-bg);
+  color: #fff;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.font-gothic {
+  font-family: "Teko", sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.font-oswald {
+  font-family: "Teko", sans-serif;
+  text-transform: uppercase;
+}
+
+.auth-wrapper {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  position: relative;
+  background: radial-gradient(circle at 15% 15%, rgba(255, 0, 0, 0.08), transparent 55%),
+    var(--dark-bg);
+  overflow: hidden;
+}
+
+.form-container {
+  position: absolute;
+  top: 0;
+  width: 50%;
+  height: 100%;
+  transition: all 0.7s cubic-bezier(0.7, 0, 0.3, 1);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 10;
+  padding: 0 10%;
+  background: linear-gradient(180deg, rgba(10, 10, 10, 0.96), rgba(10, 10, 10, 0.88));
+}
+
+.login-panel {
+  left: 0;
+  opacity: 1;
+}
+
+.register-panel {
+  left: 0;
+  opacity: 0;
+  z-index: 5;
+  transform: translateX(-20%);
+}
+
+.overlay-container {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 50%;
+  height: 100%;
+  overflow: hidden;
+  transition: transform 0.7s cubic-bezier(0.7, 0, 0.3, 1);
+  z-index: 20;
+}
+
+.overlay {
+  position: relative;
+  left: -100%;
+  height: 100%;
+  width: 200%;
+  transform: translateX(0);
+  transition: transform 0.7s cubic-bezier(0.7, 0, 0.3, 1);
+}
+
+.overlay-panel {
+  position: absolute;
+  top: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 50%;
+  height: 100%;
+  padding: 0 60px;
+  text-align: center;
+  background-size: cover;
+  background-position: center;
+  box-shadow: inset 0 0 80px rgba(0, 0, 0, 0.4);
+}
+
+.overlay-left {
+  background-image: linear-gradient(to right, rgba(0, 0, 0, 0.85), rgba(255, 0, 0, 0.25)),
+    url("/static/gym/images/auth-login.jpg");
+  transform: translateX(0);
+  transition: transform 0.7s ease;
+}
+
+.overlay-right {
+  right: 0;
+  background-image: linear-gradient(to left, rgba(0, 0, 0, 0.85), rgba(255, 0, 0, 0.25)),
+    url("/static/gym/images/auth-register.jpg");
+}
+
+.auth-wrapper.active .login-panel {
+  transform: translateX(100%);
+  opacity: 0;
+}
+
+.auth-wrapper.active .register-panel {
+  transform: translateX(100%);
+  opacity: 1;
+  z-index: 15;
+}
+
+.auth-wrapper.active .overlay-container {
+  transform: translateX(-100%);
+}
+
+.auth-wrapper.active .overlay {
+  transform: translateX(50%);
+}
+
+.input-group input {
+  background: transparent;
+  border-bottom: 2px solid var(--line);
+  transition: border-color 0.4s;
+  font-size: 1rem;
+  color: #fff;
+  letter-spacing: 0.08em;
+}
+
+.input-group input::placeholder {
+  color: var(--text-muted);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.input-group input:focus {
+  outline: none;
+  border-color: var(--red);
+}
+
+.ego-btn {
+  background: var(--accent-red);
+  color: #fff;
+  font-family: "Teko", sans-serif;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.22em;
+  transition: all 0.3s ease;
+  transform: skewX(-10deg);
+  border-radius: 0;
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.45);
+}
+
+.ego-btn .btn-text {
+  display: inline-block;
+  transform: skewX(10deg);
+}
+
+.ego-btn:hover {
+  background: #fff;
+  color: #000;
+  transform: skewX(-10deg) scale(1.04);
+}
+
+.ghost-btn {
+  font-family: "Teko", sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 0.22em;
+  border-color: rgba(255, 255, 255, 0.8);
+  transform: skewX(-10deg);
+  box-shadow: 0 16px 30px rgba(0, 0, 0, 0.35);
+}
+
+.ghost-btn .btn-text {
+  display: inline-block;
+  transform: skewX(10deg);
+}
+
+.ghost-btn:hover {
+  color: #000;
+  border-color: #fff;
+}
+
+.message {
+  margin-top: 12px;
+  color: #fca5a5;
+  font-size: 14px;
+  letter-spacing: 0.04em;
+}
+
+@media (max-width: 900px) {
+  .overlay-container {
+    display: none;
+  }
+  .form-container {
+    width: 100%;
+    padding: 0 10%;
+  }
+}

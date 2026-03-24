@@ -1,50 +1,16 @@
+{% load static %}
 <!doctype html>
 <html lang="es">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Roles del Sistema</title>
-    <style>
-      body {
-        font-family: Arial, sans-serif;
-        margin: 2rem;
-        max-width: 900px;
-      }
-      .card {
-        border: 1px solid #ddd;
-        border-radius: 10px;
-        padding: 1.5rem;
-        background: #f8fafc;
-        margin-bottom: 1.25rem;
-      }
-      nav a {
-        margin-right: 0.75rem;
-        text-decoration: none;
-        color: #0f172a;
-        font-weight: 600;
-      }
-      .row {
-        display: flex;
-        gap: 0.75rem;
-        flex-wrap: wrap;
-        align-items: center;
-      }
-      .btn {
-        display: inline-block;
-        padding: 0.6rem 1rem;
-        border-radius: 6px;
-        background: #0f172a;
-        color: #fff;
-        text-decoration: none;
-      }
-      .btn.secondary {
-        background: #334155;
-      }
-    </style>
+    <link rel="stylesheet" href="{% static 'gym/css/panel.css' %}" />
+    <script src="{% static 'gym/js/roles.js' %}" defer></script>
   </head>
-  <body>
+  <body class="page-narrow">
     <header class="card">
-      <div class="row" style="justify-content: space-between;">
+      <div class="row between">
         <strong>Gimnasio</strong>
         <nav>
           <a href="/index/">Inicio</a>
@@ -54,14 +20,14 @@
         </nav>
         <div class="row">
           <a class="btn secondary" href="/auth-test/#login">Login / Registro</a>
-          <a class="btn" href="/membresia/" id="membresia-link">Pagar membresía</a>
+          <a class="btn" href="/membresia/" id="membresia-link">Pagar membresia</a>
         </div>
       </div>
     </header>
 
     <div class="card">
       <h1>Roles del sistema</h1>
-      <p>Organizamos aquí lo que puede hacer cada rol.</p>
+      <p>Organizamos aqui lo que puede hacer cada rol.</p>
     </div>
 
     <div class="card">
@@ -83,21 +49,9 @@
     <div class="card">
       <h2>Cliente (Miembro)</h2>
       <p>
-        Se registra, solicita membresía, se inscribe en clases y consulta
+        Se registra, solicita membresia, se inscribe en clases y consulta
         contenido publicado por entrenadores.
       </p>
     </div>
-
-    <script>
-      const token = localStorage.getItem("auth_token");
-      const btn = document.getElementById("membresia-link");
-
-      if (!token) {
-        btn.addEventListener("click", (e) => {
-          e.preventDefault();
-          window.location.href = "/auth-test/#login";
-        });
-      }
-    </script>
   </body>
 </html>

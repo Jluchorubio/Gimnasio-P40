@@ -1,50 +1,15 @@
+{% load static %}
 <!doctype html>
 <html lang="es">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Panel Cliente</title>
-    <style>
-      body {
-        font-family: Arial, sans-serif;
-        margin: 2rem;
-        max-width: 900px;
-      }
-      .card {
-        border: 1px solid #ddd;
-        border-radius: 10px;
-        padding: 1.5rem;
-        background: #f8fafc;
-        margin-bottom: 1.25rem;
-      }
-      nav a {
-        margin-right: 0.75rem;
-        text-decoration: none;
-        color: #0f172a;
-        font-weight: 600;
-      }
-      .row {
-        display: flex;
-        gap: 0.75rem;
-        flex-wrap: wrap;
-        align-items: center;
-      }
-      .btn {
-        display: inline-block;
-        padding: 0.6rem 1rem;
-        border-radius: 6px;
-        background: #0f172a;
-        color: #fff;
-        text-decoration: none;
-      }
-      .btn.secondary {
-        background: #334155;
-      }
-    </style>
+    <link rel="stylesheet" href="{% static 'gym/css/panel.css' %}" />
   </head>
-  <body>
+  <body class="page-narrow">
     <header class="card">
-      <div class="row" style="justify-content: space-between;">
+      <div class="row between">
         <strong>Panel Cliente</strong>
         <nav>
           <a href="/index/">Inicio</a>
@@ -66,14 +31,14 @@
       <p><a href="/cliente/seleccionar/">Seleccionar cliente</a></p>
       {% endif %}
       <p>
-        Aquí el miembro podrá solicitar membresía, inscribirse en clases y ver
+        Aqui el miembro podra solicitar membresia, inscribirse en clases y ver
         contenido publicado por los entrenadores.
       </p>
     </div>
 
     <div class="card">
       <h2>Clases</h2>
-      <p>Consulta clases disponibles e inscríbete si tienes membresía activa.</p>
+      <p>Consulta clases disponibles e inscribete si tienes membresia activa.</p>
       <div class="row">
         <a class="btn" href="/cliente/clases/">Ver clases disponibles</a>
         <a class="btn secondary" href="/cliente/mis-clases/">Mis clases</a>
@@ -81,10 +46,10 @@
     </div>
 
     <div class="card">
-      <h2>Membresía</h2>
-      <p>Solicitar o revisar el estado de tu membresía.</p>
+      <h2>Membresia</h2>
+      <p>Solicitar o revisar el estado de tu membresia.</p>
       <div class="row">
-        <a class="btn" href="/cliente/membresia/">Gestionar membresía</a>
+        <a class="btn" href="/cliente/membresia/">Gestionar membresia</a>
       </div>
     </div>
   </body>

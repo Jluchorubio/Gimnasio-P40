@@ -1,3 +1,4 @@
+{% load static %}
 <!doctype html>
 <html lang="es">
   <head>
@@ -9,191 +10,12 @@
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
       rel="stylesheet"
     />
-    <style>
-      @import url("https://fonts.googleapis.com/css2?family=Teko:wght@400;600;700&family=Roboto:wght@300;400;700&display=swap");
-
-      :root {
-        --accent-red: #ff0000;
-        --dark-bg: #0a0a0a;
-      }
-
-      body {
-        font-family: "Roboto", sans-serif;
-        background-color: var(--dark-bg);
-        color: #ffffff;
-        overflow-x: hidden;
-      }
-
-      h1,
-      h2,
-      h3,
-      .nav-link,
-      .btn-teko {
-        font-family: "Teko", sans-serif;
-        text-transform: uppercase;
-      }
-
-      .hero-clip {
-        clip-path: polygon(0 0, 100% 0, 100% 90%, 50% 100%, 0 90%);
-      }
-
-      .section-curve-bottom {
-        clip-path: ellipse(150% 100% at 50% 0%);
-      }
-
-      .card-angled {
-        clip-path: polygon(0 0, 100% 0, 100% 85%, 90% 100%, 0 100%);
-      }
-
-      .hero-bg {
-        background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.8)),
-          url("https://images.unsplash.com/photo-1517836357463-d25dfeac3438?q=80&w=2070&auto=format&fit=crop");
-        background-size: cover;
-        background-position: center;
-      }
-
-      .red-accent {
-        color: var(--accent-red);
-      }
-      .bg-red-accent {
-        background-color: var(--accent-red);
-      }
-
-      .animate-fade-in-up {
-        animation: fadeInUp 0.8s ease-out both;
-      }
-
-      @keyframes fadeInUp {
-        from {
-          opacity: 0;
-          transform: translateY(16px);
-        }
-        to {
-          opacity: 1;
-          transform: translateY(0);
-        }
-      }
-
-      html {
-        scroll-behavior: smooth;
-      }
-
-      .marquee-container {
-        overflow: hidden;
-        background: var(--accent-red);
-        border-top: 1px solid rgba(255, 255, 255, 0.08);
-        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-      }
-
-      .marquee-content {
-        display: inline-block;
-        white-space: nowrap;
-        padding: 14px 0;
-        font-family: "Teko", sans-serif;
-        font-size: clamp(20px, 3vw, 36px);
-        letter-spacing: 0.22em;
-        text-transform: uppercase;
-        color: #ffffff;
-        transform: rotate(-1deg);
-        transform-origin: left center;
-        animation: marquee 32s linear infinite;
-      }
-
-      @keyframes marquee {
-        0% {
-          transform: translateX(0);
-        }
-        100% {
-          transform: translateX(-100%);
-        }
-      }
-
-      .reveal {
-        opacity: 0;
-        transform: translateY(24px);
-        transition: opacity 0.8s ease, transform 0.8s ease;
-      }
-
-      .reveal.active {
-        opacity: 1;
-        transform: translateY(0);
-      }
-
-      .mood-grid {
-        display: grid;
-        grid-template-columns: repeat(12, minmax(0, 1fr));
-        grid-auto-rows: 70px;
-        gap: 12px;
-      }
-
-      .mood-item {
-        position: relative;
-        overflow: hidden;
-        border: 1px solid rgba(255, 255, 255, 0.08);
-        background: #0b0b0b;
-        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.45);
-      }
-
-      .mood-item img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        filter: grayscale(1) contrast(1.1) brightness(0.9);
-        transition: transform 0.6s ease, filter 0.6s ease;
-      }
-
-      .mood-item:hover img {
-        transform: scale(1.05);
-        filter: grayscale(0) brightness(1);
-      }
-
-      .mood-caption {
-        position: absolute;
-        left: 12px;
-        bottom: 12px;
-        font-family: "Teko", sans-serif;
-        text-transform: uppercase;
-        font-size: 20px;
-        letter-spacing: 0.2em;
-        color: #fff;
-        text-shadow: 0 6px 18px rgba(0, 0, 0, 0.7);
-      }
-
-      .mood-label {
-        position: absolute;
-        inset: 0;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-family: "Teko", sans-serif;
-        font-size: clamp(36px, 6vw, 96px);
-        text-transform: uppercase;
-        letter-spacing: 0.25em;
-        color: #ffffff;
-      }
-
-      .mood-red {
-        color: var(--accent-red);
-      }
-
-      .tilt-left {
-        transform: rotate(-1.5deg);
-      }
-
-      .tilt-right {
-        transform: rotate(1.5deg);
-      }
-
-      @media (max-width: 900px) {
-        .mood-grid {
-          grid-template-columns: repeat(2, minmax(0, 1fr));
-          grid-auto-rows: 180px;
-        }
-        .mood-item {
-          transform: none !important;
-        }
-      }
-    </style>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Teko:wght@400;600;700&family=Roboto:wght@300;400;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="{% static 'gym/css/index.css' %}" />
+    <script src="{% static 'gym/js/index.js' %}" defer></script>
   </head>
   <body>
     <header class="fixed w-full z-50 bg-black/90 border-b border-white/5 backdrop-blur-sm">
@@ -285,11 +107,11 @@
     <!-- MARQUEE (Bucle infinito) -->
     <div class="marquee-container">
       <div class="marquee-content">
-        FUERZA • DISCIPLINA • RESULTADOS • COMUNIDAD • PASION • EXITO • RENDIMIENTO • MOTIVACION • FUERZA • DISCIPLINA • RESULTADOS • COMUNIDAD • PASION • EXITO • RENDIMIENTO • MOTIVACION •
+        FUERZA &bull; DISCIPLINA &bull; RESULTADOS &bull; COMUNIDAD &bull; PASION &bull; EXITO &bull; RENDIMIENTO &bull; MOTIVACION &bull; FUERZA &bull; DISCIPLINA &bull; RESULTADOS &bull; COMUNIDAD &bull; PASION &bull; EXITO &bull; RENDIMIENTO &bull; MOTIVACION &bull;
       </div>
     </div>
 
-    <section class="relative z-20 py-12 bg-white text-black section-curve-bottom reveal">
+    <section class="relative py-12 bg-white text-black section-curve-bottom reveal">
       <div class="container mx-auto px-4">
         <div class="max-w-5xl mx-auto bg-[#1a1a1a] p-1 rounded-3xl shadow-2xl overflow-hidden">
           <div class="bg-black text-white p-8 md:p-12">
@@ -306,7 +128,7 @@
                 <label class="text-[10px] text-gray-400 font-bold ml-1 uppercase">Altura (cm)</label>
                 <input type="number" id="height" placeholder="000" class="w-full bg-[#111] border border-white/10 p-4 rounded-xl focus:border-red-500 outline-none transition" />
               </div>
-              <button onclick="calculateBMI()" class="bg-red-accent py-4 rounded-xl btn-teko text-2xl font-bold hover:bg-white hover:text-black transition-all">
+              <button id="bmiBtn" class="bg-red-accent py-4 rounded-xl btn-teko text-2xl font-bold hover:bg-white hover:text-black transition-all">
                 CALCULAR
               </button>
             </div>
@@ -363,43 +185,43 @@
 
       <div class="container mx-auto px-4">
         <div class="mood-grid">
-          <div class="mood-item tilt-left" style="grid-column: 1 / span 4; grid-row: 1 / span 4;">
+          <div class="mood-item item-1 tilt-left">
             <img src="https://images.unsplash.com/photo-1517836357463-d25dfeac3438?q=80&w=1400&auto=format&fit=crop" alt="Gym 1" loading="lazy" />
             <span class="mood-caption">No risk no story</span>
           </div>
 
-          <div class="mood-item" style="grid-column: 5 / span 3; grid-row: 1 / span 3;">
+          <div class="mood-item item-2">
             <img src="https://images.unsplash.com/photo-1517963879433-6ad2b056d712?q=80&w=1000&auto=format&fit=crop" alt="Gym 2" loading="lazy" />
           </div>
 
-          <div class="mood-item tilt-right" style="grid-column: 8 / span 5; grid-row: 1 / span 5;">
+          <div class="mood-item item-3 tilt-right">
             <img src="https://images.unsplash.com/photo-1534438327276-14e5300c3a48?q=80&w=1400&auto=format&fit=crop" alt="Gym 3" loading="lazy" />
             <span class="mood-caption">You can quit or keep going</span>
           </div>
 
-          <div class="mood-item" style="grid-column: 1 / span 5; grid-row: 5 / span 4;">
+          <div class="mood-item item-4">
             <img src="https://images.unsplash.com/photo-1526506118085-60ce8714f8c5?q=80&w=1400&auto=format&fit=crop" alt="Gym 4" loading="lazy" />
             <span class="mood-caption">Trust the process</span>
           </div>
 
-          <div class="mood-item tilt-left" style="grid-column: 6 / span 4; grid-row: 4 / span 4;">
+          <div class="mood-item item-5 tilt-left">
             <img src="https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?q=80&w=1200&auto=format&fit=crop" alt="Gym 5" loading="lazy" />
           </div>
 
-          <div class="mood-item" style="grid-column: 10 / span 3; grid-row: 6 / span 3;">
+          <div class="mood-item item-6">
             <img src="https://images.unsplash.com/photo-1517964603305-11c0f6f66012?q=80&w=1000&auto=format&fit=crop" alt="Gym 6" loading="lazy" />
           </div>
 
-          <div class="mood-item tilt-right" style="grid-column: 1 / span 4; grid-row: 9 / span 4;">
+          <div class="mood-item item-7 tilt-right">
             <img src="https://images.unsplash.com/photo-1517838277536-f5f99be5019a?q=80&w=1200&auto=format&fit=crop" alt="Gym 7" loading="lazy" />
             <span class="mood-caption">Again again again</span>
           </div>
 
-          <div class="mood-item" style="grid-column: 5 / span 5; grid-row: 8 / span 5; background:#050505;">
+          <div class="mood-item item-8">
             <div class="mood-label">FOCUS</div>
           </div>
 
-          <div class="mood-item tilt-left" style="grid-column: 10 / span 3; grid-row: 9 / span 4;">
+          <div class="mood-item item-9 tilt-left">
             <img src="https://images.unsplash.com/photo-1546483875-ad9014c88eba?q=80&w=1200&auto=format&fit=crop" alt="Gym 8" loading="lazy" />
           </div>
         </div>
@@ -533,70 +355,5 @@
         </div>
       </div>
     </footer>
-
-    <script>
-      function calculateBMI() {
-        const weight = parseFloat(document.getElementById("weight").value);
-        const height = parseFloat(document.getElementById("height").value) / 100;
-        const resultDiv = document.getElementById("bmi-result");
-        const valueSpan = document.getElementById("bmi-value");
-        const statusP = document.getElementById("bmi-status");
-
-        if (weight > 0 && height > 0) {
-          const bmi = (weight / (height * height)).toFixed(1);
-          valueSpan.innerText = bmi;
-          resultDiv.classList.remove("hidden");
-
-          let status = "";
-          if (bmi < 18.5) status = "Bajo peso";
-          else if (bmi < 24.9) status = "Peso saludable";
-          else if (bmi < 29.9) status = "Sobrepeso";
-          else status = "Obesidad";
-
-          statusP.innerText = status;
-
-          resultDiv.style.opacity = 0;
-          let op = 0;
-          const timer = setInterval(function () {
-            if (op >= 1) clearInterval(timer);
-            resultDiv.style.opacity = op;
-            op += 0.1;
-          }, 30);
-        }
-      }
-
-      const token = localStorage.getItem("auth_token");
-      const note = document.getElementById("membresia-note");
-      const btn = document.getElementById("membresia-link");
-
-      if (!token) {
-        if (note) {
-          note.textContent = "Para pagar la membresia debes iniciar sesion.";
-        }
-        if (btn) {
-          btn.addEventListener("click", (e) => {
-            e.preventDefault();
-            window.location.href = "/auth-test/#login";
-          });
-        }
-      }
-
-      // Script para detectar scroll y activar animaciones
-      function reveal() {
-        var reveals = document.querySelectorAll(".reveal");
-        for (var i = 0; i < reveals.length; i++) {
-          var windowHeight = window.innerHeight;
-          var elementTop = reveals[i].getBoundingClientRect().top;
-          var elementVisible = 150;
-          if (elementTop < windowHeight - elementVisible) {
-            reveals[i].classList.add("active");
-          }
-        }
-      }
-
-      window.addEventListener("scroll", reveal);
-      // Ejecutar una vez al cargar para elementos ya visibles
-      window.onload = reveal;
-    </script>
   </body>
 </html>
