@@ -156,7 +156,117 @@
                     </div>
 
                     <div class="video-container group shadow-2xl">
-                      <div class="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent"></div>
+                      <div class="media-board">
+                        {% for pub in clase.publicaciones.all %}
+                          <div class="media-card">
+                            <div class="media-header">
+                              <div>
+                                <p class="text-[10px] uppercase tracking-widest text-zinc-500">Publicación</p>
+                                <h4 class="text-lg font-bold text-white">{{ pub.titulo }}</h4>
+                              </div>
+                              <span class="text-[10px] text-zinc-600 uppercase">{{ pub.fecha_publicacion|date:"d M Y" }}</span>
+                            </div>
+                            <p class="text-sm text-zinc-400 mt-2">{{ pub.contenido }}</p>
+
+                            <div class="media-grid">
+                              {% if pub.imagen %}
+                                <a href="{{ pub.imagen.url }}" target="_blank" download class="media-thumb">
+                                  <img src="{{ pub.imagen.url }}" alt="{{ pub.titulo }}">
+                                  <span class="media-tag">IMG</span>
+                                </a>
+                              {% endif %}
+
+                              {% if pub.video_archivo %}
+                                {% with ext=pub.video_archivo.name|fileext %}
+                                  {% if ext == 'MP4' or ext == 'WEBM' or ext == 'OGG' %}
+                                    <div class="media-thumb">
+                                      <video controls src="{{ pub.video_archivo.url }}"></video>
+                                      <span class="media-tag">{{ ext }}</span>
+                                    </div>
+                                  {% else %}
+                                    <a href="{{ pub.video_archivo.url }}" target="_blank" download class="media-file">
+                                      <span class="file-ext">{{ ext }}</span>
+                                      <span class="file-name">{{ pub.video_archivo.name|filename }}</span>
+                                    </a>
+                                  {% endif %}
+                                {% endwith %}
+                              {% endif %}
+
+                              {% if pub.video_url %}
+                                <a href="{{ pub.video_url }}" target="_blank" class="media-file">
+                                  <span class="file-ext">URL</span>
+                                  <span class="file-name">Video externo</span>
+                                </a>
+                              {% endif %}
+
+                              {% if pub.archivo_1 %}
+                                {% with ext=pub.archivo_1.name|fileext %}
+                                  {% if ext == 'PDF' %}
+                                    <a href="{{ pub.archivo_1.url }}" target="_blank" download class="media-thumb media-doc">
+                                      <embed src="{{ pub.archivo_1.url }}#toolbar=0" type="application/pdf">
+                                      <span class="media-tag">PDF</span>
+                                    </a>
+                                  {% elif ext == 'JPG' or ext == 'JPEG' or ext == 'PNG' or ext == 'WEBP' or ext == 'GIF' %}
+                                    <a href="{{ pub.archivo_1.url }}" target="_blank" download class="media-thumb">
+                                      <img src="{{ pub.archivo_1.url }}" alt="{{ pub.archivo_1.name|filename }}">
+                                      <span class="media-tag">IMG</span>
+                                    </a>
+                                  {% else %}
+                                    <a href="{{ pub.archivo_1.url }}" target="_blank" download class="media-file">
+                                      <span class="file-ext">{{ ext }}</span>
+                                      <span class="file-name">{{ pub.archivo_1.name|filename }}</span>
+                                    </a>
+                                  {% endif %}
+                                {% endwith %}
+                              {% endif %}
+                              {% if pub.archivo_2 %}
+                                {% with ext=pub.archivo_2.name|fileext %}
+                                  {% if ext == 'PDF' %}
+                                    <a href="{{ pub.archivo_2.url }}" target="_blank" download class="media-thumb media-doc">
+                                      <embed src="{{ pub.archivo_2.url }}#toolbar=0" type="application/pdf">
+                                      <span class="media-tag">PDF</span>
+                                    </a>
+                                  {% elif ext == 'JPG' or ext == 'JPEG' or ext == 'PNG' or ext == 'WEBP' or ext == 'GIF' %}
+                                    <a href="{{ pub.archivo_2.url }}" target="_blank" download class="media-thumb">
+                                      <img src="{{ pub.archivo_2.url }}" alt="{{ pub.archivo_2.name|filename }}">
+                                      <span class="media-tag">IMG</span>
+                                    </a>
+                                  {% else %}
+                                    <a href="{{ pub.archivo_2.url }}" target="_blank" download class="media-file">
+                                      <span class="file-ext">{{ ext }}</span>
+                                      <span class="file-name">{{ pub.archivo_2.name|filename }}</span>
+                                    </a>
+                                  {% endif %}
+                                {% endwith %}
+                              {% endif %}
+                              {% if pub.archivo_3 %}
+                                {% with ext=pub.archivo_3.name|fileext %}
+                                  {% if ext == 'PDF' %}
+                                    <a href="{{ pub.archivo_3.url }}" target="_blank" download class="media-thumb media-doc">
+                                      <embed src="{{ pub.archivo_3.url }}#toolbar=0" type="application/pdf">
+                                      <span class="media-tag">PDF</span>
+                                    </a>
+                                  {% elif ext == 'JPG' or ext == 'JPEG' or ext == 'PNG' or ext == 'WEBP' or ext == 'GIF' %}
+                                    <a href="{{ pub.archivo_3.url }}" target="_blank" download class="media-thumb">
+                                      <img src="{{ pub.archivo_3.url }}" alt="{{ pub.archivo_3.name|filename }}">
+                                      <span class="media-tag">IMG</span>
+                                    </a>
+                                  {% else %}
+                                    <a href="{{ pub.archivo_3.url }}" target="_blank" download class="media-file">
+                                      <span class="file-ext">{{ ext }}</span>
+                                      <span class="file-name">{{ pub.archivo_3.name|filename }}</span>
+                                    </a>
+                                  {% endif %}
+                                {% endwith %}
+                              {% endif %}
+                            </div>
+                          </div>
+                        {% empty %}
+                          <div class="media-empty">
+                            Aún no hay publicaciones en esta clase.
+                          </div>
+                        {% endfor %}
+                      </div>
                     </div>
 
                     <div class="grid grid-cols-1 lg:grid-cols-3 gap-10 mt-12">

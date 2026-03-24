@@ -275,7 +275,13 @@ def trainer_dashboard(request):
             Prefetch(
                 "clases",
                 queryset=Clase.objects.filter(instructor=trainer).prefetch_related(
-                    "publicaciones", "publicaciones__comentarios__autor", "asistencia_set__miembro"
+                    Prefetch(
+                        "publicaciones",
+                        queryset=PublicacionClase.objects.order_by("-fecha_publicacion").prefetch_related(
+                            "comentarios__autor"
+                        ),
+                    ),
+                    "asistencia_set__miembro",
                 ),
             )
         )
