@@ -188,6 +188,24 @@ class PublicacionClase(models.Model):
         blank=True
     )
 
+    archivo_1 = models.FileField(
+        upload_to="clases/archivos/",
+        null=True,
+        blank=True
+    )
+
+    archivo_2 = models.FileField(
+        upload_to="clases/archivos/",
+        null=True,
+        blank=True
+    )
+
+    archivo_3 = models.FileField(
+        upload_to="clases/archivos/",
+        null=True,
+        blank=True
+    )
+
     video_url = models.URLField(
         null=True,
         blank=True

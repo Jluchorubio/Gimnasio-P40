@@ -10,6 +10,7 @@
       href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;700&family=Poppins:wght@300;400;600&family=Pirata+One&display=swap"
       rel="stylesheet"
     />
+    {% block extra_head %}{% endblock %}
   </head>
   <body>
     <header class="trainer-header">
@@ -18,7 +19,7 @@
         <nav class="nav-links">
           <a
             href="/cliente/clases/"
-            class="{% if request.path|slice:':15' == '/cliente/clases' %}active{% endif %}"
+            class="{% if request.path == '/cliente.html' or request.path|slice:':15' == '/cliente/clases' %}active{% endif %}"
           >
             Cursos
           </a>
@@ -66,5 +67,6 @@
         {% block content %}{% endblock %}
       </div>
     </main>
+    {% block extra_scripts %}{% endblock %}
   </body>
 </html>

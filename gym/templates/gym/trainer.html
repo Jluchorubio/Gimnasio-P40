@@ -1,64 +1,554 @@
-{% load static %}
-<!doctype html>
+{% load static file_extras %}
+<!DOCTYPE html>
 <html lang="es">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Panel Entrenador</title>
-    <link rel="stylesheet" href="{% static 'gym/css/panel.css' %}" />
-  </head>
-  <body class="page-narrow">
-    <header class="card">
-      <div class="row between">
-        <strong>Panel Entrenador</strong>
-        <nav>
-          <a href="/index/">Inicio</a>
-          <a href="/roles/">Roles</a>
-          <a href="/trainer.html">Entrenador</a>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FITKIT | Panel del Trainer</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;700&family=Poppins:wght@300;400;600&family=Pirata+One&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Teko:wght@400;600;700&family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{% static 'gym/css/index.css' %}">
+  <link rel="stylesheet" href="{% static 'gym/css/trainer_panel.css' %}">
+</head>
+<body>
+
+  <!-- SIDEBAR -->
+  <aside id="sidebar" class="sidebar">
+    <div class="p-6 flex items-center justify-between">
+      <div class="font-oswald text-2xl font-bold tracking-tighter hide-collapsed">
+        FIT<span class="text-red-600">KIT</span>
+      </div>
+      <button onclick="toggleSidebar()" class="p-2 hover:bg-zinc-900 rounded-lg text-zinc-500">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+      </button>
+    </div>
+
+    <nav class="flex-grow mt-4">
+      <div class="px-6 py-2 text-[10px] font-bold text-zinc-600 uppercase tracking-widest hide-collapsed">Menú</div>
+
+      <div class="flex items-center gap-3 px-6 py-3 cursor-pointer hover:bg-zinc-900 text-zinc-400 hover:text-white transition" onclick="showView('dashboard-view')">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
+        <span class="hide-collapsed text-sm">Dashboard</span>
+      </div>
+
+      <div class="mt-4">
+        <div onclick="toggleCoursesDropdown()" class="flex items-center justify-between px-6 py-3 cursor-pointer hover:bg-zinc-900 text-zinc-400 transition">
+          <div class="flex items-center gap-3">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5S19.832 5.477 21 6.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
+            <span class="hide-collapsed text-sm">Mis Cursos</span>
+          </div>
+          <svg id="arrow-icon" class="w-4 h-4 hide-collapsed transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+        </div>
+        <div id="course-dropdown" class="course-dropdown">
+          {% for curso in cursos %}
+            <div class="px-10 py-2 text-xs text-zinc-500 hover:text-red-500 cursor-pointer" onclick="openCourse('{{ curso.id }}','{{ curso.nombre }}')">{{ curso.nombre }}</div>
+          {% empty %}
+            <div class="px-10 py-2 text-xs text-zinc-600">Sin cursos</div>
+          {% endfor %}
+        </div>
+      </div>
+    </nav>
+
+    <div class="p-6 border-t border-zinc-900 flex items-center gap-3">
+      <img src="https://i.pravatar.cc/100?u={{ trainer.id }}" class="w-8 h-8 rounded-full border border-zinc-800" alt="Trainer">
+      <div class="hide-collapsed overflow-hidden">
+        <p class="text-[10px] font-bold text-white truncate uppercase">{{ trainer.nombre }}</p>
+        <p class="text-[8px] text-zinc-500 uppercase tracking-widest">Master Trainer</p>
+      </div>
+    </div>
+  </aside>
+
+  <!-- CONTENEDOR PRINCIPAL -->
+  <main class="main-container">
+
+    <!-- HEADER (estilo index) -->
+    <header class="w-full z-40 bg-black/90 border-b border-white/5 backdrop-blur-sm">
+      <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+        <div class="flex items-center space-x-2">
+          <div class="bg-red-accent p-1 transform skew-x-[-12deg]">
+            <i class="fas fa-bolt text-white text-xl"></i>
+          </div>
+          <span class="text-3xl font-bold tracking-tighter">FIT<span class="red-accent">KIT</span></span>
+        </div>
+
+        <nav class="hidden lg:flex space-x-8">
+          <a href="#" class="nav-link text-xl tracking-wide hover:text-red-500 transition" onclick="showView('dashboard-view')">Inicio</a>
+          <a href="#" class="nav-link text-xl tracking-wide hover:text-red-500 transition" onclick="showView('dashboard-view')">Cursos</a>
+          <a href="/membresia/" class="nav-link text-xl tracking-wide hover:text-red-500 transition">Planes</a>
         </nav>
-        <div class="row">
-          <a class="btn secondary" href="/auth-test/">Cambiar sesion</a>
-          <a class="btn" href="/membresia/">Membresia</a>
+
+        <div class="flex items-center space-x-6">
+          <a href="/auth-test/" class="nav-link text-lg hover:text-red-500 transition">Cerrar sesión</a>
+          <a href="/membresia/" class="bg-white text-black px-4 py-1 rounded-sm text-lg btn-teko hover:bg-red-600 hover:text-white transition transform skew-x-[-10deg]">
+            <span class="inline-block skew-x-[10deg]">Membresia</span>
+          </a>
         </div>
       </div>
     </header>
 
-    <div class="card">
-      <h1>Panel del Entrenador</h1>
-      {% if trainer %}
-      <p><strong>Entrenador actual:</strong> {{ trainer.nombre }} ({{ trainer.email }})</p>
-      {% else %}
-      <p><a href="/trainer/seleccionar/">Seleccionar entrenador</a></p>
-      {% endif %}
-      <p>
-        Aqui centralizamos la gestion de clases, asistencia y publicaciones del
-        instructor.
-      </p>
-    </div>
+    <!-- VISTA 1: DASHBOARD -->
+    <div id="dashboard-view" class="content-view active scrollable-area overflow-y-auto">
+      <div class="p-10">
+        <div class="flex justify-between items-end mb-10">
+          <div>
+            <h1 class="text-4xl font-bold text-white uppercase font-oswald tracking-tighter">Centro de Entrenamiento</h1>
+            <p class="text-zinc-500 text-sm mt-1">Hola Coach, tienes <span class="text-red-500 font-bold">{{ cursos|length }}</span> cursos activos.</p>
+          </div>
+          <button class="btn-red px-8 py-3" onclick="openCreateClassModal()">+ Nuevo Programa</button>
+        </div>
 
-    <div class="card">
-      <h2>Mis Clases</h2>
-      <p>Ver y administrar las clases asignadas al entrenador.</p>
-      <div class="row">
-        <a class="btn" href="/trainer/clases/">Ver clases</a>
-        <a class="btn secondary" href="/trainer/clases/crear/">Crear clase</a>
+        <div class="course-grid">
+          {% for curso in cursos %}
+            <div class="course-card group" data-course-id="{{ curso.id }}" data-course-name="{{ curso.nombre }}" onclick="openCourse('{{ curso.id }}','{{ curso.nombre }}')">
+              <div class="h-48 overflow-hidden relative">
+                {% if forloop.counter|divisibleby:"2" %}
+                  <img src="https://images.unsplash.com/photo-1594381898411-846e7d193883?q=80&w=600" class="w-full h-full object-cover transition duration-500 group-hover:scale-110" alt="Curso">
+                {% else %}
+                  <img src="https://images.unsplash.com/photo-1552072092-7f9b8d63efcb?q=80&w=600" class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition duration-500" alt="Curso">
+                {% endif %}
+                <div class="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent"></div>
+              </div>
+              <div class="p-6 relative">
+                <h3 class="font-bold text-white uppercase text-lg mb-1 font-oswald">{{ curso.nombre }}</h3>
+                <p class="text-[10px] text-zinc-500 uppercase mb-4 tracking-widest">Creado: {{ curso.creado_en|date:"M Y" }}</p>
+                <div class="flex items-center justify-between pt-4 border-t border-zinc-800">
+                  <span class="text-[9px] font-bold text-zinc-600 uppercase">{{ curso.total_clases }} clases</span>
+                  {% if curso.activo %}
+                    <span class="text-[10px] font-bold text-red-600 bg-red-600/10 px-2 py-1 rounded">ACTIVO</span>
+                  {% else %}
+                    <span class="text-[10px] font-bold text-zinc-700 bg-zinc-800 px-2 py-1 rounded">BORRADOR</span>
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+          {% empty %}
+            <div class="text-zinc-500">No tienes cursos creados.</div>
+          {% endfor %}
+        </div>
       </div>
     </div>
 
-    <div class="card">
-      <h2>Asistencia</h2>
-      <p>Registrar y revisar asistencia de los miembros en tus clases.</p>
-      <div class="row">
-        <a class="btn" href="/trainer/clases/">Ver clases con inscritos</a>
-      </div>
-    </div>
+    <!-- VISTA 2: GESTIÓN DE CURSO -->
+    <div id="course-view" class="content-view flex-row">
+      {% for curso in cursos %}
+        <div class="course-instance {% if forloop.first %}active{% endif %}" data-course-id="{{ curso.id }}">
+          <div class="class-viewer">
+            {% if curso.clases.all %}
+              {% for clase in curso.clases.all %}
+                <div class="class-content {% if forloop.first %}active{% endif %}" data-class-id="{{ clase.id }}">
+                  <div class="max-w-5xl mx-auto">
+                    <div class="flex items-end justify-between mb-8">
+                      <div>
+                        <span class="text-red-600 font-bold text-[11px] uppercase tracking-[0.3em]">Sesión {{ forloop.counter|stringformat:"02d" }}</span>
+                        <h2 class="text-4xl font-bold text-white uppercase font-oswald mt-2 tracking-tight">{{ clase.nombre }}</h2>
+                      </div>
+                      <div class="flex gap-4">
+                        <button type="button" onclick="openAttendanceModal('{{ clase.id }}')" class="btn-red bg-zinc-100 !text-black hover:bg-white flex items-center gap-2">
+                          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path></svg>
+                          Asistencia
+                        </button>
+                        <button type="button" onclick="openEditModal('{{ clase.id }}')" class="bg-red-600 p-3 rounded-xl hover:bg-red-700 transition shadow-lg shadow-red-600/20 text-white">
+                          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+                        </button>
+                      </div>
+                    </div>
 
-    <div class="card">
-      <h2>Publicaciones de Clase</h2>
-      <p>Comparte rutinas, videos y material educativo con tus alumnos.</p>
-      <div class="row">
-        <a class="btn" href="/trainer/clases/">Ir a clases</a>
-      </div>
+                    <div class="video-container group shadow-2xl">
+                      <div class="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent"></div>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-10 mt-12">
+                      <div class="lg:col-span-2 space-y-12">
+                        <div>
+                          <h4 class="text-[10px] font-bold text-zinc-600 uppercase tracking-widest mb-4">Información de la Sesión</h4>
+                          <p class="text-zinc-400 text-sm leading-relaxed">{{ clase.descripcion|default:"Sin descripción de clase." }}</p>
+                        </div>
+
+                        <div>
+                          <h4 class="text-[10px] font-bold text-zinc-600 uppercase tracking-widest mb-4">Recursos del Instructor</h4>
+                          <div class="space-y-4">
+                            {% for pub in clase.publicaciones.all %}
+                              <div class="p-6 bg-zinc-900/50 border border-zinc-800 rounded-2xl space-y-4" data-publication-id="{{ pub.id }}">
+                                <div class="flex justify-between items-start gap-4">
+                                  <div>
+                                    <p class="text-xs text-zinc-500 uppercase tracking-widest">Publicación</p>
+                                    <h5 class="text-lg font-bold text-white">{{ pub.titulo }}</h5>
+                                    <p class="text-sm text-zinc-400 mt-2">{{ pub.contenido }}</p>
+                                  </div>
+                                  <div class="flex gap-2">
+                                    <button type="button" class="btn-red bg-zinc-800" onclick="openEditPublicationModal(this)"
+                                      data-id="{{ pub.id }}"
+                                      data-title="{{ pub.titulo }}"
+                                      data-content="{{ pub.contenido }}"
+                                      data-video="{{ pub.video_url|default:'' }}"
+                                    >
+                                      Editar
+                                    </button>
+                                    <form method="post">
+                                      {% csrf_token %}
+                                      <input type="hidden" name="action" value="delete_publication">
+                                      <input type="hidden" name="publication_id" value="{{ pub.id }}">
+                                      <button type="submit" class="btn-red">Eliminar</button>
+                                    </form>
+                                  </div>
+                                </div>
+
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                  {% if pub.imagen %}
+                                    <a href="{{ pub.imagen.url }}" target="_blank" download class="p-4 bg-zinc-900 border border-zinc-800 rounded-xl flex items-center justify-between">
+                                      <div>
+                                        <p class="text-xs uppercase tracking-widest text-zinc-500">Imagen</p>
+                                        <p class="text-sm text-white">{{ pub.imagen.name|filename }}</p>
+                                      </div>
+                                      <span class="text-[10px] text-zinc-400">{{ pub.imagen.name|fileext }}</span>
+                                    </a>
+                                  {% endif %}
+                                  {% if pub.video_archivo %}
+                                    <a href="{{ pub.video_archivo.url }}" target="_blank" download class="p-4 bg-zinc-900 border border-zinc-800 rounded-xl flex items-center justify-between">
+                                      <div>
+                                        <p class="text-xs uppercase tracking-widest text-zinc-500">Video</p>
+                                        <p class="text-sm text-white">{{ pub.video_archivo.name|filename }}</p>
+                                      </div>
+                                      <span class="text-[10px] text-zinc-400">{{ pub.video_archivo.name|fileext }}</span>
+                                    </a>
+                                  {% endif %}
+                                  {% if pub.video_url %}
+                                    <a href="{{ pub.video_url }}" target="_blank" class="p-4 bg-zinc-900 border border-zinc-800 rounded-xl flex items-center justify-between">
+                                      <div>
+                                        <p class="text-xs uppercase tracking-widest text-zinc-500">Video URL</p>
+                                        <p class="text-sm text-white">Ver enlace</p>
+                                      </div>
+                                      <span class="text-[10px] text-zinc-400">URL</span>
+                                    </a>
+                                  {% endif %}
+                                  {% if pub.archivo_1 %}
+                                    <a href="{{ pub.archivo_1.url }}" target="_blank" download class="p-4 bg-zinc-900 border border-zinc-800 rounded-xl flex items-center justify-between">
+                                      <div>
+                                        <p class="text-xs uppercase tracking-widest text-zinc-500">Archivo</p>
+                                        <p class="text-sm text-white">{{ pub.archivo_1.name|filename }}</p>
+                                      </div>
+                                      <span class="text-[10px] text-zinc-400">{{ pub.archivo_1.name|fileext }}</span>
+                                    </a>
+                                  {% endif %}
+                                  {% if pub.archivo_2 %}
+                                    <a href="{{ pub.archivo_2.url }}" target="_blank" download class="p-4 bg-zinc-900 border border-zinc-800 rounded-xl flex items-center justify-between">
+                                      <div>
+                                        <p class="text-xs uppercase tracking-widest text-zinc-500">Archivo</p>
+                                        <p class="text-sm text-white">{{ pub.archivo_2.name|filename }}</p>
+                                      </div>
+                                      <span class="text-[10px] text-zinc-400">{{ pub.archivo_2.name|fileext }}</span>
+                                    </a>
+                                  {% endif %}
+                                  {% if pub.archivo_3 %}
+                                    <a href="{{ pub.archivo_3.url }}" target="_blank" download class="p-4 bg-zinc-900 border border-zinc-800 rounded-xl flex items-center justify-between">
+                                      <div>
+                                        <p class="text-xs uppercase tracking-widest text-zinc-500">Archivo</p>
+                                        <p class="text-sm text-white">{{ pub.archivo_3.name|filename }}</p>
+                                      </div>
+                                      <span class="text-[10px] text-zinc-400">{{ pub.archivo_3.name|fileext }}</span>
+                                    </a>
+                                  {% endif %}
+                                </div>
+                              </div>
+                            {% empty %}
+                              <div class="p-5 bg-zinc-900/50 border border-zinc-800 rounded-2xl text-[10px] text-zinc-500 uppercase tracking-widest">
+                                Sin recursos aún
+                              </div>
+                            {% endfor %}
+                            <button type="button" onclick="openPublicationModal('{{ clase.id }}')" class="btn-red w-full text-center">+ Nueva publicación</button>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="space-y-6">
+                        <h4 class="text-[10px] font-bold text-zinc-600 uppercase tracking-widest">Feedback de Alumnos</h4>
+                        <div class="bg-zinc-900/30 rounded-2xl border border-zinc-800 p-6">
+                          <div class="space-y-6 mb-6">
+                            {% for pub in clase.publicaciones.all %}
+                              {% for comentario in pub.comentarios.all %}
+                                <div class="border-l-2 border-red-600/30 pl-4 py-1">
+                                  <div class="flex justify-between items-center mb-1">
+                                    <span class="text-[10px] font-bold text-white uppercase">{{ comentario.autor.nombre }}</span>
+                                    <span class="text-[8px] text-zinc-600 uppercase">{{ comentario.fecha|date:"d M" }}</span>
+                                  </div>
+                                  <p class="text-[11px] text-zinc-400 italic">"{{ comentario.contenido }}"</p>
+                                </div>
+                              {% empty %}
+                                <p class="text-[10px] text-zinc-600 italic">No hay comentarios aún.</p>
+                              {% endfor %}
+                            {% empty %}
+                              <p class="text-[10px] text-zinc-600 italic">No hay comentarios aún.</p>
+                            {% endfor %}
+                          </div>
+                          {% if clase.first_publicacion_id %}
+                            <form method="post" class="relative">
+                              {% csrf_token %}
+                              <input type="hidden" name="action" value="add_comment">
+                              <input type="hidden" name="publication_id" value="{{ clase.first_publicacion_id }}">
+                              <textarea name="comment_content" placeholder="Escribe un anuncio o respuesta..." class="w-full bg-zinc-950 border border-zinc-800 rounded-xl p-3 text-xs text-zinc-300 focus:outline-none focus:border-red-600 h-24 resize-none"></textarea>
+                              <div class="flex justify-end mt-3">
+                                <button type="submit" class="btn-red">Enviar</button>
+                              </div>
+                            </form>
+                          {% endif %}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              {% endfor %}
+            {% else %}
+              <div class="text-zinc-500">Este curso no tiene clases aún.</div>
+            {% endif %}
+          </div>
+
+          <!-- Lista de Lecciones Lateral -->
+          <aside class="lesson-sidebar">
+            <div class="p-6 border-b border-zinc-900 bg-zinc-900/40">
+              <h4 class="font-oswald text-xl uppercase text-white mb-4 tracking-tighter">Contenido</h4>
+              <div class="flex gap-2">
+                <button type="button" onclick="openEditCurrentClass()" class="flex-grow py-2 bg-zinc-800 rounded-lg text-white text-[9px] font-bold uppercase hover:bg-zinc-700 transition text-center">Gestionar</button>
+                <button type="button" onclick="openCreateClassModal('{{ curso.id }}')" class="w-10 h-10 bg-red-600/10 text-red-600 rounded-lg flex items-center justify-center hover:bg-red-600 hover:text-white transition">+</button>
+              </div>
+            </div>
+            <div class="lessons-list">
+              {% for clase in curso.clases.all %}
+                <div
+                  class="lesson-item {% if forloop.first %}active{% endif %}"
+                  data-class-id="{{ clase.id }}"
+                  data-name="{{ clase.nombre }}"
+                  data-desc="{{ clase.descripcion|default:'' }}"
+                  data-fecha="{{ clase.fecha }}"
+                  data-hora="{{ clase.hora }}"
+                  data-cupo="{{ clase.cupo_maximo }}"
+                >
+                  <p class="text-[10px] {% if forloop.first %}text-red-500{% else %}text-zinc-600{% endif %} font-bold uppercase mb-1">Clase {{ forloop.counter|stringformat:"02d" }}</p>
+                  <h5 class="text-sm font-bold {% if forloop.first %}text-white{% else %}text-zinc-400{% endif %} uppercase leading-tight">{{ clase.nombre }}</h5>
+                  <p class="text-[9px] text-zinc-600 mt-2 flex items-center gap-2">
+                    <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168l4.2 2.8a1 1 0 010 1.664l-4.2 2.8A1 1 0 018 13.663V7.837a1 1 0 011.555-.832z"></path></svg>
+                    {{ clase.hora }} • Video
+                  </p>
+                </div>
+              {% empty %}
+                <div class="p-6 text-xs text-zinc-600">No hay clases.</div>
+              {% endfor %}
+            </div>
+          </aside>
+        </div>
+      {% endfor %}
     </div>
-  </body>
+  </main>
+
+  <!-- MODAL: ASISTENCIA -->
+  <div id="attendance-modal" class="modal-overlay" onclick="closeAttendanceModal()">
+    <div class="modal-card" onclick="event.stopPropagation()">
+      <form method="post">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="attendance">
+        <input type="hidden" name="class_id" id="attendance_class_id">
+        <div class="modal-header">
+          <div>
+            <p class="text-[10px] uppercase tracking-widest text-zinc-500">Asistencia</p>
+            <h3 class="text-lg font-bold text-white">Registro de clase</h3>
+          </div>
+          <button type="button" class="text-zinc-400 hover:text-white" onclick="closeAttendanceModal()">✕</button>
+        </div>
+        <div class="modal-body">
+          {% for curso in cursos %}
+            {% for clase in curso.clases.all %}
+              <div class="attendance-table" data-class-id="{{ clase.id }}">
+                <div class="attendance-toolbar">
+                  <input type="text" class="attendance-search" placeholder="Filtrar por nombre o email" oninput="filterAttendance(this)">
+                  <div class="attendance-stats">
+                    <span>Inscritos<strong>{{ clase.total_inscritos }}</strong></span>
+                    <span>Presentes<strong>{{ clase.presentes }}</strong></span>
+                    <span>Ausentes<strong>{{ clase.ausentes }}</strong></span>
+                  </div>
+                </div>
+                <table class="w-full text-left text-xs">
+                  <thead class="text-[10px] uppercase text-zinc-500">
+                    <tr>
+                      <th class="py-2">Alumno</th>
+                      <th class="py-2">Email</th>
+                      <th class="py-2">Membresía</th>
+                      <th class="py-2 text-center">Estado</th>
+                    </tr>
+                  </thead>
+                  <tbody class="divide-y divide-zinc-800">
+                    {% for asistencia in clase.asistencia_set.all %}
+                      <tr data-name="{{ asistencia.miembro.nombre|lower }}" data-email="{{ asistencia.miembro.email|lower }}">
+                        <td class="py-2 text-white">{{ asistencia.miembro.nombre }}</td>
+                        <td class="py-2 text-zinc-500">{{ asistencia.miembro.email }}</td>
+                        <td class="py-2">
+                          <span class="text-[10px] uppercase tracking-widest text-zinc-400">
+                            {{ asistencia.miembro.plan.nombre|default:"Sin plan" }}
+                          </span>
+                        </td>
+                        <td class="py-2 text-center">
+                          <label class="switch">
+                            <input type="checkbox" name="present_{{ asistencia.id }}" {% if asistencia.asistio %}checked{% endif %}>
+                            <span class="slider"></span>
+                          </label>
+                        </td>
+                      </tr>
+                    {% empty %}
+                      <tr>
+                        <td colspan="4" class="py-4 text-zinc-500">Sin inscritos.</td>
+                      </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+            {% endfor %}
+          {% endfor %}
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn-red bg-zinc-800" onclick="closeAttendanceModal()">Cancelar</button>
+          <button type="submit" class="btn-red">Guardar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: EDITAR CLASE -->
+  <div id="edit-class-modal" class="modal-overlay" onclick="closeEditModal()">
+    <div class="modal-card" onclick="event.stopPropagation()">
+      <form method="post">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="edit_class">
+        <input type="hidden" name="class_id" id="edit_class_id">
+        <div class="modal-header">
+          <h3 class="text-lg font-bold text-white">Editar clase</h3>
+          <button type="button" class="text-zinc-400 hover:text-white" onclick="closeEditModal()">✕</button>
+        </div>
+        <div class="modal-body grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+          <label class="flex flex-col gap-2">
+            Nombre
+            <input id="edit_nombre" name="nombre" class="bg-zinc-900 border border-zinc-800 rounded-lg p-2 text-white">
+          </label>
+          <label class="flex flex-col gap-2">
+            Fecha
+            <input id="edit_fecha" name="fecha" type="date" class="bg-zinc-900 border border-zinc-800 rounded-lg p-2 text-white">
+          </label>
+          <label class="flex flex-col gap-2">
+            Hora
+            <input id="edit_hora" name="hora" type="time" class="bg-zinc-900 border border-zinc-800 rounded-lg p-2 text-white">
+          </label>
+          <label class="flex flex-col gap-2">
+            Cupo máximo
+            <input id="edit_cupo" name="cupo_maximo" type="number" class="bg-zinc-900 border border-zinc-800 rounded-lg p-2 text-white">
+          </label>
+          <label class="flex flex-col gap-2 md:col-span-2">
+            Descripción
+            <textarea id="edit_descripcion" name="descripcion" class="bg-zinc-900 border border-zinc-800 rounded-lg p-2 text-white" rows="3"></textarea>
+          </label>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn-red bg-zinc-800" onclick="closeEditModal()">Cancelar</button>
+          <button type="submit" class="btn-red">Guardar cambios</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: CREAR CLASE -->
+  <div id="create-class-modal" class="modal-overlay" onclick="closeCreateClassModal()">
+    <div class="modal-card" onclick="event.stopPropagation()">
+      <form method="post">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="create_class">
+        <input type="hidden" name="curso_id" id="create_course_id">
+        <div class="modal-header">
+          <h3 class="text-lg font-bold text-white">Crear clase</h3>
+          <button type="button" class="text-zinc-400 hover:text-white" onclick="closeCreateClassModal()">✕</button>
+        </div>
+        <div class="modal-body grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+          <label class="flex flex-col gap-2">
+            Nombre
+            <input id="create_nombre" name="nombre" class="bg-zinc-900 border border-zinc-800 rounded-lg p-2 text-white">
+          </label>
+          <label class="flex flex-col gap-2">
+            Fecha
+            <input id="create_fecha" name="fecha" type="date" class="bg-zinc-900 border border-zinc-800 rounded-lg p-2 text-white">
+          </label>
+          <label class="flex flex-col gap-2">
+            Hora
+            <input id="create_hora" name="hora" type="time" class="bg-zinc-900 border border-zinc-800 rounded-lg p-2 text-white">
+          </label>
+          <label class="flex flex-col gap-2">
+            Cupo máximo
+            <input id="create_cupo" name="cupo_maximo" type="number" class="bg-zinc-900 border border-zinc-800 rounded-lg p-2 text-white">
+          </label>
+          <label class="flex flex-col gap-2 md:col-span-2">
+            Descripción
+            <textarea id="create_descripcion" name="descripcion" class="bg-zinc-900 border border-zinc-800 rounded-lg p-2 text-white" rows="3"></textarea>
+          </label>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn-red bg-zinc-800" onclick="closeCreateClassModal()">Cancelar</button>
+          <button type="submit" class="btn-red">Crear clase</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: NUEVA PUBLICACIÓN -->
+  <div id="publication-modal" class="modal-overlay" onclick="closePublicationModal()">
+    <div class="modal-card" onclick="event.stopPropagation()">
+      <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <input type="hidden" name="action" id="publication_action" value="create_publication">
+        <input type="hidden" name="publication_id" id="publication_id">
+        <input type="hidden" name="class_id" id="publication_class_id">
+        <div class="modal-header">
+          <h3 class="text-lg font-bold text-white">Nueva publicación</h3>
+          <button type="button" class="text-zinc-400 hover:text-white" onclick="closePublicationModal()">✕</button>
+        </div>
+        <div class="modal-body grid grid-cols-1 gap-4 text-sm">
+          <label class="flex flex-col gap-2">
+            Título
+            <input id="pub_title" name="titulo" class="bg-zinc-900 border border-zinc-800 rounded-lg p-2 text-white">
+          </label>
+          <label class="flex flex-col gap-2">
+            Contenido
+            <textarea id="pub_content" name="contenido" class="bg-zinc-900 border border-zinc-800 rounded-lg p-2 text-white" rows="4"></textarea>
+          </label>
+          <div class="text-[10px] text-zinc-500 uppercase tracking-widest">Archivos (máximo 3)</div>
+          <label class="flex flex-col gap-2">
+            Archivo 1
+            <input type="file" name="archivo_1" class="bg-zinc-900 border border-zinc-800 rounded-lg p-2 text-white">
+          </label>
+          <label class="flex flex-col gap-2">
+            Archivo 2
+            <input type="file" name="archivo_2" class="bg-zinc-900 border border-zinc-800 rounded-lg p-2 text-white">
+          </label>
+          <label class="flex flex-col gap-2">
+            Archivo 3
+            <input type="file" name="archivo_3" class="bg-zinc-900 border border-zinc-800 rounded-lg p-2 text-white">
+          </label>
+          <label class="flex flex-col gap-2">
+            Imagen (opcional)
+            <input type="file" name="imagen" accept="image/*" class="bg-zinc-900 border border-zinc-800 rounded-lg p-2 text-white">
+          </label>
+          <label class="flex flex-col gap-2">
+            Archivo / Video (opcional)
+            <input type="file" name="video_archivo" class="bg-zinc-900 border border-zinc-800 rounded-lg p-2 text-white">
+          </label>
+          <label class="flex flex-col gap-2">
+            Video URL (opcional)
+            <input id="pub_video_url" name="video_url" class="bg-zinc-900 border border-zinc-800 rounded-lg p-2 text-white">
+          </label>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn-red bg-zinc-800" onclick="closePublicationModal()">Cancelar</button>
+          <button type="submit" class="btn-red">Publicar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="{% static 'gym/js/trainer_panel.js' %}"></script>
+</body>
 </html>

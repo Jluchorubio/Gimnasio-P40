@@ -2,11 +2,13 @@ from django import forms
 from django.core.exceptions import ValidationError
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
+from django.db.models import Count
 from django.contrib import messages
 
 from gym.models import (
     Miembro,
     Clase,
+    Curso,
     Asistencia,
     SolicitudMembresia,
     PublicacionClase,
@@ -68,7 +70,18 @@ def cliente_dashboard(request):
     if redirect_response:
         return redirect_response
 
-    return render(request, "gym/cliente.html", {"cliente": cliente})
+    cursos = (
+        Curso.objects.prefetch_related("clases")
+        .annotate(total_clases=Count("clases"))
+        .order_by("nombre")
+    )
+    mis_cursos = cursos.filter(clases__asistencia__miembro=cliente).distinct()
+
+    return render(
+        request,
+        "gym/cliente.html",
+        {"cliente": cliente, "cursos": cursos, "mis_cursos": mis_cursos},
+    )
 
 
 def cliente_membresia(request):

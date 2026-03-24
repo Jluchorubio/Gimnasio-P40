@@ -1,40 +1,126 @@
-{% extends "gym/cliente/base.html" %}
+﻿{% extends "gym/cliente/base.html" %}
+{% load static %}
 
-{% block title %}Panel Cliente{% endblock %}
+{% block title %}Mis cursos | Cliente{% endblock %}
+
+{% block extra_head %}
+  <link rel="stylesheet" href="{% static 'gym/css/cliente_moodle.css' %}" />
+{% endblock %}
 
 {% block content %}
-  <section class="page-header">
-    <div>
-      <h1 class="page-title">Panel del Cliente</h1>
-      <p class="page-subtitle">Tu acceso a cursos, clases y comunidad Fitkit.</p>
-    </div>
-  </section>
+  <div class="client-lms">
+    <section class="client-window">
+      <div class="window-header">
+        <div>
+          <h1>Mis cursos</h1>
+          <p>Vista general tipo Moodle con acceso rápido a clases, contenido y comentarios.</p>
+        </div>
+        <div class="client-badges">
+          {% if cliente.estado_membresia %}
+            <span class="client-badge ok">Membresía activa</span>
+          {% else %}
+            <span class="client-badge">Membresía requerida para inscribirte</span>
+          {% endif %}
+          <span class="client-badge">Cliente: {{ cliente.nombre }}</span>
+        </div>
+      </div>
+      <div class="window-banner"></div>
+      <h2>Mis cursos activos</h2>
+      {% if mis_cursos %}
+        <div class="course-grid window-courses">
+          {% for curso in mis_cursos %}
+            <div class="client-course-card">
+              <strong>{{ curso.nombre }}</strong>
+              <small>{{ curso.descripcion|default:"Sin descripción" }}</small>
+              <button class="btn btn-card" type="button" data-course-target="curso-{{ curso.id }}">Entrar</button>
+            </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <p class="course-meta">Aún no tienes cursos inscritos.</p>
+      {% endif %}
+    </section>
 
-  <div class="form-card">
-    {% if cliente %}
-      <p><strong>Cliente actual:</strong> {{ cliente.nombre }} ({{ cliente.email }})</p>
-    {% else %}
-      <p><a class="btn ghost" href="/cliente/seleccionar/">Seleccionar cliente</a></p>
-    {% endif %}
-    <p class="course-meta">
-      Aquí podrás ver cursos, inscribirte cuando tengas membresía activa y comentar en clases.
-    </p>
-  </div>
+    <div class="lms-grid course-shell">
+      <aside class="lms-sidebar">
+        <h3>Cursos disponibles</h3>
+        {% for curso in cursos %}
+          <button class="course-link" type="button" data-course-target="curso-{{ curso.id }}">
+            {{ curso.nombre }}
+            <span>{{ curso.total_clases }} clases</span>
+          </button>
+        {% empty %}
+          <p class="course-meta">No hay cursos aún.</p>
+        {% endfor %}
+      </aside>
 
-  <div class="form-card">
-    <h2>Clases y cursos</h2>
-    <p class="course-meta">Explora los cursos disponibles y accede a tus clases inscritas.</p>
-    <div class="class-actions">
-      <a class="btn primary" href="/cliente/clases/">Ver cursos</a>
-      <a class="btn ghost" href="/cliente/mis-clases/">Mis clases</a>
-    </div>
-  </div>
+      <section class="course-content">
+        {% for curso in cursos %}
+          <div class="course-view" data-course="curso-{{ curso.id }}">
+            <div class="course-header">
+              <div>
+                <h2>{{ curso.nombre }}</h2>
+                <p class="course-meta">{{ curso.descripcion|default:"Sin descripción del curso." }}</p>
+              </div>
+              <div class="course-actions">
+                <button class="btn-outline" type="button">Darse de baja</button>
+              </div>
+            </div>
 
-  <div class="form-card">
-    <h2>Membresía</h2>
-    <p class="course-meta">Solicita o revisa el estado de tu membresía.</p>
-    <div class="class-actions">
-      <a class="btn primary" href="/cliente/membresia/">Gestionar membresía</a>
+            {% if curso.clases.all %}
+              {% for clase in curso.clases.all %}
+                <details class="class-item">
+                  <summary>
+                    {{ clase.nombre }}
+                    <span>{{ clase.fecha }} · {{ clase.hora }}</span>
+                  </summary>
+                  <div class="class-body">
+                    <p>{{ clase.descripcion|default:"Sin descripción de clase." }}</p>
+
+                    <div class="content-block">
+                      <div class="media-placeholder"></div>
+                      <h4>Contenido de la clase</h4>
+                      <p>Video principal + materiales descargables.</p>
+                      <div class="file-list">
+                        <div class="file-item">
+                          <span>Guía.pdf</span>
+                          <span>Descargar</span>
+                        </div>
+                        <div class="file-item">
+                          <span>Resumen.docx</span>
+                          <span>Descargar</span>
+                        </div>
+                      </div>
+                      <div class="course-actions" style="margin-top:12px;">
+                        <button class="btn-light" type="button">Marcar como finalizada</button>
+                      </div>
+                    </div>
+
+                    <div class="comment-box">
+                      <h4>Comentarios</h4>
+                      <div class="comment-list">
+                        <div class="comment-item"><strong>Usuario</strong>: Excelente clase.</div>
+                        <div class="comment-item"><strong>Cliente</strong>: ¿Podrían subir el PDF?</div>
+                      </div>
+                      <textarea placeholder="Escribe tu comentario..."></textarea>
+                      <div class="course-actions" style="margin-top:10px;">
+                        <button class="btn-light" type="button">Comentar</button>
+                      </div>
+                    </div>
+                  </div>
+                </details>
+              {% endfor %}
+            {% else %}
+              <p class="course-meta">Este curso no tiene clases todavía.</p>
+            {% endif %}
+          </div>
+        {% endfor %}
+      </section>
     </div>
   </div>
 {% endblock %}
+
+{% block extra_scripts %}
+  <script src="{% static 'gym/js/cliente_moodle.js' %}"></script>
+{% endblock %}
+

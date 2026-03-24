@@ -1,10 +1,10 @@
 from django import forms
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
-from django.db.models import Count
+from django.db.models import Count, Prefetch
 from django.contrib import messages
 
-from gym.models import Miembro, Curso, Clase, Asistencia, PublicacionClase
+from gym.models import Miembro, Curso, Clase, Asistencia, PublicacionClase, Comentario
 
 
 class CursoTrainerForm(forms.ModelForm):
@@ -96,7 +96,206 @@ def trainer_select(request):
 
 
 def trainer_dashboard(request):
-    return redirect(reverse("trainer_courses_list"))
+    trainer, redirect_response = _require_trainer(request)
+    if redirect_response:
+        return redirect_response
+
+    if request.method == "POST":
+        action = request.POST.get("action")
+
+        if action == "create_class":
+            curso_id = request.POST.get("curso_id")
+            curso = Curso.objects.filter(pk=curso_id, profesor=trainer).first()
+            if not curso:
+                messages.error(request, "Curso no válido.")
+                return redirect(reverse("trainer_home_html"))
+
+            form = ClaseTrainerForm(request.POST, instructor=trainer, curso=curso)
+            if form.is_valid():
+                clase = form.save()
+                messages.success(request, "Clase creada correctamente.")
+                return redirect(
+                    reverse("trainer_home_html") + f"?curso_id={curso.id}&clase_id={clase.id}"
+                )
+            messages.error(request, "Revisa los datos de la clase.")
+            return redirect(reverse("trainer_home_html"))
+
+        if action == "edit_class":
+            class_id = request.POST.get("class_id")
+            clase = Clase.objects.filter(pk=class_id, instructor=trainer).first()
+            if not clase:
+                messages.error(request, "Clase no válida.")
+                return redirect(reverse("trainer_home_html"))
+
+            form = ClaseTrainerForm(
+                request.POST, instance=clase, instructor=trainer, curso=clase.curso
+            )
+            if form.is_valid():
+                form.save()
+                messages.success(request, "Clase actualizada correctamente.")
+            else:
+                messages.error(request, "No se pudo actualizar la clase.")
+            return redirect(
+                reverse("trainer_home_html")
+                + f"?curso_id={clase.curso_id}&clase_id={clase.id}"
+            )
+
+        if action == "attendance":
+            class_id = request.POST.get("class_id")
+            clase = Clase.objects.filter(pk=class_id, instructor=trainer).first()
+            if not clase:
+                messages.error(request, "Clase no válida.")
+                return redirect(reverse("trainer_home_html"))
+
+            asistencias = Asistencia.objects.filter(clase=clase).select_related("miembro")
+            for asistencia in asistencias:
+                checked = request.POST.get(f"present_{asistencia.id}") == "on"
+                if asistencia.asistio != checked:
+                    asistencia.asistio = checked
+                    asistencia.save(update_fields=["asistio"])
+            messages.success(request, "Asistencia guardada.")
+            return redirect(
+                reverse("trainer_home_html")
+                + f"?curso_id={clase.curso_id}&clase_id={clase.id}"
+            )
+
+        if action == "create_publication":
+            class_id = request.POST.get("class_id")
+            clase = Clase.objects.filter(pk=class_id, instructor=trainer).first()
+            if not clase:
+                messages.error(request, "Clase no válida.")
+                return redirect(reverse("trainer_home_html"))
+
+            titulo = request.POST.get("titulo", "").strip()
+            contenido = request.POST.get("contenido", "").strip()
+            video_url = request.POST.get("video_url", "").strip()
+            if not titulo or not contenido:
+                messages.error(request, "Título y contenido son obligatorios.")
+                return redirect(
+                    reverse("trainer_home_html")
+                    + f"?curso_id={clase.curso_id}&clase_id={clase.id}"
+                )
+
+            PublicacionClase.objects.create(
+                clase=clase,
+                autor=trainer,
+                titulo=titulo,
+                contenido=contenido,
+                video_url=video_url or None,
+                imagen=request.FILES.get("imagen"),
+                video_archivo=request.FILES.get("video_archivo"),
+                archivo_1=request.FILES.get("archivo_1"),
+                archivo_2=request.FILES.get("archivo_2"),
+                archivo_3=request.FILES.get("archivo_3"),
+            )
+            messages.success(request, "Publicación creada.")
+            return redirect(
+                reverse("trainer_home_html")
+                + f"?curso_id={clase.curso_id}&clase_id={clase.id}"
+            )
+
+        if action == "edit_publication":
+            publication_id = request.POST.get("publication_id")
+            publicacion = PublicacionClase.objects.filter(
+                pk=publication_id, clase__instructor=trainer
+            ).first()
+            if not publicacion:
+                messages.error(request, "Publicación no válida.")
+                return redirect(reverse("trainer_home_html"))
+
+            publicacion.titulo = request.POST.get("titulo", "").strip()
+            publicacion.contenido = request.POST.get("contenido", "").strip()
+            publicacion.video_url = request.POST.get("video_url", "").strip() or None
+
+            if request.FILES.get("imagen"):
+                publicacion.imagen = request.FILES.get("imagen")
+            if request.FILES.get("video_archivo"):
+                publicacion.video_archivo = request.FILES.get("video_archivo")
+            if request.FILES.get("archivo_1"):
+                publicacion.archivo_1 = request.FILES.get("archivo_1")
+            if request.FILES.get("archivo_2"):
+                publicacion.archivo_2 = request.FILES.get("archivo_2")
+            if request.FILES.get("archivo_3"):
+                publicacion.archivo_3 = request.FILES.get("archivo_3")
+
+            publicacion.save()
+            messages.success(request, "Publicación actualizada.")
+            return redirect(
+                reverse("trainer_home_html")
+                + f"?curso_id={publicacion.clase.curso_id}&clase_id={publicacion.clase_id}"
+            )
+
+        if action == "delete_publication":
+            publication_id = request.POST.get("publication_id")
+            publicacion = PublicacionClase.objects.filter(
+                pk=publication_id, clase__instructor=trainer
+            ).first()
+            if not publicacion:
+                messages.error(request, "Publicación no válida.")
+                return redirect(reverse("trainer_home_html"))
+
+            curso_id = publicacion.clase.curso_id
+            clase_id = publicacion.clase_id
+            publicacion.delete()
+            messages.success(request, "Publicación eliminada.")
+            return redirect(
+                reverse("trainer_home_html")
+                + f"?curso_id={curso_id}&clase_id={clase_id}"
+            )
+
+        if action == "add_comment":
+            publication_id = request.POST.get("publication_id")
+            contenido = request.POST.get("comment_content", "").strip()
+            publicacion = PublicacionClase.objects.filter(
+                pk=publication_id, clase__instructor=trainer
+            ).first()
+            if not publicacion:
+                messages.error(request, "Publicación no válida.")
+                return redirect(reverse("trainer_home_html"))
+            if not contenido:
+                messages.error(request, "El comentario no puede estar vacío.")
+                return redirect(
+                    reverse("trainer_home_html")
+                    + f"?curso_id={publicacion.clase.curso_id}&clase_id={publicacion.clase_id}"
+                )
+
+            Comentario.objects.create(
+                publicacion=publicacion, autor=trainer, contenido=contenido
+            )
+            messages.success(request, "Comentario publicado.")
+            return redirect(
+                reverse("trainer_home_html")
+                + f"?curso_id={publicacion.clase.curso_id}&clase_id={publicacion.clase_id}"
+            )
+
+    cursos = (
+        Curso.objects.filter(profesor=trainer)
+        .annotate(total_clases=Count("clases"))
+        .prefetch_related(
+            Prefetch(
+                "clases",
+                queryset=Clase.objects.filter(instructor=trainer).prefetch_related(
+                    "publicaciones", "publicaciones__comentarios__autor", "asistencia_set__miembro"
+                ),
+            )
+        )
+        .order_by("nombre")
+    )
+
+    for curso in cursos:
+        for clase in curso.clases.all():
+            first_pub = clase.publicaciones.first()
+            clase.first_publicacion_id = first_pub.id if first_pub else None
+            asistencias = list(clase.asistencia_set.all())
+            clase.total_inscritos = len(asistencias)
+            clase.presentes = sum(1 for a in asistencias if a.asistio)
+            clase.ausentes = clase.total_inscritos - clase.presentes
+
+    return render(
+        request,
+        "gym/trainer.html",
+        {"trainer": trainer, "cursos": cursos},
+    )
 
 
 def trainer_courses_list(request):
