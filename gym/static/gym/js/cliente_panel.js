@@ -227,24 +227,39 @@ function updateCommentsCount(classId, delta) {
   counter.textContent = `${next} comentarios`;
 }
 
+function getFormToken(form) {
+  if (!form) return getCookie("csrftoken");
+  return (
+    form.querySelector('input[name="csrfmiddlewaretoken"]')?.value ||
+    getCookie("csrftoken")
+  );
+}
+
 function initComments() {
-  const csrfToken = getCookie("csrftoken");
+  const fallbackToken = getCookie("csrftoken");
 
   document.querySelectorAll(".comment-form").forEach((form) => {
     form.addEventListener("submit", async (event) => {
       event.preventDefault();
+      const csrfToken = getFormToken(form) || fallbackToken;
       const formData = new FormData(form);
-      const response = await fetch(form.action || window.location.href, {
-        method: "POST",
-        headers: {
-          "X-Requested-With": "XMLHttpRequest",
-          "X-CSRFToken": csrfToken,
-        },
-        body: formData,
-      });
-      if (!response.ok) return;
-      const data = await response.json();
-      if (!data.ok) return;
+      let data;
+      try {
+        const response = await fetch(form.action || window.location.href, {
+          method: "POST",
+          headers: {
+            "X-Requested-With": "XMLHttpRequest",
+            "X-CSRFToken": csrfToken,
+          },
+          body: formData,
+        });
+        if (!response.ok) throw new Error("request_failed");
+        data = await response.json();
+        if (!data.ok) throw new Error(data.error || "request_failed");
+      } catch (err) {
+        form.submit();
+        return;
+      }
 
       const classId = data.class_id;
       const list = document.querySelector(`[data-comments-list="${classId}"]`);
@@ -312,6 +327,7 @@ function initComments() {
     const btn = event.target.closest(".comment-delete");
     if (!btn) return;
 
+    const csrfToken = getFormToken(document.querySelector(".comment-form")) || fallbackToken;
     const commentId = btn.dataset.commentId;
     const classContent = btn.closest(".class-content");
     const classId = classContent?.dataset.classId;

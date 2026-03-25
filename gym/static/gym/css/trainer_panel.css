@@ -67,7 +67,6 @@ body {
 
 .content-view {
   display: none;
-  height: 100%;
   flex-direction: column;
   flex: 1;
   min-height: 0;
@@ -639,6 +638,49 @@ body {
 
 .inline-form {
   display: inline-flex;
+}
+
+/* Calendario */
+.calendar-view {
+  overflow: hidden;
+}
+
+.calendar-panel {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+}
+
+.calendar-grid-body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+.calendar-day {
+  aspect-ratio: 1 / 1;
+  border: 1px solid var(--ego-border);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 8px;
+  font-size: 12px;
+  transition: 0.2s;
+}
+
+.calendar-day:hover {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.calendar-day.active-workout {
+  border-top: 3px solid var(--ego-red);
+  background: rgba(220, 38, 38, 0.05);
+}
+
+.calendar-day.empty {
+  border-color: transparent;
+  background: transparent;
 }
 
 .comment-card {

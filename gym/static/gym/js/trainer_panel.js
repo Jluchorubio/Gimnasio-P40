@@ -15,12 +15,123 @@ function showView(viewId) {
   }
   const title = document.getElementById("page-title");
   if (title) {
-    title.innerText = viewId === "dashboard-view" ? "Panel del Profesor" : "Gestión de Contenido";
+    const titles = {
+      "dashboard-view": "Panel del Profesor",
+      "course-view": "Gestion de Contenido",
+      "calendar-view": "Calendario",
+    };
+    title.innerText = titles[viewId] || "Panel del Profesor";
   }
 }
 
 let currentCourseId = null;
 let currentClassId = null;
+
+function initCalendar() {
+  const grid = document.getElementById("calendar-grid");
+  if (!grid) return;
+
+  const raw = document.getElementById("calendar-events")?.textContent || "[]";
+  let events = [];
+  try {
+    events = JSON.parse(raw);
+  } catch (err) {
+    events = [];
+  }
+
+  const eventsByDate = {};
+  events.forEach((event) => {
+    if (!event.date) return;
+    if (!eventsByDate[event.date]) {
+      eventsByDate[event.date] = [];
+    }
+    eventsByDate[event.date].push(event);
+  });
+
+  const monthNames = [
+    "Enero",
+    "Febrero",
+    "Marzo",
+    "Abril",
+    "Mayo",
+    "Junio",
+    "Julio",
+    "Agosto",
+    "Septiembre",
+    "Octubre",
+    "Noviembre",
+    "Diciembre",
+  ];
+
+  let currentDate = new Date();
+  let currentMonth = currentDate.getMonth();
+  let currentYear = currentDate.getFullYear();
+
+  const label = document.getElementById("calendar-month-label");
+
+  const renderCalendar = () => {
+    grid.innerHTML = "";
+    const firstDay = new Date(currentYear, currentMonth, 1);
+    const startDay = firstDay.getDay();
+    const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+
+    if (label) {
+      label.innerText = `${monthNames[currentMonth]} ${currentYear}`;
+    }
+
+    for (let i = 0; i < startDay; i += 1) {
+      const empty = document.createElement("div");
+      empty.className = "calendar-day empty";
+      grid.appendChild(empty);
+    }
+
+    for (let day = 1; day <= daysInMonth; day += 1) {
+      const dateKey = `${currentYear}-${String(currentMonth + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+      const dayEvents = eventsByDate[dateKey] || [];
+
+      const cell = document.createElement("div");
+      cell.className = `calendar-day${dayEvents.length ? " active-workout" : ""}`;
+
+      const number = document.createElement("span");
+      number.className = dayEvents.length ? "text-white font-bold" : "text-zinc-600";
+      number.innerText = day;
+      cell.appendChild(number);
+
+      if (dayEvents.length) {
+        const labelEl = document.createElement("span");
+        labelEl.className = "text-[8px] uppercase font-bold text-red-500";
+        labelEl.innerText =
+          dayEvents.length === 1
+            ? dayEvents[0].label
+            : `${dayEvents.length} clases`;
+        cell.appendChild(labelEl);
+      }
+
+      grid.appendChild(cell);
+    }
+  };
+
+  document.getElementById("calendar-prev")?.addEventListener("click", () => {
+    currentMonth -= 1;
+    if (currentMonth < 0) {
+      currentMonth = 11;
+      currentYear -= 1;
+    }
+    renderCalendar();
+  });
+
+  document.getElementById("calendar-next")?.addEventListener("click", () => {
+    currentMonth += 1;
+    if (currentMonth > 11) {
+      currentMonth = 0;
+      currentYear += 1;
+    }
+    renderCalendar();
+  });
+
+  renderCalendar();
+}
+
 
 function openCourse(courseId, courseName) {
   currentCourseId = String(courseId);
@@ -127,6 +238,28 @@ function getPublicationForm(scopeEl) {
   return classContent.querySelector(".publication-form");
 }
 
+function syncVideoFields(form) {
+  if (!form) return;
+  const selector = form.querySelector("[data-video-source]");
+  const fileField = form.querySelector("[data-video-file]");
+  const urlField = form.querySelector("[data-video-url]");
+  if (!selector || !fileField || !urlField) return;
+
+  const mode = selector.value || "file";
+  const useUrl = mode === "url";
+  urlField.hidden = !useUrl;
+  fileField.hidden = useUrl;
+}
+
+function initPublicationVideoSelectors() {
+  document.querySelectorAll(".publication-form").forEach((form) => {
+    const selector = form.querySelector("[data-video-source]");
+    if (!selector) return;
+    selector.addEventListener("change", () => syncVideoFields(form));
+    syncVideoFields(form);
+  });
+}
+
 function setPublicationFormState(form, data) {
   if (!form) return;
   const actionInput = form.querySelector(".publication-action");
@@ -134,18 +267,22 @@ function setPublicationFormState(form, data) {
   const titleInput = form.querySelector('input[name="titulo"]');
   const contentInput = form.querySelector('textarea[name="contenido"]');
   const videoInput = form.querySelector('input[name="video_url"]');
+  const selector = form.querySelector("[data-video-source]");
 
   if (actionInput) actionInput.value = data.action || "create_publication";
   if (idInput) idInput.value = data.id || "";
   if (titleInput) titleInput.value = data.title || "";
   if (contentInput) contentInput.value = data.content || "";
   if (videoInput) videoInput.value = data.video || "";
+  if (selector && data.video) selector.value = "url";
 
   if (data.clearFiles) {
     form.querySelectorAll('input[type="file"]').forEach((input) => {
       input.value = "";
     });
   }
+
+  syncVideoFields(form);
 
   const card = form.closest("[data-form-card]");
   const titleEl = card?.querySelector("[data-form-title]");
@@ -205,6 +342,8 @@ document.addEventListener("DOMContentLoaded", () => {
   document.querySelectorAll(".lesson-item").forEach((item) => {
     item.addEventListener("click", () => activateLesson(item));
   });
+  initPublicationVideoSelectors();
+  initCalendar();
 });
 
 document.addEventListener("DOMContentLoaded", () => {

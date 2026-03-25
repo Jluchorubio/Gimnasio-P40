@@ -49,6 +49,11 @@
           {% endfor %}
         </div>
       </div>
+
+      <div class="flex items-center gap-3 px-6 py-3 cursor-pointer hover:bg-zinc-900 text-zinc-400 hover:text-white transition mt-2" onclick="showView('calendar-view')">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+        <span class="hide-collapsed text-sm">Calendario</span>
+      </div>
     </nav>
 
     <div class="p-6 border-t border-zinc-900 flex items-center gap-3">
@@ -76,6 +81,7 @@
         <nav class="hidden lg:flex space-x-8">
           <a href="#" class="nav-link text-xl tracking-wide hover:text-red-500 transition" onclick="showView('dashboard-view')">Inicio</a>
           <a href="#" class="nav-link text-xl tracking-wide hover:text-red-500 transition" onclick="showView('dashboard-view')">Cursos</a>
+          <a href="#" class="nav-link text-xl tracking-wide hover:text-red-500 transition" onclick="showView('calendar-view')">Calendario</a>
         </nav>
 
         <div class="flex items-center space-x-6">
@@ -126,6 +132,37 @@
       </div>
     </div>
 
+
+
+    <!-- VISTA: CALENDARIO -->
+    <div id="calendar-view" class="content-view calendar-view p-10">
+      <div class="flex items-center justify-between mb-8 flex-wrap gap-4">
+        <h1 class="text-4xl font-bold text-white uppercase font-oswald tracking-tighter">Agenda de Clases</h1>
+        <div class="flex gap-2">
+          <button id="calendar-prev" class="w-10 h-10 rounded-lg bg-zinc-900 border border-zinc-800 flex items-center justify-center text-white">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="3" d="M15 19l-7-7 7-7"></path></svg>
+          </button>
+          <div id="calendar-month-label" class="px-4 h-10 rounded-lg bg-zinc-900 border border-zinc-800 flex items-center justify-center text-[10px] font-bold uppercase text-white tracking-widest">Mes</div>
+          <button id="calendar-next" class="w-10 h-10 rounded-lg bg-zinc-900 border border-zinc-800 flex items-center justify-center text-white">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="3" d="M9 5l7 7-7 7"></path></svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="calendar-panel bg-zinc-950 border border-zinc-900 rounded-2xl overflow-hidden">
+        <div class="grid grid-cols-7 border-b border-zinc-900 bg-zinc-900/50">
+          <div class="p-4 text-center text-[10px] font-bold text-zinc-500 uppercase">Dom</div>
+          <div class="p-4 text-center text-[10px] font-bold text-zinc-500 uppercase">Lun</div>
+          <div class="p-4 text-center text-[10px] font-bold text-zinc-500 uppercase">Mar</div>
+          <div class="p-4 text-center text-[10px] font-bold text-zinc-500 uppercase">Mie</div>
+          <div class="p-4 text-center text-[10px] font-bold text-zinc-500 uppercase">Jue</div>
+          <div class="p-4 text-center text-[10px] font-bold text-zinc-500 uppercase">Vie</div>
+          <div class="p-4 text-center text-[10px] font-bold text-zinc-500 uppercase">Sab</div>
+        </div>
+        <div class="calendar-grid-body grid grid-cols-7" id="calendar-grid"></div>
+      </div>
+      {{ calendar_events|json_script:"calendar-events" }}
+    </div>
     <!-- VISTA 2: GESTIÓN DE CURSO -->
     <div id="course-view" class="content-view flex-row">
       {% for curso in cursos %}
@@ -152,109 +189,229 @@
                     </div>
 
                     <div class="fitkit-publication-wrapper">
-                      {% with latest=clase.publicaciones.all|first %}
-                        <section class="content-hero">
-                          {% if latest %}
-                            {% if latest.video_archivo %}
-                              {% with ext=latest.video_archivo.name|fileext %}
-                                {% if ext == 'MP4' or ext == 'WEBM' or ext == 'OGG' %}
-                                  <video class="video-placeholder" controls src="{{ latest.video_archivo.url }}"></video>
-                                {% elif latest.imagen %}
-                                  <img src="{{ latest.imagen.url }}" alt="{{ latest.titulo }}" class="video-placeholder">
-                                {% else %}
-                                  <div class="hero-empty">Sin multimedia disponible</div>
-                                {% endif %}
-                              {% endwith %}
-                            {% elif latest.video_url %}
-                              <a href="{{ latest.video_url }}" target="_blank" class="video-placeholder flex items-center justify-center text-[10px] uppercase tracking-widest text-white bg-black/60">Ver video externo</a>
-                            {% elif latest.imagen %}
-                              <img src="{{ latest.imagen.url }}" alt="{{ latest.titulo }}" class="video-placeholder">
+                      {% with latest=clase.latest_publicacion %}
+                        {% if latest %}
+                          <div class="section-container pb-0">
+                            <p class="text-[10px] font-bold uppercase tracking-[0.3em] text-zinc-500">
+                              {{ clase.nombre }}{% if clase.curso %} - {{ clase.curso.nombre }}{% endif %}
+                            </p>
+                            <p class="text-xs text-zinc-500 mt-2">Contenido principal de la clase.</p>
+                            <h1 class="text-4xl font-bold text-white uppercase font-oswald mt-4 tracking-tight italic">
+                              {{ latest.titulo }}
+                            </h1>
+                          </div>
+
+                          <section class="content-hero mt-6">
+                            {% if clase.primary_media_type == "video" %}
+                              <video class="video-placeholder" controls src="{{ clase.primary_media_url }}"></video>
+                            {% elif clase.primary_media_type == "video_url" %}
+                              <a href="{{ clase.primary_media_url }}" target="_blank" class="video-placeholder flex items-center justify-center text-[10px] uppercase tracking-widest text-white bg-black/60">Ver video externo</a>
+                            {% elif clase.primary_media_type == "image" %}
+                              <img src="{{ clase.primary_media_url }}" alt="{{ latest.titulo }}" class="video-placeholder">
                             {% else %}
                               <div class="hero-empty">Sin multimedia disponible</div>
                             {% endif %}
-                          {% else %}
-                            <div class="hero-empty">Sin multimedia disponible</div>
-                          {% endif %}
-                        </section>
-                      {% endwith %}
+                          </section>
 
-                      <div class="section-container">
-                        <div class="grid grid-cols-1 lg:grid-cols-3 gap-12">
-                          <div class="lg:col-span-2 space-y-10">
-                            <div>
-                              <h4 class="text-[10px] font-bold text-zinc-500 uppercase tracking-[0.3em] mb-4">Informacion de la sesion</h4>
-                              <p class="text-zinc-400 text-sm leading-relaxed">{{ clase.descripcion|default:"Sin descripcion de clase." }}</p>
-                            </div>
+                          <div class="section-container">
+                            <div class="grid grid-cols-1 lg:grid-cols-3 gap-12">
+                              <div class="lg:col-span-2 space-y-10">
+                                <div>
+                                  <h4 class="text-[10px] font-bold text-zinc-500 uppercase tracking-[0.3em] mb-4">Descripcion de la clase</h4>
+                                  <p class="text-zinc-400 text-sm leading-relaxed">{{ latest.contenido }}</p>
+                                </div>
 
-                            <div>
-                              <h4 class="text-[10px] font-bold text-zinc-500 uppercase tracking-[0.3em] mb-4">Publicaciones de la clase</h4>
-                              <div class="fitkit-post-list">
-                                {% for pub in clase.publicaciones.all %}
-                                  {% include "gym/components/publicacion_card.html" with publicacion=pub show_actions=True %}
-                                {% empty %}
-                                  <div class="media-empty">Aun no hay publicaciones en esta clase.</div>
-                                {% endfor %}
+                                {% if clase.media_images %}
+                                  <div>
+                                    <h4 class="text-[10px] font-bold text-zinc-500 uppercase tracking-[0.3em] mb-4">Material visual de apoyo</h4>
+                                    <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+                                      {% for img in clase.media_images|slice:":3" %}
+                                        <a href="{{ img.url }}" target="_blank" class="media-thumb">
+                                          <img src="{{ img.url }}" alt="{{ img.label }}">
+                                          <span class="media-tag">IMG</span>
+                                        </a>
+                                      {% endfor %}
+                                    </div>
+                                  </div>
+                                {% endif %}
+
+                                <div>
+                                  <h4 class="text-[10px] font-bold text-zinc-500 uppercase tracking-[0.3em] mb-4">Publicaciones de la clase</h4>
+                                  <div class="fitkit-post-list">
+                                    {% for pub in clase.publicaciones.all %}
+                                      {% include "gym/components/publicacion_card.html" with publicacion=pub show_actions=True %}
+                                    {% empty %}
+                                      <div class="media-empty">Aun no hay publicaciones en esta clase.</div>
+                                    {% endfor %}
+                                  </div>
+                                </div>
+                              </div>
+
+                              <div class="space-y-6">
+                                <div class="card-ego">
+                                  <h4 class="text-xs font-bold text-zinc-500 uppercase tracking-widest mb-6">Recursos del clan</h4>
+                                  {% if clase.media_files %}
+                                    <div class="space-y-4">
+                                      {% for file in clase.media_files|slice:":3" %}
+                                        <a href="{{ file.url }}" target="_blank" download class="media-file">
+                                          <span class="file-ext">{{ file.ext }}</span>
+                                          <span class="file-name">{{ file.name }}</span>
+                                        </a>
+                                      {% endfor %}
+                                    </div>
+                                  {% else %}
+                                    <p class="text-[10px] text-zinc-600 uppercase tracking-widest">Sin archivos de apoyo</p>
+                                  {% endif %}
+                                </div>
+
+                                <div class="card-ego fitkit-form-card" data-form-card>
+                                  <div class="fitkit-form-header">
+                                    <p class="fitkit-post-eyebrow">Publicacion</p>
+                                    <h4 class="fitkit-form-title" data-form-title>Crear nueva publicacion</h4>
+                                    <p class="fitkit-form-note">Carga archivos y edita desde aqui mismo.</p>
+                                  </div>
+                                  <form method="post" enctype="multipart/form-data" class="publication-form" data-class-id="{{ clase.id }}">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="action" value="create_publication" class="publication-action">
+                                    <input type="hidden" name="publication_id" class="publication-id">
+                                    <input type="hidden" name="class_id" value="{{ clase.id }}">
+                                    <label class="fitkit-form-field">
+                                      <span>Titulo</span>
+                                      <input name="titulo" class="input-ego" required>
+                                    </label>
+                                    <label class="fitkit-form-field">
+                                      <span>Contenido</span>
+                                      <textarea name="contenido" rows="4" class="input-ego" required></textarea>
+                                    </label>
+                                    <label class="fitkit-form-field">
+                                      <span>Video principal</span>
+                                      <select class="input-ego" data-video-source>
+                                        <option value="file">Archivo</option>
+                                        <option value="url">URL</option>
+                                      </select>
+                                    </label>
+                                    <label class="fitkit-form-field" data-video-file>
+                                      <span>Archivo / Video</span>
+                                      <input type="file" name="video_archivo" class="input-ego">
+                                    </label>
+                                    <label class="fitkit-form-field" data-video-url hidden>
+                                      <span>Video URL</span>
+                                      <input name="video_url" class="input-ego">
+                                    </label>
+                                    <label class="fitkit-form-field">
+                                      <span>Imagen (opcional)</span>
+                                      <input type="file" name="imagen" accept="image/*" class="input-ego">
+                                    </label>
+                                    <div class="fitkit-form-field">
+                                      <span>Archivos (maximo 3)</span>
+                                    </div>
+                                    <label class="fitkit-form-field">
+                                      <span>Archivo 1</span>
+                                      <input type="file" name="archivo_1" class="input-ego">
+                                    </label>
+                                    <label class="fitkit-form-field">
+                                      <span>Archivo 2</span>
+                                      <input type="file" name="archivo_2" class="input-ego">
+                                    </label>
+                                    <label class="fitkit-form-field">
+                                      <span>Archivo 3</span>
+                                      <input type="file" name="archivo_3" class="input-ego">
+                                    </label>
+                                    <div class="fitkit-form-actions">
+                                      <button type="submit" class="btn-post">Publicar</button>
+                                      <button type="button" class="btn-post btn-post-ghost" onclick="resetPublicationForm(this)">Cancelar edicion</button>
+                                    </div>
+                                  </form>
+                                </div>
                               </div>
                             </div>
                           </div>
+                        {% else %}
+                          <form method="post" enctype="multipart/form-data" class="publication-form" data-class-id="{{ clase.id }}">
+                            {% csrf_token %}
+                            <input type="hidden" name="action" value="create_publication" class="publication-action">
+                            <input type="hidden" name="publication_id" class="publication-id">
+                            <input type="hidden" name="class_id" value="{{ clase.id }}">
 
-                          <div class="space-y-6">
-                            <div class="card-ego fitkit-form-card" data-form-card>
-                              <div class="fitkit-form-header">
-                                <p class="fitkit-post-eyebrow">Publicacion</p>
-                                <h4 class="fitkit-form-title" data-form-title>Crear nueva publicacion</h4>
-                                <p class="fitkit-form-note">Carga archivos y edita desde aqui mismo.</p>
+                            <div class="section-container pb-0">
+                              <p class="text-[10px] font-bold uppercase tracking-[0.3em] text-zinc-500">
+                                {{ clase.nombre }}{% if clase.curso %} - {{ clase.curso.nombre }}{% endif %}
+                              </p>
+                              <p class="text-xs text-zinc-500 mt-2">Contenido principal de la clase.</p>
+                              <label class="fitkit-form-field mt-4">
+                                <span>Titulo de la publicacion</span>
+                                <input name="titulo" class="input-ego text-3xl font-oswald uppercase tracking-tight italic" required>
+                              </label>
+                            </div>
+
+                            <section class="content-hero mt-6">
+                              <div class="hero-empty">Selecciona el video principal</div>
+                            </section>
+
+                            <div class="section-container">
+                              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <label class="fitkit-form-field">
+                                  <span>Tipo de video</span>
+                                  <select class="input-ego" data-video-source>
+                                    <option value="file">Archivo</option>
+                                    <option value="url">URL</option>
+                                  </select>
+                                </label>
                               </div>
-                              <form method="post" enctype="multipart/form-data" class="publication-form" data-class-id="{{ clase.id }}">
-                                {% csrf_token %}
-                                <input type="hidden" name="action" value="create_publication" class="publication-action">
-                                <input type="hidden" name="publication_id" class="publication-id">
-                                <input type="hidden" name="class_id" value="{{ clase.id }}">
-                                <label class="fitkit-form-field">
-                                  <span>Titulo</span>
-                                  <input name="titulo" class="input-ego" required>
-                                </label>
-                                <label class="fitkit-form-field">
-                                  <span>Contenido</span>
-                                  <textarea name="contenido" rows="4" class="input-ego" required></textarea>
-                                </label>
-                                <div class="fitkit-form-field">
-                                  <span>Archivos (maximo 3)</span>
-                                </div>
-                                <label class="fitkit-form-field">
-                                  <span>Archivo 1</span>
-                                  <input type="file" name="archivo_1" class="input-ego">
-                                </label>
-                                <label class="fitkit-form-field">
-                                  <span>Archivo 2</span>
-                                  <input type="file" name="archivo_2" class="input-ego">
-                                </label>
-                                <label class="fitkit-form-field">
-                                  <span>Archivo 3</span>
-                                  <input type="file" name="archivo_3" class="input-ego">
-                                </label>
-                                <label class="fitkit-form-field">
-                                  <span>Imagen (opcional)</span>
-                                  <input type="file" name="imagen" accept="image/*" class="input-ego">
-                                </label>
-                                <label class="fitkit-form-field">
-                                  <span>Archivo / Video (opcional)</span>
+                              <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                                <label class="fitkit-form-field" data-video-file>
+                                  <span>Archivo / Video</span>
                                   <input type="file" name="video_archivo" class="input-ego">
                                 </label>
-                                <label class="fitkit-form-field">
-                                  <span>Video URL (opcional)</span>
+                                <label class="fitkit-form-field" data-video-url hidden>
+                                  <span>Video URL</span>
                                   <input name="video_url" class="input-ego">
                                 </label>
-                                <div class="fitkit-form-actions">
-                                  <button type="submit" class="btn-post">Publicar</button>
-                                  <button type="button" class="btn-post btn-post-ghost" onclick="resetPublicationForm(this)">Cancelar edicion</button>
-                                </div>
-                              </form>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
+                              </div>
 
+                              <div class="grid grid-cols-1 lg:grid-cols-3 gap-12 mt-10">
+                                <div class="lg:col-span-2 space-y-10">
+                                  <label class="fitkit-form-field">
+                                    <span>Descripcion</span>
+                                    <textarea name="contenido" rows="5" class="input-ego" required></textarea>
+                                  </label>
+
+                                  <div>
+                                    <h4 class="text-[10px] font-bold text-zinc-500 uppercase tracking-[0.3em] mb-4">Material visual de apoyo</h4>
+                                    <label class="fitkit-form-field">
+                                      <span>Imagen principal</span>
+                                      <input type="file" name="imagen" accept="image/*" class="input-ego">
+                                    </label>
+                                    <p class="text-[10px] text-zinc-600 uppercase tracking-widest mt-3">Puedes subir mas imagenes usando los archivos de apoyo.</p>
+                                  </div>
+                                </div>
+
+                                <div class="space-y-6">
+                                  <div class="card-ego">
+                                    <h4 class="text-xs font-bold text-zinc-500 uppercase tracking-widest mb-6">Recursos del clan (max 3)</h4>
+                                    <label class="fitkit-form-field">
+                                      <span>Archivo 1</span>
+                                      <input type="file" name="archivo_1" class="input-ego">
+                                    </label>
+                                    <label class="fitkit-form-field">
+                                      <span>Archivo 2</span>
+                                      <input type="file" name="archivo_2" class="input-ego">
+                                    </label>
+                                    <label class="fitkit-form-field">
+                                      <span>Archivo 3</span>
+                                      <input type="file" name="archivo_3" class="input-ego">
+                                    </label>
+                                  </div>
+                                </div>
+                              </div>
+
+                              <div class="fitkit-form-actions">
+                                <button type="submit" class="btn-post">Publicar</button>
+                              </div>
+                            </div>
+                          </form>
+                        {% endif %}
+                      {% endwith %}
                       <section class="section-container border-t border-zinc-900 mt-12">
                         <div class="flex items-center gap-4 mb-10">
                           <h3 class="text-3xl font-bold font-oswald uppercase tracking-tight italic">Debate del clan</h3>
@@ -287,8 +444,18 @@
                                     <div class="flex items-center justify-between mb-2">
                                       <h5 class="text-sm font-bold uppercase tracking-widest text-white">
                                         {{ comentario.autor.nombre }}
-                                        <span class="ml-2 text-[9px] text-zinc-600 font-normal italic">{{ comentario.fecha|date:"d M" }}</span>
                                       </h5>
+                                      <div class="flex items-center gap-3">
+                                        <span class="text-[9px] text-zinc-600 uppercase font-bold tracking-widest">{{ comentario.fecha|date:"d M" }}</span>
+                                        {% if comentario.autor_id == trainer.id %}
+                                          <form method="post">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="action" value="delete_comment">
+                                            <input type="hidden" name="comment_id" value="{{ comentario.id }}">
+                                            <button type="submit" class="text-[9px] font-bold text-zinc-600 uppercase hover:text-red-500 transition">Eliminar</button>
+                                          </form>
+                                        {% endif %}
+                                      </div>
                                     </div>
                                     <p class="text-zinc-400 text-sm leading-relaxed">"{{ comentario.contenido }}"</p>
                                   </div>
@@ -327,8 +494,8 @@
                   data-class-id="{{ clase.id }}"
                   data-name="{{ clase.nombre }}"
                   data-desc="{{ clase.descripcion|default:'' }}"
-                  data-fecha="{{ clase.fecha }}"
-                  data-hora="{{ clase.hora }}"
+                  data-fecha="{{ clase.fecha|date:'Y-m-d' }}"
+                  data-hora="{{ clase.hora|time:'H:i' }}"
                   data-cupo="{{ clase.cupo_maximo }}"
                 >
                   <p class="text-[10px] {% if forloop.first %}text-red-500{% else %}text-zinc-600{% endif %} font-bold uppercase mb-1">Clase {{ forloop.counter|stringformat:"02d" }}</p>

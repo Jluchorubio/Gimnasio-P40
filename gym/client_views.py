@@ -314,10 +314,17 @@ def cliente_dashboard(request):
 
     calendar_events = []
     for clase in clases_inscritas:
+        hora_label = clase.hora.strftime("%H:%M") if clase.hora else ""
+        base_label = (
+            f"{clase.curso.nombre} - {clase.nombre}"
+            if clase.curso
+            else clase.nombre
+        )
+        label = f"{hora_label} · {base_label}" if hora_label else base_label
         calendar_events.append(
             {
                 "date": clase.fecha.isoformat(),
-                "label": clase.curso.nombre if clase.curso else clase.nombre,
+                "label": label,
             }
         )
 

@@ -1,3 +1,4 @@
+import os
 from django import forms
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
@@ -268,6 +269,26 @@ def trainer_dashboard(request):
                 + f"?curso_id={publicacion.clase.curso_id}&clase_id={publicacion.clase_id}"
             )
 
+        if action == "delete_comment":
+            comment_id = request.POST.get("comment_id")
+            comentario = Comentario.objects.filter(
+                pk=comment_id,
+                autor=trainer,
+                publicacion__clase__instructor=trainer,
+            ).first()
+            if not comentario:
+                messages.error(request, "Comentario no vÃ¡lido.")
+                return redirect(reverse("trainer_home_html"))
+
+            clase_id = comentario.publicacion.clase_id
+            curso_id = comentario.publicacion.clase.curso_id
+            comentario.delete()
+            messages.success(request, "Comentario eliminado.")
+            return redirect(
+                reverse("trainer_home_html")
+                + f"?curso_id={curso_id}&clase_id={clase_id}"
+            )
+
     cursos = (
         Curso.objects.filter(profesor=trainer)
         .annotate(total_clases=Count("clases"))
@@ -288,10 +309,102 @@ def trainer_dashboard(request):
         .order_by("nombre")
     )
 
+    def _file_ext(name):
+        return os.path.splitext(name)[1].replace(".", "").upper()
+
+    image_exts = {"JPG", "JPEG", "PNG", "WEBP", "GIF"}
+    video_exts = {"MP4", "WEBM", "OGG"}
+    calendar_events = []
+
     for curso in cursos:
         for clase in curso.clases.all():
-            first_pub = clase.publicaciones.first()
-            clase.first_publicacion_id = first_pub.id if first_pub else None
+            publicaciones = list(clase.publicaciones.all())
+            clase.latest_publicacion = publicaciones[0] if publicaciones else None
+            clase.first_publicacion_id = (
+                clase.latest_publicacion.id if clase.latest_publicacion else None
+            )
+            clase.total_comentarios = sum(
+                len(pub.comentarios.all()) for pub in publicaciones
+            )
+
+            primary_video = None
+            primary_video_url = None
+            primary_image = None
+            images = []
+            files = []
+
+            for pub in publicaciones:
+                if pub.video_archivo and not primary_video:
+                    ext = _file_ext(pub.video_archivo.name)
+                    if ext in video_exts:
+                        primary_video = pub.video_archivo
+                if pub.video_url and not primary_video and not primary_video_url:
+                    primary_video_url = pub.video_url
+                if pub.imagen and not primary_image:
+                    primary_image = pub.imagen
+
+                if pub.imagen:
+                    images.append({"url": pub.imagen.url, "label": pub.titulo or "Imagen"})
+
+                for attachment in (pub.archivo_1, pub.archivo_2, pub.archivo_3):
+                    if not attachment:
+                        continue
+                    ext = _file_ext(attachment.name)
+                    if ext in image_exts:
+                        images.append(
+                            {
+                                "url": attachment.url,
+                                "label": os.path.basename(attachment.name),
+                            }
+                        )
+                    else:
+                        files.append(
+                            {
+                                "url": attachment.url,
+                                "name": os.path.basename(attachment.name),
+                                "ext": ext or "FILE",
+                            }
+                        )
+
+                if pub.video_archivo:
+                    ext = _file_ext(pub.video_archivo.name)
+                    if ext and ext not in video_exts:
+                        files.append(
+                            {
+                                "url": pub.video_archivo.url,
+                                "name": os.path.basename(pub.video_archivo.name),
+                                "ext": ext,
+                            }
+                        )
+
+            if primary_video:
+                clase.primary_media_type = "video"
+                clase.primary_media_url = primary_video.url
+            elif primary_video_url:
+                clase.primary_media_type = "video_url"
+                clase.primary_media_url = primary_video_url
+            elif primary_image:
+                clase.primary_media_type = "image"
+                clase.primary_media_url = primary_image.url
+            else:
+                clase.primary_media_type = None
+                clase.primary_media_url = None
+
+            clase.media_images = images
+            clase.media_files = files
+
+            if clase.fecha:
+                hora_label = clase.hora.strftime("%H:%M") if clase.hora else ""
+                base_label = (
+                    f"{curso.nombre} - {clase.nombre}"
+                    if curso
+                    else clase.nombre
+                )
+                label = f"{hora_label} · {base_label}" if hora_label else base_label
+                calendar_events.append(
+                    {"date": clase.fecha.isoformat(), "label": label}
+                )
+
             asistencias = list(clase.asistencia_set.all())
             clase.total_inscritos = len(asistencias)
             clase.presentes = sum(1 for a in asistencias if a.asistio)
@@ -300,7 +413,7 @@ def trainer_dashboard(request):
     return render(
         request,
         "gym/trainer.html",
-        {"trainer": trainer, "cursos": cursos},
+        {"trainer": trainer, "cursos": cursos, "calendar_events": calendar_events},
     )
 
 
