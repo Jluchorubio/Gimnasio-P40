@@ -30,6 +30,11 @@
               <td>
                 <div class="class-actions">
                   <a class="btn primary" href="{% url 'cliente_publicaciones_list' pk=asistencia.clase.pk %}">Ver contenido</a>
+                  <form method="post" style="margin:0;">
+                    {% csrf_token %}
+                    <input type="hidden" name="clase_id" value="{{ asistencia.clase.id }}" />
+                    <button class="btn danger" type="submit">Darme de baja</button>
+                  </form>
                 </div>
               </td>
             </tr>

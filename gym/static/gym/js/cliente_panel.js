@@ -254,22 +254,24 @@ function initComments() {
       if (empty) empty.remove();
 
       const card = document.createElement("div");
-      card.className = "bg-zinc-900/20 p-6 rounded-2xl border border-zinc-900 flex gap-5";
+      card.className = "comment-card";
       card.dataset.commentId = data.comment.id;
 
+      const wrap = document.createElement("div");
+      wrap.className = "flex gap-6";
+
       const avatar = document.createElement("div");
-      avatar.className =
-        "w-10 h-10 rounded-full bg-zinc-800 border border-zinc-700 flex items-center justify-center text-xs font-bold text-white";
+      avatar.className = "user-avatar";
       avatar.textContent = data.comment.initials || "";
 
       const body = document.createElement("div");
       body.className = "flex-grow";
 
       const header = document.createElement("div");
-      header.className = "flex justify-between items-center mb-2";
+      header.className = "flex items-center justify-between mb-2";
 
-      const name = document.createElement("span");
-      name.className = "text-xs font-bold text-zinc-300 uppercase";
+      const name = document.createElement("h5");
+      name.className = "text-sm font-bold uppercase tracking-widest text-white";
       name.textContent = data.comment.author;
 
       const meta = document.createElement("div");
@@ -287,7 +289,7 @@ function initComments() {
       del.textContent = "Eliminar";
 
       const text = document.createElement("p");
-      text.className = "text-sm text-zinc-500 leading-relaxed italic";
+      text.className = "text-zinc-400 text-sm leading-relaxed";
       text.textContent = `"${data.comment.content}"`;
 
       meta.appendChild(date);
@@ -296,8 +298,9 @@ function initComments() {
       header.appendChild(meta);
       body.appendChild(header);
       body.appendChild(text);
-      card.appendChild(avatar);
-      card.appendChild(body);
+      wrap.appendChild(avatar);
+      wrap.appendChild(body);
+      card.appendChild(wrap);
 
       list.prepend(card);
       updateCommentsCount(classId, 1);

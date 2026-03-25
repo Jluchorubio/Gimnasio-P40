@@ -121,32 +121,78 @@ function closeCreateClassModal() {
   document.getElementById("create-class-modal")?.classList.remove("active");
 }
 
+function getPublicationForm(scopeEl) {
+  const classContent = scopeEl?.closest(".class-content") || document.querySelector(".class-content.active");
+  if (!classContent) return null;
+  return classContent.querySelector(".publication-form");
+}
+
+function setPublicationFormState(form, data) {
+  if (!form) return;
+  const actionInput = form.querySelector(".publication-action");
+  const idInput = form.querySelector(".publication-id");
+  const titleInput = form.querySelector('input[name="titulo"]');
+  const contentInput = form.querySelector('textarea[name="contenido"]');
+  const videoInput = form.querySelector('input[name="video_url"]');
+
+  if (actionInput) actionInput.value = data.action || "create_publication";
+  if (idInput) idInput.value = data.id || "";
+  if (titleInput) titleInput.value = data.title || "";
+  if (contentInput) contentInput.value = data.content || "";
+  if (videoInput) videoInput.value = data.video || "";
+
+  if (data.clearFiles) {
+    form.querySelectorAll('input[type="file"]').forEach((input) => {
+      input.value = "";
+    });
+  }
+
+  const card = form.closest("[data-form-card]");
+  const titleEl = card?.querySelector("[data-form-title]");
+  if (titleEl) {
+    titleEl.textContent =
+      data.action === "edit_publication" ? "Editar publicacion" : "Crear nueva publicacion";
+  }
+  if (card) {
+    card.classList.toggle("is-editing", data.action === "edit_publication");
+  }
+}
+
+function resetPublicationForm(btn) {
+  const form = btn?.closest(".publication-form");
+  if (!form) return;
+  setPublicationFormState(form, { action: "create_publication", clearFiles: true });
+}
+
+function editPublicationInline(btn) {
+  const form = getPublicationForm(btn);
+  if (!form) return;
+  setPublicationFormState(form, {
+    action: "edit_publication",
+    id: btn.dataset.id,
+    title: btn.dataset.title,
+    content: btn.dataset.content,
+    video: btn.dataset.video,
+  });
+  form.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
 function openPublicationModal(classId) {
-  const modal = document.getElementById("publication-modal");
-  if (!modal) return;
-  modal.classList.add("active");
-  document.getElementById("publication_action").value = "create_publication";
-  document.getElementById("publication_id").value = "";
-  document.getElementById("publication_class_id").value = classId || currentClassId || "";
-  document.getElementById("pub_title").value = "";
-  document.getElementById("pub_content").value = "";
-  document.getElementById("pub_video_url").value = "";
+  const classContent = classId
+    ? document.querySelector(`.class-content[data-class-id="${classId}"]`)
+    : document.querySelector(".class-content.active");
+  const form = classContent?.querySelector(".publication-form");
+  if (!form) return;
+  setPublicationFormState(form, { action: "create_publication", clearFiles: true });
+  form.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
 function closePublicationModal() {
-  document.getElementById("publication-modal")?.classList.remove("active");
+  return;
 }
 
 function openEditPublicationModal(btn) {
-  const modal = document.getElementById("publication-modal");
-  if (!modal) return;
-  modal.classList.add("active");
-  document.getElementById("publication_action").value = "edit_publication";
-  document.getElementById("publication_id").value = btn.dataset.id || "";
-  document.getElementById("publication_class_id").value = currentClassId || "";
-  document.getElementById("pub_title").value = btn.dataset.title || "";
-  document.getElementById("pub_content").value = btn.dataset.content || "";
-  document.getElementById("pub_video_url").value = btn.dataset.video || "";
+  editPublicationInline(btn);
 }
 
 function openEditCurrentClass() {

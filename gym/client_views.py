@@ -371,20 +371,32 @@ def cliente_clases_list(request):
     if redirect_response:
         return redirect_response
 
+    redirect_url = reverse("cliente_home_html") + "?view=courses"
+
     if request.method == "POST":
         clase_id = request.POST.get("clase_id")
+        action = request.POST.get("action", "enroll")
         clase = Clase.objects.filter(pk=clase_id).first()
         if not clase:
-            messages.error(request, "Clase no válida.")
-            return redirect(reverse("cliente_clases_list"))
+            messages.error(request, "Clase no v?lida.")
+            return redirect(redirect_url)
+
+        if action == "cancel":
+            asistencia = Asistencia.objects.filter(miembro=cliente, clase=clase).first()
+            if not asistencia:
+                messages.info(request, "No estas inscrito en esta clase.")
+            else:
+                asistencia.delete()
+                messages.success(request, "Te diste de baja correctamente.")
+            return redirect(redirect_url)
 
         if not cliente.estado_membresia:
             messages.error(request, "Necesitas una membresia activa para inscribirte.")
-            return redirect(reverse("cliente_clases_list"))
+            return redirect(redirect_url)
 
         if Asistencia.objects.filter(miembro=cliente, clase=clase).exists():
             messages.info(request, "Ya estas inscrito en esta clase.")
-            return redirect(reverse("cliente_clases_list"))
+            return redirect(redirect_url)
 
         asistencia = Asistencia(miembro=cliente, clase=clase, asistio=False)
         try:
@@ -394,32 +406,30 @@ def cliente_clases_list(request):
         except ValidationError as exc:
             messages.error(request, " ".join(exc.messages))
 
-        return redirect(reverse("cliente_clases_list"))
+        return redirect(redirect_url)
 
-    clases = Clase.objects.select_related("instructor").order_by("fecha", "hora")
-    inscritos_ids = set(
-        Asistencia.objects.filter(miembro=cliente).values_list("clase_id", flat=True)
-    )
-    cupos = {
-        clase.id: Asistencia.objects.filter(clase=clase).count() for clase in clases
-    }
-
-    return render(
-        request,
-        "gym/cliente/clases_list.html",
-        {
-            "cliente": cliente,
-            "clases": clases,
-            "inscritos_ids": inscritos_ids,
-            "cupos": cupos,
-        },
-    )
+    return redirect(redirect_url)
 
 
 def cliente_mis_clases(request):
     cliente, redirect_response = _require_cliente(request)
     if redirect_response:
         return redirect_response
+
+    if request.method == "POST":
+        clase_id = request.POST.get("clase_id")
+        clase = Clase.objects.filter(pk=clase_id).first()
+        if not clase:
+            messages.error(request, "Clase no v??lida.")
+            return redirect(reverse("cliente_mis_clases"))
+
+        asistencia = Asistencia.objects.filter(miembro=cliente, clase=clase).first()
+        if not asistencia:
+            messages.info(request, "No estas inscrito en esta clase.")
+        else:
+            asistencia.delete()
+            messages.success(request, "Te diste de baja correctamente.")
+        return redirect(reverse("cliente_mis_clases"))
 
     asistencias = Asistencia.objects.filter(miembro=cliente).select_related("clase")
     return render(

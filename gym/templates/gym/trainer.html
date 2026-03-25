@@ -151,256 +151,157 @@
                       </div>
                     </div>
 
-                    <div class="video-container group shadow-2xl">
-                      <div class="media-board">
-                        {% for pub in clase.publicaciones.all %}
-                          <div class="media-card">
-                            <div class="media-header">
-                              <div>
-                                <p class="text-[10px] uppercase tracking-widest text-zinc-500">Publicación</p>
-                                <h4 class="text-lg font-bold text-white">{{ pub.titulo }}</h4>
-                              </div>
-                              <span class="text-[10px] text-zinc-600 uppercase">{{ pub.fecha_publicacion|date:"d M Y" }}</span>
-                            </div>
-                            <p class="text-sm text-zinc-400 mt-2">{{ pub.contenido }}</p>
-
-                            <div class="media-grid">
-                              {% if pub.imagen %}
-                                <a href="{{ pub.imagen.url }}" target="_blank" download class="media-thumb">
-                                  <img src="{{ pub.imagen.url }}" alt="{{ pub.titulo }}">
-                                  <span class="media-tag">IMG</span>
-                                </a>
-                              {% endif %}
-
-                              {% if pub.video_archivo %}
-                                {% with ext=pub.video_archivo.name|fileext %}
-                                  {% if ext == 'MP4' or ext == 'WEBM' or ext == 'OGG' %}
-                                    <div class="media-thumb">
-                                      <video controls src="{{ pub.video_archivo.url }}"></video>
-                                      <span class="media-tag">{{ ext }}</span>
-                                    </div>
-                                  {% else %}
-                                    <a href="{{ pub.video_archivo.url }}" target="_blank" download class="media-file">
-                                      <span class="file-ext">{{ ext }}</span>
-                                      <span class="file-name">{{ pub.video_archivo.name|filename }}</span>
-                                    </a>
-                                  {% endif %}
-                                {% endwith %}
-                              {% endif %}
-
-                              {% if pub.video_url %}
-                                <a href="{{ pub.video_url }}" target="_blank" class="media-file">
-                                  <span class="file-ext">URL</span>
-                                  <span class="file-name">Video externo</span>
-                                </a>
-                              {% endif %}
-
-                              {% if pub.archivo_1 %}
-                                {% with ext=pub.archivo_1.name|fileext %}
-                                  {% if ext == 'PDF' %}
-                                    <a href="{{ pub.archivo_1.url }}" target="_blank" download class="media-thumb media-doc">
-                                      <embed src="{{ pub.archivo_1.url }}#toolbar=0" type="application/pdf">
-                                      <span class="media-tag">PDF</span>
-                                    </a>
-                                  {% elif ext == 'JPG' or ext == 'JPEG' or ext == 'PNG' or ext == 'WEBP' or ext == 'GIF' %}
-                                    <a href="{{ pub.archivo_1.url }}" target="_blank" download class="media-thumb">
-                                      <img src="{{ pub.archivo_1.url }}" alt="{{ pub.archivo_1.name|filename }}">
-                                      <span class="media-tag">IMG</span>
-                                    </a>
-                                  {% else %}
-                                    <a href="{{ pub.archivo_1.url }}" target="_blank" download class="media-file">
-                                      <span class="file-ext">{{ ext }}</span>
-                                      <span class="file-name">{{ pub.archivo_1.name|filename }}</span>
-                                    </a>
-                                  {% endif %}
-                                {% endwith %}
-                              {% endif %}
-                              {% if pub.archivo_2 %}
-                                {% with ext=pub.archivo_2.name|fileext %}
-                                  {% if ext == 'PDF' %}
-                                    <a href="{{ pub.archivo_2.url }}" target="_blank" download class="media-thumb media-doc">
-                                      <embed src="{{ pub.archivo_2.url }}#toolbar=0" type="application/pdf">
-                                      <span class="media-tag">PDF</span>
-                                    </a>
-                                  {% elif ext == 'JPG' or ext == 'JPEG' or ext == 'PNG' or ext == 'WEBP' or ext == 'GIF' %}
-                                    <a href="{{ pub.archivo_2.url }}" target="_blank" download class="media-thumb">
-                                      <img src="{{ pub.archivo_2.url }}" alt="{{ pub.archivo_2.name|filename }}">
-                                      <span class="media-tag">IMG</span>
-                                    </a>
-                                  {% else %}
-                                    <a href="{{ pub.archivo_2.url }}" target="_blank" download class="media-file">
-                                      <span class="file-ext">{{ ext }}</span>
-                                      <span class="file-name">{{ pub.archivo_2.name|filename }}</span>
-                                    </a>
-                                  {% endif %}
-                                {% endwith %}
-                              {% endif %}
-                              {% if pub.archivo_3 %}
-                                {% with ext=pub.archivo_3.name|fileext %}
-                                  {% if ext == 'PDF' %}
-                                    <a href="{{ pub.archivo_3.url }}" target="_blank" download class="media-thumb media-doc">
-                                      <embed src="{{ pub.archivo_3.url }}#toolbar=0" type="application/pdf">
-                                      <span class="media-tag">PDF</span>
-                                    </a>
-                                  {% elif ext == 'JPG' or ext == 'JPEG' or ext == 'PNG' or ext == 'WEBP' or ext == 'GIF' %}
-                                    <a href="{{ pub.archivo_3.url }}" target="_blank" download class="media-thumb">
-                                      <img src="{{ pub.archivo_3.url }}" alt="{{ pub.archivo_3.name|filename }}">
-                                      <span class="media-tag">IMG</span>
-                                    </a>
-                                  {% else %}
-                                    <a href="{{ pub.archivo_3.url }}" target="_blank" download class="media-file">
-                                      <span class="file-ext">{{ ext }}</span>
-                                      <span class="file-name">{{ pub.archivo_3.name|filename }}</span>
-                                    </a>
-                                  {% endif %}
-                                {% endwith %}
-                              {% endif %}
-                            </div>
-                          </div>
-                        {% empty %}
-                          <div class="media-empty">
-                            Aún no hay publicaciones en esta clase.
-                          </div>
-                        {% endfor %}
-                      </div>
-                    </div>
-
-                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-10 mt-12">
-                      <div class="lg:col-span-2 space-y-12">
-                        <div>
-                          <h4 class="text-[10px] font-bold text-zinc-600 uppercase tracking-widest mb-4">Información de la Sesión</h4>
-                          <p class="text-zinc-400 text-sm leading-relaxed">{{ clase.descripcion|default:"Sin descripción de clase." }}</p>
-                        </div>
-
-                        <div>
-                          <h4 class="text-[10px] font-bold text-zinc-600 uppercase tracking-widest mb-4">Recursos del Instructor</h4>
-                          <div class="space-y-4">
-                            {% for pub in clase.publicaciones.all %}
-                              <div class="p-6 bg-zinc-900/50 border border-zinc-800 rounded-2xl space-y-4" data-publication-id="{{ pub.id }}">
-                                <div class="flex justify-between items-start gap-4">
-                                  <div>
-                                    <p class="text-xs text-zinc-500 uppercase tracking-widest">Publicación</p>
-                                    <h5 class="text-lg font-bold text-white">{{ pub.titulo }}</h5>
-                                    <p class="text-sm text-zinc-400 mt-2">{{ pub.contenido }}</p>
-                                  </div>
-                                  <div class="flex gap-2">
-                                    <button type="button" class="btn-red bg-zinc-800" onclick="openEditPublicationModal(this)"
-                                      data-id="{{ pub.id }}"
-                                      data-title="{{ pub.titulo }}"
-                                      data-content="{{ pub.contenido }}"
-                                      data-video="{{ pub.video_url|default:'' }}"
-                                    >
-                                      Editar
-                                    </button>
-                                    <form method="post">
-                                      {% csrf_token %}
-                                      <input type="hidden" name="action" value="delete_publication">
-                                      <input type="hidden" name="publication_id" value="{{ pub.id }}">
-                                      <button type="submit" class="btn-red">Eliminar</button>
-                                    </form>
-                                  </div>
-                                </div>
-
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                  {% if pub.imagen %}
-                                    <a href="{{ pub.imagen.url }}" target="_blank" download class="p-4 bg-zinc-900 border border-zinc-800 rounded-xl flex items-center justify-between">
-                                      <div>
-                                        <p class="text-xs uppercase tracking-widest text-zinc-500">Imagen</p>
-                                        <p class="text-sm text-white">{{ pub.imagen.name|filename }}</p>
-                                      </div>
-                                      <span class="text-[10px] text-zinc-400">{{ pub.imagen.name|fileext }}</span>
-                                    </a>
-                                  {% endif %}
-                                  {% if pub.video_archivo %}
-                                    <a href="{{ pub.video_archivo.url }}" target="_blank" download class="p-4 bg-zinc-900 border border-zinc-800 rounded-xl flex items-center justify-between">
-                                      <div>
-                                        <p class="text-xs uppercase tracking-widest text-zinc-500">Video</p>
-                                        <p class="text-sm text-white">{{ pub.video_archivo.name|filename }}</p>
-                                      </div>
-                                      <span class="text-[10px] text-zinc-400">{{ pub.video_archivo.name|fileext }}</span>
-                                    </a>
-                                  {% endif %}
-                                  {% if pub.video_url %}
-                                    <a href="{{ pub.video_url }}" target="_blank" class="p-4 bg-zinc-900 border border-zinc-800 rounded-xl flex items-center justify-between">
-                                      <div>
-                                        <p class="text-xs uppercase tracking-widest text-zinc-500">Video URL</p>
-                                        <p class="text-sm text-white">Ver enlace</p>
-                                      </div>
-                                      <span class="text-[10px] text-zinc-400">URL</span>
-                                    </a>
-                                  {% endif %}
-                                  {% if pub.archivo_1 %}
-                                    <a href="{{ pub.archivo_1.url }}" target="_blank" download class="p-4 bg-zinc-900 border border-zinc-800 rounded-xl flex items-center justify-between">
-                                      <div>
-                                        <p class="text-xs uppercase tracking-widest text-zinc-500">Archivo</p>
-                                        <p class="text-sm text-white">{{ pub.archivo_1.name|filename }}</p>
-                                      </div>
-                                      <span class="text-[10px] text-zinc-400">{{ pub.archivo_1.name|fileext }}</span>
-                                    </a>
-                                  {% endif %}
-                                  {% if pub.archivo_2 %}
-                                    <a href="{{ pub.archivo_2.url }}" target="_blank" download class="p-4 bg-zinc-900 border border-zinc-800 rounded-xl flex items-center justify-between">
-                                      <div>
-                                        <p class="text-xs uppercase tracking-widest text-zinc-500">Archivo</p>
-                                        <p class="text-sm text-white">{{ pub.archivo_2.name|filename }}</p>
-                                      </div>
-                                      <span class="text-[10px] text-zinc-400">{{ pub.archivo_2.name|fileext }}</span>
-                                    </a>
-                                  {% endif %}
-                                  {% if pub.archivo_3 %}
-                                    <a href="{{ pub.archivo_3.url }}" target="_blank" download class="p-4 bg-zinc-900 border border-zinc-800 rounded-xl flex items-center justify-between">
-                                      <div>
-                                        <p class="text-xs uppercase tracking-widest text-zinc-500">Archivo</p>
-                                        <p class="text-sm text-white">{{ pub.archivo_3.name|filename }}</p>
-                                      </div>
-                                      <span class="text-[10px] text-zinc-400">{{ pub.archivo_3.name|fileext }}</span>
-                                    </a>
-                                  {% endif %}
-                                </div>
-                              </div>
-                            {% empty %}
-                              <div class="p-5 bg-zinc-900/50 border border-zinc-800 rounded-2xl text-[10px] text-zinc-500 uppercase tracking-widest">
-                                Sin recursos aún
-                              </div>
-                            {% endfor %}
-                            <button type="button" onclick="openPublicationModal('{{ clase.id }}')" class="btn-red w-full text-center">+ Nueva publicación</button>
-                          </div>
-                        </div>
-                      </div>
-
-                      <div class="space-y-6">
-                        <h4 class="text-[10px] font-bold text-zinc-600 uppercase tracking-widest">Feedback de Alumnos</h4>
-                        <div class="bg-zinc-900/30 rounded-2xl border border-zinc-800 p-6">
-                          <div class="space-y-6 mb-6">
-                            {% for pub in clase.publicaciones.all %}
-                              {% for comentario in pub.comentarios.all %}
-                                <div class="border-l-2 border-red-600/30 pl-4 py-1">
-                                  <div class="flex justify-between items-center mb-1">
-                                    <span class="text-[10px] font-bold text-white uppercase">{{ comentario.autor.nombre }}</span>
-                                    <span class="text-[8px] text-zinc-600 uppercase">{{ comentario.fecha|date:"d M" }}</span>
-                                  </div>
-                                  <p class="text-[11px] text-zinc-400 italic">"{{ comentario.contenido }}"</p>
-                                </div>
-                              {% empty %}
-                                <p class="text-[10px] text-zinc-600 italic">No hay comentarios aún.</p>
-                              {% endfor %}
-                            {% empty %}
-                              <p class="text-[10px] text-zinc-600 italic">No hay comentarios aún.</p>
-                            {% endfor %}
-                          </div>
-                          {% if clase.first_publicacion_id %}
-                            <form method="post" class="relative">
-                              {% csrf_token %}
-                              <input type="hidden" name="action" value="add_comment">
-                              <input type="hidden" name="publication_id" value="{{ clase.first_publicacion_id }}">
-                              <textarea name="comment_content" placeholder="Escribe un anuncio o respuesta..." class="w-full bg-zinc-950 border border-zinc-800 rounded-xl p-3 text-xs text-zinc-300 focus:outline-none focus:border-red-600 h-24 resize-none"></textarea>
-                              <div class="flex justify-end mt-3">
-                                <button type="submit" class="btn-red">Enviar</button>
-                              </div>
-                            </form>
+                    <div class="fitkit-publication-wrapper">
+                      {% with latest=clase.publicaciones.all|first %}
+                        <section class="content-hero">
+                          {% if latest %}
+                            {% if latest.video_archivo %}
+                              {% with ext=latest.video_archivo.name|fileext %}
+                                {% if ext == 'MP4' or ext == 'WEBM' or ext == 'OGG' %}
+                                  <video class="video-placeholder" controls src="{{ latest.video_archivo.url }}"></video>
+                                {% elif latest.imagen %}
+                                  <img src="{{ latest.imagen.url }}" alt="{{ latest.titulo }}" class="video-placeholder">
+                                {% else %}
+                                  <div class="hero-empty">Sin multimedia disponible</div>
+                                {% endif %}
+                              {% endwith %}
+                            {% elif latest.video_url %}
+                              <a href="{{ latest.video_url }}" target="_blank" class="video-placeholder flex items-center justify-center text-[10px] uppercase tracking-widest text-white bg-black/60">Ver video externo</a>
+                            {% elif latest.imagen %}
+                              <img src="{{ latest.imagen.url }}" alt="{{ latest.titulo }}" class="video-placeholder">
+                            {% else %}
+                              <div class="hero-empty">Sin multimedia disponible</div>
+                            {% endif %}
+                          {% else %}
+                            <div class="hero-empty">Sin multimedia disponible</div>
                           {% endif %}
+                        </section>
+                      {% endwith %}
+
+                      <div class="section-container">
+                        <div class="grid grid-cols-1 lg:grid-cols-3 gap-12">
+                          <div class="lg:col-span-2 space-y-10">
+                            <div>
+                              <h4 class="text-[10px] font-bold text-zinc-500 uppercase tracking-[0.3em] mb-4">Informacion de la sesion</h4>
+                              <p class="text-zinc-400 text-sm leading-relaxed">{{ clase.descripcion|default:"Sin descripcion de clase." }}</p>
+                            </div>
+
+                            <div>
+                              <h4 class="text-[10px] font-bold text-zinc-500 uppercase tracking-[0.3em] mb-4">Publicaciones de la clase</h4>
+                              <div class="fitkit-post-list">
+                                {% for pub in clase.publicaciones.all %}
+                                  {% include "gym/components/publicacion_card.html" with publicacion=pub show_actions=True %}
+                                {% empty %}
+                                  <div class="media-empty">Aun no hay publicaciones en esta clase.</div>
+                                {% endfor %}
+                              </div>
+                            </div>
+                          </div>
+
+                          <div class="space-y-6">
+                            <div class="card-ego fitkit-form-card" data-form-card>
+                              <div class="fitkit-form-header">
+                                <p class="fitkit-post-eyebrow">Publicacion</p>
+                                <h4 class="fitkit-form-title" data-form-title>Crear nueva publicacion</h4>
+                                <p class="fitkit-form-note">Carga archivos y edita desde aqui mismo.</p>
+                              </div>
+                              <form method="post" enctype="multipart/form-data" class="publication-form" data-class-id="{{ clase.id }}">
+                                {% csrf_token %}
+                                <input type="hidden" name="action" value="create_publication" class="publication-action">
+                                <input type="hidden" name="publication_id" class="publication-id">
+                                <input type="hidden" name="class_id" value="{{ clase.id }}">
+                                <label class="fitkit-form-field">
+                                  <span>Titulo</span>
+                                  <input name="titulo" class="input-ego" required>
+                                </label>
+                                <label class="fitkit-form-field">
+                                  <span>Contenido</span>
+                                  <textarea name="contenido" rows="4" class="input-ego" required></textarea>
+                                </label>
+                                <div class="fitkit-form-field">
+                                  <span>Archivos (maximo 3)</span>
+                                </div>
+                                <label class="fitkit-form-field">
+                                  <span>Archivo 1</span>
+                                  <input type="file" name="archivo_1" class="input-ego">
+                                </label>
+                                <label class="fitkit-form-field">
+                                  <span>Archivo 2</span>
+                                  <input type="file" name="archivo_2" class="input-ego">
+                                </label>
+                                <label class="fitkit-form-field">
+                                  <span>Archivo 3</span>
+                                  <input type="file" name="archivo_3" class="input-ego">
+                                </label>
+                                <label class="fitkit-form-field">
+                                  <span>Imagen (opcional)</span>
+                                  <input type="file" name="imagen" accept="image/*" class="input-ego">
+                                </label>
+                                <label class="fitkit-form-field">
+                                  <span>Archivo / Video (opcional)</span>
+                                  <input type="file" name="video_archivo" class="input-ego">
+                                </label>
+                                <label class="fitkit-form-field">
+                                  <span>Video URL (opcional)</span>
+                                  <input name="video_url" class="input-ego">
+                                </label>
+                                <div class="fitkit-form-actions">
+                                  <button type="submit" class="btn-post">Publicar</button>
+                                  <button type="button" class="btn-post btn-post-ghost" onclick="resetPublicationForm(this)">Cancelar edicion</button>
+                                </div>
+                              </form>
+                            </div>
+                          </div>
                         </div>
                       </div>
+
+                      <section class="section-container border-t border-zinc-900 mt-12">
+                        <div class="flex items-center gap-4 mb-10">
+                          <h3 class="text-3xl font-bold font-oswald uppercase tracking-tight italic">Debate del clan</h3>
+                        </div>
+
+                        {% if clase.first_publicacion_id %}
+                          <form method="post" class="bg-zinc-900/20 p-8 rounded-[2rem] border border-zinc-900/50 mb-12 comment-form">
+                            {% csrf_token %}
+                            <input type="hidden" name="action" value="add_comment">
+                            <input type="hidden" name="publication_id" value="{{ clase.first_publicacion_id }}">
+                            <div class="flex gap-6">
+                              <div class="user-avatar bg-red-600 shadow-[0_0_15px_rgba(220,38,38,0.3)]">{{ trainer.nombre|slice:":2"|upper }}</div>
+                              <div class="flex-grow">
+                                <textarea name="comment_content" class="input-ego mb-4" rows="3" placeholder="Deja tu mensaje..."></textarea>
+                                <div class="flex justify-end">
+                                  <button type="submit" class="btn-post">Enviar mensaje</button>
+                                </div>
+                              </div>
+                            </div>
+                          </form>
+                        {% endif %}
+
+                        <div class="space-y-6">
+                          {% for pub in clase.publicaciones.all %}
+                            {% for comentario in pub.comentarios.all %}
+                              <div class="comment-card" data-comment-id="{{ comentario.id }}">
+                                <div class="flex gap-6">
+                                  <div class="user-avatar">{{ comentario.autor.nombre|slice:":2"|upper }}</div>
+                                  <div class="flex-grow">
+                                    <div class="flex items-center justify-between mb-2">
+                                      <h5 class="text-sm font-bold uppercase tracking-widest text-white">
+                                        {{ comentario.autor.nombre }}
+                                        <span class="ml-2 text-[9px] text-zinc-600 font-normal italic">{{ comentario.fecha|date:"d M" }}</span>
+                                      </h5>
+                                    </div>
+                                    <p class="text-zinc-400 text-sm leading-relaxed">"{{ comentario.contenido }}"</p>
+                                  </div>
+                                </div>
+                              </div>
+                            {% empty %}
+                              <p class="text-[10px] text-zinc-600 italic">No hay comentarios aun.</p>
+                            {% endfor %}
+                          {% empty %}
+                            <p class="text-[10px] text-zinc-600 italic">No hay comentarios aun.</p>
+                          {% endfor %}
+                        </div>
+                      </section>
                     </div>
                   </div>
                 </div>
@@ -600,60 +501,6 @@
     </div>
   </div>
 
-  <!-- MODAL: NUEVA PUBLICACIÓN -->
-  <div id="publication-modal" class="modal-overlay" onclick="closePublicationModal()">
-    <div class="modal-card" onclick="event.stopPropagation()">
-      <form method="post" enctype="multipart/form-data">
-        {% csrf_token %}
-        <input type="hidden" name="action" id="publication_action" value="create_publication">
-        <input type="hidden" name="publication_id" id="publication_id">
-        <input type="hidden" name="class_id" id="publication_class_id">
-        <div class="modal-header">
-          <h3 class="text-lg font-bold text-white">Nueva publicación</h3>
-          <button type="button" class="text-zinc-400 hover:text-white" onclick="closePublicationModal()">✕</button>
-        </div>
-        <div class="modal-body grid grid-cols-1 gap-4 text-sm">
-          <label class="flex flex-col gap-2">
-            Título
-            <input id="pub_title" name="titulo" class="bg-zinc-900 border border-zinc-800 rounded-lg p-2 text-white">
-          </label>
-          <label class="flex flex-col gap-2">
-            Contenido
-            <textarea id="pub_content" name="contenido" class="bg-zinc-900 border border-zinc-800 rounded-lg p-2 text-white" rows="4"></textarea>
-          </label>
-          <div class="text-[10px] text-zinc-500 uppercase tracking-widest">Archivos (máximo 3)</div>
-          <label class="flex flex-col gap-2">
-            Archivo 1
-            <input type="file" name="archivo_1" class="bg-zinc-900 border border-zinc-800 rounded-lg p-2 text-white">
-          </label>
-          <label class="flex flex-col gap-2">
-            Archivo 2
-            <input type="file" name="archivo_2" class="bg-zinc-900 border border-zinc-800 rounded-lg p-2 text-white">
-          </label>
-          <label class="flex flex-col gap-2">
-            Archivo 3
-            <input type="file" name="archivo_3" class="bg-zinc-900 border border-zinc-800 rounded-lg p-2 text-white">
-          </label>
-          <label class="flex flex-col gap-2">
-            Imagen (opcional)
-            <input type="file" name="imagen" accept="image/*" class="bg-zinc-900 border border-zinc-800 rounded-lg p-2 text-white">
-          </label>
-          <label class="flex flex-col gap-2">
-            Archivo / Video (opcional)
-            <input type="file" name="video_archivo" class="bg-zinc-900 border border-zinc-800 rounded-lg p-2 text-white">
-          </label>
-          <label class="flex flex-col gap-2">
-            Video URL (opcional)
-            <input id="pub_video_url" name="video_url" class="bg-zinc-900 border border-zinc-800 rounded-lg p-2 text-white">
-          </label>
-        </div>
-        <div class="modal-actions">
-          <button type="button" class="btn-red bg-zinc-800" onclick="closePublicationModal()">Cancelar</button>
-          <button type="submit" class="btn-red">Publicar</button>
-        </div>
-      </form>
-    </div>
-  </div>
 
   <script src="{% static 'gym/js/trainer_panel.js' %}"></script>
 </body>

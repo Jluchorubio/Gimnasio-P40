@@ -158,7 +158,14 @@
               </div>
               <div>
                 {% if clase.is_inscrito %}
-                  <span class="text-[10px] font-bold text-green-400 uppercase tracking-widest">Inscrito</span>
+                  <form method="post" action="{% url 'cliente_clases_list' %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="clase_id" value="{{ clase.id }}">
+                    <input type="hidden" name="action" value="cancel">
+                    <button class="px-4 py-2 rounded-lg text-[10px] font-bold uppercase tracking-widest border border-red-500 text-red-400 hover:bg-red-500/10 transition" type="submit">
+                      Darme de baja
+                    </button>
+                  </form>
                 {% elif clase.cupo_lleno %}
                   <span class="text-[10px] font-bold text-red-400 uppercase tracking-widest">Cupo lleno</span>
                 {% elif not cliente.estado_membresia %}
@@ -432,127 +439,127 @@
                 {% if curso.clases_inscritas %}
                   {% for clase in curso.clases_inscritas %}
                     <div class="class-content {% if forloop.first %}active{% endif %}" data-class-id="{{ clase.id }}">
-                      <div class="video-player mb-10 group">
-                        {% if clase.primary_media_type == "video" %}
-                          <video controls src="{{ clase.primary_media_url }}" class="w-full h-full object-cover"></video>
-                        {% elif clase.primary_media_type == "video_url" %}
-                          <a href="{{ clase.primary_media_url }}" target="_blank" class="w-full h-full flex items-center justify-center text-white text-xs uppercase tracking-widest bg-black/60">Ver video externo</a>
-                        {% elif clase.primary_media_type == "image" %}
-                          <img src="{{ clase.primary_media_url }}" class="w-full h-full object-cover opacity-40 group-hover:scale-105 transition duration-700" alt="Media">
-                          <div class="absolute inset-0 flex items-center justify-center">
-                            <div class="w-16 h-16 bg-red-600 rounded-full flex items-center justify-center shadow-2xl">
-                              <svg class="w-6 h-6 text-white ml-1" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
-                            </div>
-                          </div>
-                        {% else %}
-                          <div class="w-full h-full flex items-center justify-center text-zinc-600 text-xs uppercase tracking-widest">Sin video disponible</div>
-                        {% endif %}
-                      </div>
-
-                      <div class="mb-12">
-                        <h1 class="text-3xl font-bold text-white uppercase font-oswald mb-4 tracking-tight">{{ clase.nombre }}</h1>
-                        <div class="prose prose-invert max-w-none text-zinc-400 text-sm leading-relaxed">
-                          <p>{{ clase.descripcion|default:"Sin descripcion de clase." }}</p>
-                          {% if clase.latest_publicacion %}
-                            <p class="mt-4"><strong>{{ clase.latest_publicacion.titulo }}</strong></p>
-                            <p>{{ clase.latest_publicacion.contenido }}</p>
+                      <div class="fitkit-publication-wrapper">
+                        <section class="content-hero">
+                          {% if clase.primary_media_type == "video" %}
+                            <video controls src="{{ clase.primary_media_url }}" class="video-placeholder"></video>
+                          {% elif clase.primary_media_type == "video_url" %}
+                            <a href="{{ clase.primary_media_url }}" target="_blank" class="video-placeholder flex items-center justify-center text-[10px] uppercase tracking-widest text-white bg-black/60">Ver video externo</a>
+                          {% elif clase.primary_media_type == "image" %}
+                            <img src="{{ clase.primary_media_url }}" class="video-placeholder" alt="Media">
+                          {% else %}
+                            <div class="hero-empty">Sin multimedia disponible</div>
                           {% endif %}
-                        </div>
-                      </div>
+                        </section>
 
-                      {% if clase.media_images %}
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
-                          {% for img in clase.media_images %}
-                            <div class="rounded-2xl overflow-hidden border border-zinc-900">
-                              <img src="{{ img.url }}" class="w-full h-56 object-cover grayscale hover:grayscale-0 transition" alt="{{ img.label }}">
-                              <div class="p-4 bg-zinc-900/50">
-                                <p class="text-[10px] text-zinc-500 uppercase font-bold">{{ img.label }}</p>
+                        <div class="section-container">
+                          <div class="grid grid-cols-1 lg:grid-cols-3 gap-12">
+                            <div class="lg:col-span-2 space-y-10">
+                              <div>
+                                <h1 class="text-4xl font-bold text-white uppercase font-oswald mb-4 tracking-tight">{{ clase.nombre }}</h1>
+                                <p class="text-zinc-400 text-sm leading-relaxed">{{ clase.descripcion|default:"Sin descripcion de clase." }}</p>
+                              </div>
+
+                              {% if clase.media_images %}
+                                <div>
+                                  <h4 class="text-[10px] font-bold text-zinc-500 uppercase tracking-[0.3em] mb-4">Material visual de apoyo</h4>
+                                  <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+                                    {% for img in clase.media_images %}
+                                      <a href="{{ img.url }}" target="_blank" class="media-thumb">
+                                        <img src="{{ img.url }}" alt="{{ img.label }}">
+                                        <span class="media-tag">IMG</span>
+                                      </a>
+                                    {% endfor %}
+                                  </div>
+                                </div>
+                              {% endif %}
+
+                              <div>
+                                <h4 class="text-[10px] font-bold text-zinc-500 uppercase tracking-[0.3em] mb-4">Publicaciones de la clase</h4>
+                                <div class="fitkit-post-list">
+                                  {% for pub in clase.publicaciones.all %}
+                                    {% include "gym/components/publicacion_card.html" with publicacion=pub %}
+                                  {% empty %}
+                                    <div class="media-empty">Aun no hay publicaciones en esta clase.</div>
+                                  {% endfor %}
+                                </div>
                               </div>
                             </div>
-                          {% endfor %}
-                        </div>
-                      {% else %}
-                        <div class="mb-12 text-xs text-zinc-600 uppercase tracking-widest">Sin multimedia</div>
-                      {% endif %}
 
-                      <div class="mb-16">
-                        <h4 class="text-[10px] font-bold text-zinc-600 uppercase tracking-widest mb-4">Material de Apoyo</h4>
-                        {% if clase.media_files %}
-                          <div class="space-y-3">
-                            {% for file in clase.media_files %}
-                              <a href="{{ file.url }}" target="_blank" download class="p-4 bg-zinc-900/40 border border-zinc-800 rounded-2xl flex items-center justify-between hover:border-red-600/40 transition group">
-                                <div class="flex items-center gap-4">
-                                  <div class="w-10 h-10 bg-zinc-800 rounded-xl flex items-center justify-center text-red-600">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                            <div class="space-y-6">
+                              <div class="card-ego">
+                                <h4 class="text-xs font-bold text-zinc-500 uppercase tracking-widest mb-6">Recursos del clan</h4>
+                                {% if clase.media_files %}
+                                  <div class="space-y-4">
+                                    {% for file in clase.media_files %}
+                                      <a href="{{ file.url }}" target="_blank" download class="media-file">
+                                        <span class="file-ext">{{ file.ext }}</span>
+                                        <span class="file-name">{{ file.name }}</span>
+                                      </a>
+                                    {% endfor %}
                                   </div>
-                                  <div>
-                                    <p class="text-xs font-bold text-white uppercase">{{ file.name }}</p>
-                                    <p class="text-[9px] text-zinc-500 uppercase">{{ file.ext }}</p>
-                                  </div>
-                                </div>
-                                <span class="text-zinc-600 group-hover:text-white transition">
-                                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
-                                </span>
-                              </a>
-                            {% endfor %}
+                                {% else %}
+                                  <p class="text-[10px] text-zinc-600 uppercase tracking-widest">Sin archivos de apoyo</p>
+                                {% endif %}
+                              </div>
+                            </div>
                           </div>
-                        {% else %}
-                          <p class="text-xs text-zinc-600 uppercase tracking-widest">Sin archivos de apoyo</p>
-                        {% endif %}
-                      </div>
-
-                      <section class="border-t border-zinc-900 pt-16 pb-20">
-                        <div class="flex justify-between items-center mb-8">
-                          <h3 class="text-2xl font-bold text-white uppercase font-oswald tracking-tight flex items-center gap-3">
-                            <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path></svg>
-                            Foro de Preguntas
-                          </h3>
-                          <span class="text-[10px] font-bold text-zinc-600 uppercase" data-comments-count="{{ clase.id }}">{{ clase.total_comentarios }} comentarios</span>
                         </div>
 
-                        <div class="space-y-6 mb-10" data-comments-list="{{ clase.id }}">
-                          {% if clase.total_comentarios %}
-                            {% for pub in clase.publicaciones.all %}
-                              {% for comentario in pub.comentarios.all %}
-                                <div class="bg-zinc-900/20 p-6 rounded-2xl border border-zinc-900 flex gap-5" data-comment-id="{{ comentario.id }}">
-                                  <div class="w-10 h-10 rounded-full bg-zinc-800 border border-zinc-700 flex items-center justify-center text-xs font-bold text-white">
-                                    {{ comentario.autor.nombre|slice:":2"|upper }}
-                                  </div>
-                                  <div class="flex-grow">
-                                    <div class="flex justify-between items-center mb-2">
-                                      <span class="text-xs font-bold text-zinc-300 uppercase">{{ comentario.autor.nombre }}</span>
-                                      <div class="flex items-center gap-3">
-                                        <span class="text-[9px] text-zinc-600 uppercase font-bold tracking-widest">{{ comentario.fecha|date:"d M" }}</span>
-                                        {% if comentario.autor_id == cliente.id %}
-                                          <button type="button" class="comment-delete text-[9px] font-bold text-zinc-600 uppercase hover:text-red-500 transition" data-comment-id="{{ comentario.id }}">Eliminar</button>
-                                        {% endif %}
+                        <section class="section-container border-t border-zinc-900 mt-12">
+                          <div class="flex items-center justify-between mb-8">
+                            <h3 class="text-2xl font-bold text-white uppercase font-oswald tracking-tight">Debate del clan</h3>
+                            <span class="text-[10px] font-bold text-zinc-600 uppercase" data-comments-count="{{ clase.id }}">{{ clase.total_comentarios }} comentarios</span>
+                          </div>
+
+                          <div class="space-y-6 mb-10" data-comments-list="{{ clase.id }}">
+                            {% if clase.total_comentarios %}
+                              {% for pub in clase.publicaciones.all %}
+                                {% for comentario in pub.comentarios.all %}
+                                  <div class="comment-card" data-comment-id="{{ comentario.id }}">
+                                    <div class="flex gap-6">
+                                      <div class="user-avatar">{{ comentario.autor.nombre|slice:":2"|upper }}</div>
+                                      <div class="flex-grow">
+                                        <div class="flex items-center justify-between mb-2">
+                                          <h5 class="text-sm font-bold uppercase tracking-widest text-white">{{ comentario.autor.nombre }}</h5>
+                                          <div class="flex items-center gap-3">
+                                            <span class="text-[9px] text-zinc-600 uppercase font-bold tracking-widest">{{ comentario.fecha|date:"d M" }}</span>
+                                            {% if comentario.autor_id == cliente.id %}
+                                              <button type="button" class="comment-delete text-[9px] font-bold text-zinc-600 uppercase hover:text-red-500 transition" data-comment-id="{{ comentario.id }}">Eliminar</button>
+                                            {% endif %}
+                                          </div>
+                                        </div>
+                                        <p class="text-zinc-400 text-sm leading-relaxed">"{{ comentario.contenido }}"</p>
                                       </div>
                                     </div>
-                                    <p class="text-sm text-zinc-500 leading-relaxed italic">"{{ comentario.contenido }}"</p>
+                                  </div>
+                                {% endfor %}
+                              {% endfor %}
+                            {% else %}
+                              <p class="text-[10px] text-zinc-600 italic" data-comments-empty="{{ clase.id }}">No hay comentarios aun.</p>
+                            {% endif %}
+                          </div>
+
+                          {% if clase.first_publicacion_id %}
+                            <form method="post" class="bg-zinc-900/20 p-8 rounded-[2rem] border border-zinc-900/50 comment-form">
+                              {% csrf_token %}
+                              <input type="hidden" name="action" value="add_comment">
+                              <input type="hidden" name="publication_id" value="{{ clase.first_publicacion_id }}">
+                              <div class="flex gap-6">
+                                <div class="user-avatar bg-zinc-800">{{ cliente.nombre|slice:":2"|upper }}</div>
+                                <div class="flex-grow">
+                                  <textarea name="comment_content" placeholder="Escribe tu duda tecnica aqui..." class="input-ego mb-4" rows="3"></textarea>
+                                  <div class="flex justify-end">
+                                    <button type="submit" class="btn-post">Publicar pregunta</button>
                                   </div>
                                 </div>
-                              {% endfor %}
-                            {% endfor %}
+                              </div>
+                            </form>
                           {% else %}
-                            <p class="text-[10px] text-zinc-600 italic" data-comments-empty="{{ clase.id }}">No hay comentarios aun.</p>
+                            <p class="text-[10px] text-zinc-600 italic">Aun no hay publicaciones para comentar.</p>
                           {% endif %}
-                        </div>
-
-                        {% if clase.first_publicacion_id %}
-                          <form method="post" class="bg-zinc-900/40 p-6 rounded-2xl border border-zinc-800 comment-form">
-                            {% csrf_token %}
-                            <input type="hidden" name="action" value="add_comment">
-                            <input type="hidden" name="publication_id" value="{{ clase.first_publicacion_id }}">
-                            <p class="text-[10px] font-bold text-zinc-500 uppercase mb-4 tracking-widest">Nueva Pregunta</p>
-                            <textarea name="comment_content" placeholder="Escribe tu duda tecnica aqui..." class="w-full bg-zinc-950 border border-zinc-900 rounded-xl p-4 text-xs text-white focus:outline-none focus:border-red-600 h-24 resize-none transition-all mb-4"></textarea>
-                            <div class="flex justify-end">
-                              <button type="submit" class="btn-action px-8">Publicar Pregunta</button>
-                            </div>
-                          </form>
-                        {% else %}
-                          <p class="text-[10px] text-zinc-600 italic">Aun no hay publicaciones para comentar.</p>
-                        {% endif %}
-                      </section>
+                        </section>
+                      </div>
                     </div>
                   {% endfor %}
                 {% else %}

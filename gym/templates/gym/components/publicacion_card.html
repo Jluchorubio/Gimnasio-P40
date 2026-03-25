@@ -1,0 +1,134 @@
+{% load file_extras %}
+<article class="fitkit-post card-ego" data-publication-id="{{ publicacion.id }}">
+  <div class="fitkit-post-head">
+    <div>
+      <p class="fitkit-post-eyebrow">Publicación</p>
+      <h4 class="fitkit-post-title">{{ publicacion.titulo }}</h4>
+      <p class="fitkit-post-meta">Por {{ publicacion.autor.nombre }} · {{ publicacion.fecha_publicacion|date:"d M Y" }}</p>
+    </div>
+    <span class="fitkit-post-date">{{ publicacion.fecha_publicacion|date:"d M Y" }}</span>
+  </div>
+
+  <p class="fitkit-post-body">{{ publicacion.contenido }}</p>
+
+  {% if publicacion.imagen or publicacion.video_archivo or publicacion.video_url or publicacion.archivo_1 or publicacion.archivo_2 or publicacion.archivo_3 %}
+    <div class="media-grid fitkit-post-media">
+      {% if publicacion.imagen %}
+        <a href="{{ publicacion.imagen.url }}" target="_blank" download class="media-thumb">
+          <img src="{{ publicacion.imagen.url }}" alt="{{ publicacion.titulo }}">
+          <span class="media-tag">IMG</span>
+        </a>
+      {% endif %}
+
+      {% if publicacion.video_archivo %}
+        {% with ext=publicacion.video_archivo.name|fileext %}
+          {% if ext == 'MP4' or ext == 'WEBM' or ext == 'OGG' %}
+            <div class="media-thumb">
+              <video controls src="{{ publicacion.video_archivo.url }}"></video>
+              <span class="media-tag">{{ ext }}</span>
+            </div>
+          {% else %}
+            <a href="{{ publicacion.video_archivo.url }}" target="_blank" download class="media-file">
+              <span class="file-ext">{{ ext }}</span>
+              <span class="file-name">{{ publicacion.video_archivo.name|filename }}</span>
+            </a>
+          {% endif %}
+        {% endwith %}
+      {% endif %}
+
+      {% if publicacion.video_url %}
+        <a href="{{ publicacion.video_url }}" target="_blank" class="media-file">
+          <span class="file-ext">URL</span>
+          <span class="file-name">Video externo</span>
+        </a>
+      {% endif %}
+
+      {% if publicacion.archivo_1 %}
+        {% with ext=publicacion.archivo_1.name|fileext %}
+          {% if ext == 'PDF' %}
+            <a href="{{ publicacion.archivo_1.url }}" target="_blank" download class="media-thumb media-doc">
+              <embed src="{{ publicacion.archivo_1.url }}#toolbar=0" type="application/pdf">
+              <span class="media-tag">PDF</span>
+            </a>
+          {% elif ext == 'JPG' or ext == 'JPEG' or ext == 'PNG' or ext == 'WEBP' or ext == 'GIF' %}
+            <a href="{{ publicacion.archivo_1.url }}" target="_blank" download class="media-thumb">
+              <img src="{{ publicacion.archivo_1.url }}" alt="{{ publicacion.archivo_1.name|filename }}">
+              <span class="media-tag">IMG</span>
+            </a>
+          {% else %}
+            <a href="{{ publicacion.archivo_1.url }}" target="_blank" download class="media-file">
+              <span class="file-ext">{{ ext }}</span>
+              <span class="file-name">{{ publicacion.archivo_1.name|filename }}</span>
+            </a>
+          {% endif %}
+        {% endwith %}
+      {% endif %}
+
+      {% if publicacion.archivo_2 %}
+        {% with ext=publicacion.archivo_2.name|fileext %}
+          {% if ext == 'PDF' %}
+            <a href="{{ publicacion.archivo_2.url }}" target="_blank" download class="media-thumb media-doc">
+              <embed src="{{ publicacion.archivo_2.url }}#toolbar=0" type="application/pdf">
+              <span class="media-tag">PDF</span>
+            </a>
+          {% elif ext == 'JPG' or ext == 'JPEG' or ext == 'PNG' or ext == 'WEBP' or ext == 'GIF' %}
+            <a href="{{ publicacion.archivo_2.url }}" target="_blank" download class="media-thumb">
+              <img src="{{ publicacion.archivo_2.url }}" alt="{{ publicacion.archivo_2.name|filename }}">
+              <span class="media-tag">IMG</span>
+            </a>
+          {% else %}
+            <a href="{{ publicacion.archivo_2.url }}" target="_blank" download class="media-file">
+              <span class="file-ext">{{ ext }}</span>
+              <span class="file-name">{{ publicacion.archivo_2.name|filename }}</span>
+            </a>
+          {% endif %}
+        {% endwith %}
+      {% endif %}
+
+      {% if publicacion.archivo_3 %}
+        {% with ext=publicacion.archivo_3.name|fileext %}
+          {% if ext == 'PDF' %}
+            <a href="{{ publicacion.archivo_3.url }}" target="_blank" download class="media-thumb media-doc">
+              <embed src="{{ publicacion.archivo_3.url }}#toolbar=0" type="application/pdf">
+              <span class="media-tag">PDF</span>
+            </a>
+          {% elif ext == 'JPG' or ext == 'JPEG' or ext == 'PNG' or ext == 'WEBP' or ext == 'GIF' %}
+            <a href="{{ publicacion.archivo_3.url }}" target="_blank" download class="media-thumb">
+              <img src="{{ publicacion.archivo_3.url }}" alt="{{ publicacion.archivo_3.name|filename }}">
+              <span class="media-tag">IMG</span>
+            </a>
+          {% else %}
+            <a href="{{ publicacion.archivo_3.url }}" target="_blank" download class="media-file">
+              <span class="file-ext">{{ ext }}</span>
+              <span class="file-name">{{ publicacion.archivo_3.name|filename }}</span>
+            </a>
+          {% endif %}
+        {% endwith %}
+      {% endif %}
+    </div>
+  {% else %}
+    <div class="media-empty">Sin archivos adjuntos.</div>
+  {% endif %}
+
+  {% if show_actions %}
+    <div class="fitkit-post-actions">
+      <button
+        type="button"
+        class="btn-post btn-post-ghost publication-edit-btn"
+        onclick="editPublicationInline(this)"
+        data-id="{{ publicacion.id }}"
+        data-title="{{ publicacion.titulo|escape }}"
+        data-content="{{ publicacion.contenido|escape }}"
+        data-video="{{ publicacion.video_url|default:''|escape }}"
+      >
+        Editar
+      </button>
+      <form method="post" class="inline-form">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="delete_publication">
+        <input type="hidden" name="publication_id" value="{{ publicacion.id }}">
+        <button type="submit" class="btn-post btn-post-danger">Eliminar</button>
+      </form>
+    </div>
+  {% endif %}
+</article>
